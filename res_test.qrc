@@ -1,0 +1,45 @@
+<RCC>
+  <qresource prefix="img">
+    <file>utils/images/about.png</file>
+    <file>utils/images/addFromLocal.png</file>
+    <file>utils/images/app_icon.png</file>
+    <file>utils/images/clear.png</file>
+    <file>utils/images/current-music.png</file>
+    <file>utils/images/detail.png</file>
+    <file>utils/images/dialog-music.png</file>
+    <file>utils/images/duration.png</file>
+    <file>utils/images/like.png</file>
+    <file>utils/images/loop-one.png</file>
+    <file>utils/images/loop.png</file>
+    <file>utils/images/min.png</file>
+    <file>utils/images/music_list.png</file>
+    <file>utils/images/music-dir.png</file>
+    <file>utils/images/music-voice.png</file>
+    <file>utils/images/MusicListItem.png</file>
+    <file>utils/images/next.png</file>
+    <file>utils/images/pase.png</file>
+    <file>utils/images/play-random.png</file>
+    <file>utils/images/play.png</file>
+    <file>utils/images/pre.png</file>
+    <file>utils/images/quit.png</file>
+    <file>utils/images/remove.png</file>
+    <file>utils/images/sort-alpha-asc_ea48_ether.png</file>
+    <file>utils/images/stop.png</file>
+    <file>utils/images/unpause.png</file>
+  </qresource>
+  <qresource prefix="bgr_img">
+    <file>utils/bg_imgs/bg_0002_11.jpg</file>
+    <file>utils/bg_imgs/bg_0003_1.jpg</file>
+    <file>utils/bg_imgs/bg_0004_12.jpg</file>
+    <file>utils/bg_imgs/bg_0005_10.jpg</file>
+    <file>utils/bg_imgs/bg_0006_9.jpg</file>
+    <file>utils/bg_imgs/bg_0007_8.jpg</file>
+    <file>utils/bg_imgs/bg_0008_7.jpg</file>
+    <file>utils/bg_imgs/bg_0009_6.jpg</file>
+    <file>utils/bg_imgs/bg_0010_5.jpg</file>
+    <file>utils/bg_imgs/bg_0011_4.jpg</file>
+    <file>utils/bg_imgs/bg_0012_3.jpg</file>
+    <file>utils/bg_imgs/bg_0013_2.jpg</file>
+    <file>utils/bg_imgs/bg_overlay.png</file>
+  </qresource>
+</RCC>
