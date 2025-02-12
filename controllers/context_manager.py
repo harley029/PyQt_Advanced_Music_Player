@@ -17,11 +17,11 @@ class ContextMenuManager:
         self.setup_menus()
 
     def create_commands(self):
-        # # Контекстное меню вкладки Favourites
+        # Контекстное меню вкладки Favourites
         self.del_selected_fav_command = cmd.DeleteSelectedFavouriteCommand(self.favourites_manager)
         self.del_all_favourites_command = cmd.DeleteAllFavouriteCommand(self.favourites_manager)
 
-        # # Контекстное меню вкладки Playlist
+        # Контекстное меню вкладки Playlist
         self.load_playlist_command = cmd.LoadPlaylistCommand(self.playlist_manager, self.parent)
         self.create_new_playlist_command = cmd.NewPlaylistCommand(self.playlist_manager, self.parent)
         self.del_sel_pl_command = cmd.DeletePlaylistCommand(self.playlist_manager, self.parent)
@@ -58,7 +58,7 @@ class ContextMenuManager:
 
         menu.addAction(ctionRemove_All_Favourites)
 
-    # # Настройка контекстного меню для Плейлистов
+    # Настройка контекстного меню для Плейлистов
     def setup_playlist_menu(self):
         menu = self.parent.playlists_listWidget
         menu.setContextMenuPolicy(Qt.ActionsContextMenu)

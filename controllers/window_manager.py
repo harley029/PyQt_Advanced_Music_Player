@@ -5,7 +5,6 @@ class WindowManager:
     def __init__(self, window):
         self.window = window
         self.initialPosition = window.pos()
-        # Можно также установить дополнительные параметры окна здесь
 
     def setup_window(self):
         self.window.setAttribute(Qt.WA_TranslucentBackground)

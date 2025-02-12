@@ -50,7 +50,6 @@ class NavigationHandler:
     """
 
     def __init__(self, navigation_strategy: INavigationStrategy = None):
-        # Стратегия по умолчанию — нормальная последовательная навигация.
         self.navigation_strategy = navigation_strategy or NormalNavigationStrategy()
 
     def set_strategy(self, strategy: INavigationStrategy) -> None:

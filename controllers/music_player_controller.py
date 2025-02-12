@@ -24,7 +24,7 @@ class MusicPlayerController(IMusicPlayerController):
 
     def play_song(self, song_path: str):
         if not song_path or not os.path.exists(song_path):
-            return  # можно выводить предупреждение
+            return
 
         self.current_song_path = song_path
         media = QMediaContent(QUrl.fromLocalFile(song_path))

@@ -16,7 +16,6 @@ class UIUpdater:
 
         self.is_slider_moving = False
 
-        # Таймер для обновления слайдера
         self.timer = QTimer()
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.update_slider)

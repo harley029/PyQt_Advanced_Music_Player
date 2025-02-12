@@ -109,7 +109,6 @@ class PlaylistManager(IPlaylistManager):
             if not item:
                 return
 
-            # Извлекаем имя плейлиста (имя таблицы)
             playlist_name = item.text().strip()
             confirm = QMessageBox.question(
                 parent,
@@ -183,7 +182,7 @@ class PlaylistManager(IPlaylistManager):
             if not self.check_list_not_empty(parent.loaded_songs_listWidget, "No songs in the list!"):
                 return
             current_selection = parent.loaded_songs_listWidget.currentRow()
-            if current_selection < 0 or current_selection >= parent.loaded_songs_listWidget.count():  # ✅ Исправлено!
+            if current_selection < 0 or current_selection >= parent.loaded_songs_listWidget.count():
                 QMessageBox.information(parent, "Attention", "No song selected!")
                 return
 
@@ -200,7 +199,6 @@ class PlaylistManager(IPlaylistManager):
                 QMessageBox.information(parent, "Add song to playlist", "No playlist was selected")
                 return
 
-            # Добавляем песню в плейлист
             self.db_manager.add_song_to_playlist(playlist, current_song)
         except IntegrityError:
             QMessageBox.warning(parent, "Warning", f"Song already in {playlist}.")
@@ -218,7 +216,7 @@ class PlaylistManager(IPlaylistManager):
                 return
 
             playlist, ok = self.ui_manager.select_playlist(parent)
-            if not ok:  # Пользователь нажал "Отмена"
+            if not ok:
                 return
             if playlist == "--Click to Select--":
                 QMessageBox.information(

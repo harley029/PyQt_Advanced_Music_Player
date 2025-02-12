@@ -82,7 +82,6 @@ class FavouritesManager:
 
             self._remove_song_from_ui_and_db(current_song)
 
-            # Если список не пуст, воспроизводим следующую песню
             if self.list_widget.count() > 0:
                 new_selection = min(current_selection, self.list_widget.count() - 1)
                 self.list_widget.setCurrentRow(new_selection)
