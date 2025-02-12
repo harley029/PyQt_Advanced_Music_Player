@@ -7,16 +7,8 @@ from typing import List, Tuple, Any, Optional
 from database.db_utils import DBUtils
 from interfaces.interfaces import IDatabaseManager
 
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
-# Отключаем вывод в консоль
-# sys.stdout = open(os.devnull, "w")
-# sys.stderr = open(os.devnull, "w")
-# # Отключаем ошибки, чтобы они не писались в консоль
-# sys.excepthook = lambda exc_type, exc_value, traceback: None
 
 class DatabaseException(Exception):
     """Пользовательское исключение для ошибок работы с базой данных."""
@@ -27,8 +19,7 @@ class DatabaseManager(IDatabaseManager):
     """
     Конкретная реализация интерфейса IDatabaseManager для SQLite.
 
-    Этот класс реализует основные операции с базой данных, такие как подключение, выполнение запросов,
-    добавление, удаление и выборка данных. Реализация основана на SQLite.
+    Реализует операции подключения, выполнения запросов, а также операций добавления, удаления и выборки данных.
     """
 
     def __init__(self, db_name: str = "qtbeets_db.db", db_dir: Optional[str] = None):
@@ -82,7 +73,7 @@ class DatabaseManager(IDatabaseManager):
         :param params: Кортеж параметров для запроса.
         :param fetch: Если True, возвращает результат запроса.
         :return: Список кортежей с результатами запроса, если fetch=True, иначе пустой список.
-        :raises Exception: При ошибке выполнения запроса.
+        :raises DatabaseException: При ошибке выполнения запроса.
         """
         try:
             with self._connect() as conn:
@@ -96,13 +87,11 @@ class DatabaseManager(IDatabaseManager):
                 else:
                     logging.info(f"Executed query: {query} | Params: {params}")
                     return []
-        except sqlite3.IntegrityError:
-            logging.warning(
-                f"Integrity constraint violation: {query} | Params: {params}"
-            )
+        except sqlite3.IntegrityError as e:
+            logging.warning(f"Integrity constraint violation: {query} | Params: {params}")
             raise
         except sqlite3.Error as e:
-            logging.error(f"Database error: {e} | Query: {query} | Params: {params}")
+            logging.exception(f"Database error: {e} | Query: {query} | Params: {params}")
             raise DatabaseException(e)
 
     def add_song(self, table: str, song: str) -> None:
@@ -114,6 +103,7 @@ class DatabaseManager(IDatabaseManager):
         """
         table_escaped = f'"{table}"'
         query = f"INSERT INTO {table_escaped} (song) VALUES (?)"
+        logging.debug(f"Adding song: {song} to table: {table}")
         self.execute_query(query, (song,))
 
     def delete_song(self, table: str, song: str) -> None:
@@ -125,6 +115,7 @@ class DatabaseManager(IDatabaseManager):
         """
         table_escaped = f'"{table}"'
         query = f"DELETE FROM {table_escaped} WHERE song = ?"
+        logging.debug(f"Deleting song: {song} from table: {table}")
         self.execute_query(query, (song,))
 
     def delete_all_songs(self, table: str) -> None:
@@ -135,6 +126,7 @@ class DatabaseManager(IDatabaseManager):
         """
         table_escaped = f'"{table}"'
         query = f"DELETE FROM {table_escaped}"
+        logging.debug(f"Deleting all songs from table: {table}")
         self.execute_query(query)
 
     def create_table(self, table_name: str, columns: str = "song TEXT UNIQUE") -> None:
@@ -146,9 +138,11 @@ class DatabaseManager(IDatabaseManager):
         :raises ValueError: Если имя таблицы недопустимо.
         """
         if not DBUtils.is_valid_table_name(table_name):
+            logging.error(f"Attempt to create table with invalid name: {table_name}")
             raise ValueError("Invalid table name!")
         table_escaped = f'"{table_name}"'
         query = f"CREATE TABLE IF NOT EXISTS {table_escaped} ({columns})"
+        logging.debug(f"Creating table: {table_name} with columns: {columns}")
         self.execute_query(query)
 
     def delete_table(self, table: str) -> None:
@@ -159,6 +153,7 @@ class DatabaseManager(IDatabaseManager):
         """
         table_escaped = f'"{table}"'
         query = f"DROP TABLE IF EXISTS {table_escaped}"
+        logging.debug(f"Dropping table: {table}")
         self.execute_query(query)
 
     def get_tables(self) -> List[str]:
@@ -170,6 +165,7 @@ class DatabaseManager(IDatabaseManager):
         query = "SELECT name FROM sqlite_master WHERE type='table';"
         tables = self.execute_query(query, fetch=True)
         table_names = [table[0] for table in tables]
+        logging.debug(f"Retrieved tables: {table_names}")
         return table_names
 
     def fetch_all_songs(self, table: str) -> List[str]:
@@ -182,4 +178,5 @@ class DatabaseManager(IDatabaseManager):
         query = f"SELECT song FROM {table}"
         songs = self.execute_query(query, fetch=True)
         song_list = [song[0] for song in songs]
+        logging.debug(f"Fetched songs from table {table}: {song_list}")
         return song_list
