@@ -157,11 +157,12 @@ class EventHandler:
             if list_widget is None or list_widget.count() == 0:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
-            current_item = list_widget.currentItem()
-            if not current_item:
+            item = list_widget.currentItem()
+            if not item:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
-            current_song = current_item.data(Qt.UserRole)
+            
+            current_song = item.data(Qt.UserRole)
 
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
@@ -174,7 +175,7 @@ class EventHandler:
                 db_table = self.ui.current_playlist
             if db_table:
                 self.ui.db_manager.delete_song(db_table, current_song)
-            row = list_widget.row(current_item)
+            row = list_widget.row(item)
             list_widget.takeItem(row)
             # Запускаем следующую песню
             if list_widget.count() > 0:

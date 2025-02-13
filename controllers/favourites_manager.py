@@ -66,7 +66,10 @@ class FavouritesManager:
         try:
             if not self._check_list_not_empty(self.parent.favourites_listWidget):
                 return
-
+            item = self.parent.loaded_songs_listWidget.currentItem()
+            if not item:
+                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                return
             current_selection = self.list_widget.currentRow()
             item = self.list_widget.currentItem()
             if not item:
