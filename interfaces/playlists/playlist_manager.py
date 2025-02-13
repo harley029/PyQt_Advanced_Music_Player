@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from interfaces.interfaces import IPlaylistManager
 from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManager
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
+from utils import messages as msg
 
 
 class PlaylistManager(IPlaylistManager):
@@ -36,11 +37,11 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if parent.playlists_listWidget.count() == 0:
-                QMessageBox.information(parent, "Attention!", "List of playlists is empty!")
+                QMessageBox.information(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
                 return
             current_selection = parent.playlists_listWidget.selectedItems()
             if not current_selection:
-                QMessageBox.information(parent, "Warning", "No playlist selected!")
+                QMessageBox.information(parent, msg.TTL_WRN, msg.MSG_NO_LST_SEL)
                 return
             current_selection = parent.playlists_listWidget.currentRow()
             item = parent.playlists_listWidget.item(current_selection)
@@ -52,7 +53,7 @@ class PlaylistManager(IPlaylistManager):
             self.ui_manager.load_playlist(current_playlist, parent.loaded_songs_listWidget)
             parent.switch_to_songs_tab()
         except Exception as e:
-            QMessageBox.critical(parent, "Error", f"Error loading playlist: {e}")
+            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_LOAD_ERR} {e}")
 
     def create_playlist(self, parent):
         """
@@ -72,7 +73,7 @@ class PlaylistManager(IPlaylistManager):
             else:
                 caution = QMessageBox.question(
                     parent,
-                    "Replace Playlist",
+                    msg.TTL_LST_REPL,
                     f'A playlist with name "{playlist_name}" already exists.\nDo you want to replace it?',
                     QMessageBox.Yes | QMessageBox.Cancel,
                     QMessageBox.Cancel,
@@ -85,7 +86,7 @@ class PlaylistManager(IPlaylistManager):
 
             self.ui_manager.load_playlists()
         except ValueError as e:
-            QMessageBox.critical(parent, "Error", f"Имя плейлиста может содержать буквы латинского и украинского алфавиотов, а также знаки подчеркивания, тире, восклицательные знаки и пробелы")
+            QMessageBox.critical(parent, msg.TTL_ERR, msg.MSG_NAME_RULE)
         return playlist_name
 
     def remove_playlist(self, parent):
@@ -96,13 +97,11 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if parent.playlists_listWidget.count() == 0:
-                QMessageBox.information(
-                    parent, "Attention!", "List of playlists is empty!"
-                )
+                QMessageBox.information(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
                 return
             current_selection = parent.playlists_listWidget.selectedItems()
             if not current_selection:
-                QMessageBox.information(parent, "Warning", "No playlist selected!")
+                QMessageBox.information(parent, msg.TTL_WRN, msg.MSG_NO_LST_SEL)
                 return
             current_selection = parent.playlists_listWidget.currentRow()
             item = parent.playlists_listWidget.item(current_selection)
@@ -112,8 +111,8 @@ class PlaylistManager(IPlaylistManager):
             playlist_name = item.text().strip()
             confirm = QMessageBox.question(
                 parent,
-                "Delete Playlist",
-                f"Are you sure you want to delete playlist '{playlist_name}'?",
+                msg.TTL_LST_DEL,
+                f"{msg.MSG_LST_DEL_QUEST} '{playlist_name}'?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
@@ -129,11 +128,9 @@ class PlaylistManager(IPlaylistManager):
             if parent.playlists_listWidget.count() > 0:
                 new_selection = current_selection % parent.playlists_listWidget.count()
                 parent.playlists_listWidget.setCurrentRow(new_selection)
-            QMessageBox.information(
-                parent, "Success", f"Playlist '{playlist_name}' has been deleted."
-            )
+            # QMessageBox.information(parent, msg.TTL_OK, f"Playlist '{playlist_name}' has been deleted.")
         except Exception as e:
-            QMessageBox.critical(parent, "Error", f"Error removing playlist: {e}")
+            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_DEL_ERR} {e}")
 
     def remove_all_playlists(self, parent):
         """
@@ -143,30 +140,30 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if parent.playlists_listWidget.count() == 0:
-                QMessageBox.information(parent, "Attention!", "List of playlists is empty!")
+                QMessageBox.information(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
                 return
             confirm = QMessageBox.question(
                 parent,
-                "Delete Playlist",
-                f"Are you sure you want to delete all playlists?",
+                msg.TTL_LST_DEL,
+                msg.MSG_LST_DEL_QUEST,
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
             if confirm != QMessageBox.Yes:
                 return
-            
+
             if parent.current_playlist and parent.current_playlist.lower() != "favourites":
                 parent.music_controller.stop_song()
                 parent.ui_updater.clear_song_info()
                 parent.current_playlist = None
-                
+
             playlists = self.db_manager.get_playlists()
             for playlist in playlists:
                 self.db_manager.delete_playlist(playlist)
             parent.playlists_listWidget.clear()
-            QMessageBox.information(parent, "Success", f"Playlists have been deleted.")
+            # QMessageBox.information(parent, msg.TTL_OK, msg.MSG_LST_DEL_OK)
         except Exception as e:
-            QMessageBox.critical(parent, "Error", f"Error removing playlist: {e}")
+            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_DEL_ERR} {e}")
 
     def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
         result = self.ui_manager.check_list_not_empty(list_widget, message)
@@ -183,12 +180,12 @@ class PlaylistManager(IPlaylistManager):
                 return
             current_selection = parent.loaded_songs_listWidget.currentRow()
             if current_selection < 0 or current_selection >= parent.loaded_songs_listWidget.count():
-                QMessageBox.information(parent, "Attention", "No song selected!")
+                QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
 
             item = parent.loaded_songs_listWidget.item(current_selection)
             if not item:
-                QMessageBox.information(parent, "Attention", "No song selected!")
+                QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_song = item.data(Qt.UserRole)
 
@@ -196,14 +193,14 @@ class PlaylistManager(IPlaylistManager):
             if not ok:  # Пользователь нажал "Отмена"
                 return
             if playlist == "--Click to Select--":
-                QMessageBox.information(parent, "Add song to playlist", "No playlist was selected")
+                QMessageBox.information(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
                 return
 
             self.db_manager.add_song_to_playlist(playlist, current_song)
         except IntegrityError:
-            QMessageBox.warning(parent, "Warning", f"Song already in {playlist}.")
+            QMessageBox.warning(parent, msg.TTL_WRN, f"{msg.MSG_SONG_EXIST} {playlist}.")
         except Exception as e:
-            QMessageBox.critical(parent, "Error", f"Error adding to {playlist}: {e}")
+            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_ADD_TO_LST_ERR} {playlist}: {e}")
 
     def add_all_to_playlist(self, parent):
         """
@@ -219,9 +216,7 @@ class PlaylistManager(IPlaylistManager):
             if not ok:
                 return
             if playlist == "--Click to Select--":
-                QMessageBox.information(
-                    parent, "Add song to playlist", "No playlist was selected"
-                )
+                QMessageBox.information(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
                 return
 
             added_count = 0
@@ -236,10 +231,8 @@ class PlaylistManager(IPlaylistManager):
                 except IntegrityError:
                     # Если песня уже была в избранном, просто пропускаем
                     pass
-            QMessageBox.information(
-                parent, "Success", f"{added_count} songs added to {playlist}."
-            )
+            # QMessageBox.information(parent, msg.TTL_OK, f"{added_count} songs added to {playlist}.")
         except Exception as e:
             QMessageBox.critical(
-                parent, "Error", f"Error adding all songs to {playlist}: {e}"
+                parent, msg.TTL_ERR, f"{msg.MSG_ALL_ADD_ERR} {playlist}: {e}"
             )

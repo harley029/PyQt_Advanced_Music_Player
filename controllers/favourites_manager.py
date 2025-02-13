@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QListWidget, QMessageBox, QListWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
+from utils import messages as msg
+
 
 class FavouritesManager:
 
@@ -20,7 +22,7 @@ class FavouritesManager:
 
     def _check_list_not_empty(self, list_widget:QListWidget):
         if list_widget.count() == 0:
-            QMessageBox.information(self.parent, "Attention!", "List is empty!")
+            QMessageBox.information(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
             return False
         return True
 
@@ -43,7 +45,7 @@ class FavouritesManager:
                 item.setData(Qt.UserRole, song)
                 self.list_widget.addItem(item)
         except Exception as e:
-            QMessageBox.critical(self.parent, "Error", f"Error loading favourites: {e}")
+            QMessageBox.critical(self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {e}")
 
     def add_to_favourites(self):
         try:
@@ -51,16 +53,14 @@ class FavouritesManager:
                 return
             item = self.parent.loaded_songs_listWidget.currentItem()
             if not item:
-                QMessageBox.information(self.parent, "Attention", "No song selected!")
+                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_song = item.data(Qt.UserRole)
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
-            QMessageBox.warning(self.parent, "Warning", "Song already in favourites.")
+            QMessageBox.warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
         except Exception as e:
-            QMessageBox.critical(
-                self.parent, "Error", f"Error adding to favourites: {e}"
-            )
+            QMessageBox.critical(self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD} {e}")
 
     def remove_selected_favourite(self):
         try:
@@ -70,7 +70,7 @@ class FavouritesManager:
             current_selection = self.list_widget.currentRow()
             item = self.list_widget.currentItem()
             if not item:
-                QMessageBox.information(self.parent, "Warning", "No song selected!")
+                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
 
             current_song = item.data(Qt.UserRole)
@@ -91,7 +91,7 @@ class FavouritesManager:
                 self.parent.music_controller.play_song(next_song)
 
         except Exception as e:
-            QMessageBox.critical(self.parent, "Error", f"Error removing song: {e}")
+            QMessageBox.critical(self.parent, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {e}")
 
     def clear_favourites(self):
         try:
@@ -99,8 +99,8 @@ class FavouritesManager:
                 return
             confirm = QMessageBox.question(
                 self.parent,
-                "Remove all favourites",
-                "Are you sure you want to remove all songs from favourites?",
+                msg.TTL_FAV_QUEST,
+                msg.MSG_FAV_QUEST,
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
@@ -121,7 +121,7 @@ class FavouritesManager:
 
         except Exception as e:
             QMessageBox.critical(
-                self.parent, "Error", f"Error clearing favourites: {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAF_CLEAR_ERR} {e}"
             )
 
     def add_all_to_favourites(self):
@@ -142,10 +142,10 @@ class FavouritesManager:
                     pass  # Пропускаем уже существующие песни
 
             QMessageBox.information(
-                self.parent, "Success", f"{added_count} songs added to Favourites."
+                self.parent, msg.TTL_OK, f"{added_count} {msg.MSG_FAV_ADDED}"
             )
 
         except Exception as e:
             QMessageBox.critical(
-                self.parent, "Error", f"Error adding all songs to Favourites: {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {e}"
             )

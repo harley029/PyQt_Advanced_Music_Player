@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from interfaces.interfaces import IPlaylistUIManager
+from utils import messages as msg
 
 
 class PlaylistUIManager(IPlaylistUIManager):
@@ -68,9 +69,9 @@ class PlaylistUIManager(IPlaylistUIManager):
         return playlist, ok
 
     def check_list_not_empty(
-        self, list_widget: QListWidget, message: str = "No songs in the list!"
+        self, list_widget: QListWidget, message: str = msg.MSG_LST_EMPTY
     ) -> bool:
         if not list_widget or list_widget.count() == 0:
-            QMessageBox.information(None, "Warning", message)
+            QMessageBox.information(None, msg.TTL_WRN, message)
             return False
         return True
