@@ -43,9 +43,6 @@ class PlaylistUIManager(IPlaylistUIManager):
             item.setData(Qt.UserRole, song)
             list_widget.addItem(item)
 
-    def refresh_playlists(self):
-        self.load_playlists_into_widget()
-
     def select_playlist(self, parent_widget: QListWidget) -> tuple:
         """
         Отображает диалог выбора плейлиста и возвращает выбранное имя.

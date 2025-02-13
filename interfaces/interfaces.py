@@ -121,11 +121,6 @@ class IPlaylistDatabaseManager(ABC):
         pass
 
     @abstractmethod
-    def remove_song_from_playlist(self, playlist: str, song: str):
-        """Удаляет песню из плейлиста."""
-        pass
-
-    @abstractmethod
     def get_playlists(self) -> List[str]:
         """Возвращает список всех плейлистов."""
         pass
@@ -144,10 +139,10 @@ class IPlaylistUIManager(ABC):
         """Загружает плейлист в UI."""
         pass
 
-    @abstractmethod
-    def refresh_playlists(self):
-        """Обновляет UI при изменении плейлиста."""
-        pass
+    # @abstractmethod
+    # def refresh_playlists(self):
+    #     """Обновляет UI при изменении плейлиста."""
+    #     pass
 
     @abstractmethod
     def check_list_not_empty(self, list_widget: QListWidget, message: str) -> bool:

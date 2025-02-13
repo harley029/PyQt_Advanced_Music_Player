@@ -157,11 +157,12 @@ class EventHandler:
             if list_widget is None or list_widget.count() == 0:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
-            item = list_widget.currentItem()
-            if not item:
+            items = list_widget.selectedItems()
+            if not items:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             
+            item = list_widget.currentItem()
             current_song = item.data(Qt.UserRole)
 
             # Проверяем, не играет ли сейчас эта песня

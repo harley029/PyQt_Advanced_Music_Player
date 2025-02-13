@@ -26,8 +26,5 @@ class PlaylistDatabaseManager(IPlaylistDatabaseManager):
     def add_song_to_playlist(self, playlist: str, song: str):
         self.db_manager.add_song(playlist, song)
 
-    def remove_song_from_playlist(self, playlist: str, song: str):
-        self.db_manager.delete_song(playlist, song)
-
     def fetch_all_songs(self, playlist: str):
         return self.db_manager.fetch_all_songs(playlist)
