@@ -149,17 +149,17 @@ class EventHandler:
                 item.setData(Qt.UserRole, file_name)
                 self.ui.loaded_songs_listWidget.addItem(item)
         else:
-            QMessageBox.information(self.ui, "Info", "No files selected.")
+            QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
     def on_delete_selected_song_clicked(self, db_table=None):
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(self.ui, "Внимание", "Нет песен для удаления!")
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
             current_item = list_widget.currentItem()
             if not current_item:
-                QMessageBox.information(self.ui, "Внимание", "Песня не выбрана!")
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_song = current_item.data(Qt.UserRole)
 
@@ -185,19 +185,19 @@ class EventHandler:
                 else:
                     self.on_stop_clicked()
         except Exception as e:
-            QMessageBox.critical(self.ui, "Error", f"Error removing song: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {e}")
 
     def on_clear_list_clicked(self,db_table=None):
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(self.ui, "Внимание", "Нет песен для удаления!")
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
 
             question = QMessageBox.question(
                 self.ui,
-                "Remove all songs!",
-                "Are you sure you want to remove all songs?",
+                msg.TTL_SONG_DEL_QUEST,
+                msg.MSG_SONG_DEL_QUEST,
                 QMessageBox.Yes | QMessageBox.Cancel,
                 QMessageBox.Cancel,
             )
@@ -209,26 +209,24 @@ class EventHandler:
                 if db_table:
                     self.db_manager.delete_all_songs(db_table)
         except Exception as e:
-            QMessageBox.critical(self.ui, "Error", f"Remove all songs error: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_ALL_SONG_DEL_ERR} {e}")
 
     def on_play_clicked(self):
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(
-                    self.ui, "Внимание", "Нет песен для воспроизведения!"
-                )
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
 
             current_item = list_widget.currentItem()
             if not current_item:
-                QMessageBox.information(self.ui, "Внимание", "Песня не выбрана!")
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
 
             song_path = current_item.data(Qt.UserRole)
             self.playback_handler.play(song_path)
         except Exception as e:
-            QMessageBox.critical(self.ui, "Error", f"Error playing song: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {e}")
 
     def on_pause_clicked(self):
         self.playback_handler.pause()
@@ -240,7 +238,7 @@ class EventHandler:
         try:
             list_widget = self.get_current_list_widget()
             if not list_widget or list_widget.count() == 0:
-                QMessageBox.information(self.ui, "Внимание", "Нет песен для воспроизведения!")
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
             current_index = list_widget.currentRow()
             count = list_widget.count()
@@ -255,7 +253,7 @@ class EventHandler:
             list_widget.setCurrentRow(new_index)
             self.on_play_clicked()
         except Exception as e:
-            QMessageBox.critical(self.ui, "Ошибка", f"Ошибка навигации по песням: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {e}")
 
     def on_loop_clicked(self):
         try:
@@ -266,7 +264,7 @@ class EventHandler:
             else:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error with looping: {e}")
+            QMessageBox.critical(self, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {e}")
 
     def on_shuffle_clicked(self):
         try:
@@ -277,7 +275,7 @@ class EventHandler:
             else:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
         except Exception as e:
-            QMessageBox.critical(self.ui, "Error", f"Error with shuffling: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {e}")
 
     def handle_media_status(self, status):
         if status == QMediaPlayer.EndOfMedia:
@@ -288,4 +286,4 @@ class EventHandler:
             self.music_controller.set_volume(value)
             self.ui.volume_label.setText(str(value))
         except Exception as e:
-            QMessageBox.critical(self.ui, "Error", f"Volume control error: {e}")
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {e}")
