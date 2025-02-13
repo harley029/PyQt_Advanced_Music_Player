@@ -40,3 +40,21 @@ MSG_FAV_ERR_ADD_ALL = "Error adding all songs to Favourites:"
 MSG_FAV_ADDED = "songs added to Favourites."
 
 MSG_NAME_RULE = "Имя плейлиста может содержать буквы латинского и украинского алфавиотов, а также знаки подчеркивания, тире, восклицательные знаки и пробелы."
+
+
+# Context manager messages
+CTX_DEL_SEL = "Delete selected song"
+CTX_DEL_ALL = "Remove all songs"
+CTX_LOAD_LST = "Load Playlist"
+CTX_NEW_LST = "Creare a new Playlist"
+CTX_DEL_SEL_LST = "Delete selected Playlist"
+CTX_DEL_ALL_LST = "Delete all Playlists"
+CTX_PLAY = "Play"
+CTX_PAUSE = "Pause / Resume"
+CTX_NEXT = "Next"
+CTX_PREVS = "Previous"
+CTX_STOP = "Stop"
+CTX_ADD_TO_FAV = "Add song to favourites"
+CTX_ADD_ALL_TO_FAV = "Add all songs to favourites"
+CTX_ADD_TO_LST = "Add song to playlist"
+CTX_ADD_ALL_TO_LST = "Add all songs to playlist"
