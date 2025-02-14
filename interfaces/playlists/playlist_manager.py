@@ -37,7 +37,7 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if parent.playlists_listWidget.count() == 0:
-                QMessageBox.information(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
+                QMessageBox.information(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
                 return
             current_selection = parent.playlists_listWidget.selectedItems()
             if not current_selection:
