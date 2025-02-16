@@ -1086,8 +1086,17 @@ padding:10px;
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);
-border-radius:5px;</string>
+       <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1106,7 +1115,7 @@ border-radius:5px;</string>
      <widget class="QPushButton" name="delete_selected_btn">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>478</x>
         <y>14</y>
         <width>31</width>
         <height>32</height>
@@ -1116,8 +1125,17 @@ border-radius:5px;</string>
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);
-border-radius:5px;</string>
+       <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1146,8 +1164,17 @@ border-radius:5px;</string>
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);
-border-radius:5px;</string>
+       <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1434,8 +1461,17 @@ padding:10px;
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);
-border-radius:5px;</string>
+       <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
       </property>
       <property name="text">
        <string/>
@@ -1464,8 +1500,17 @@ border-radius:5px;</string>
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);
-border-radius:5px;</string>
+       <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
       </property>
       <property name="text">
        <string/>

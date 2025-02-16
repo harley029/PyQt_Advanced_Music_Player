@@ -520,8 +520,17 @@ class Ui_MusicApp(object):
         self.delete_all_songs_btn = QtWidgets.QPushButton(self.song_list_page)
         self.delete_all_songs_btn.setGeometry(QtCore.QRect(515, 14, 31, 32))
         self.delete_all_songs_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.delete_all_songs_btn.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-radius:5px;")
+        self.delete_all_songs_btn.setStyleSheet("QPushButton{\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"    background-repeat:no-repeat;\n"
+"    border:none;\n"
+"    background-position:center center;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgba(255,255,255,100);\n"
+"}")
         self.delete_all_songs_btn.setText("")
         icon12 = QtGui.QIcon()
         icon12.addPixmap(QtGui.QPixmap(":/img/utils/images/remove.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -529,10 +538,19 @@ class Ui_MusicApp(object):
         self.delete_all_songs_btn.setIconSize(QtCore.QSize(32, 32))
         self.delete_all_songs_btn.setObjectName("delete_all_songs_btn")
         self.delete_selected_btn = QtWidgets.QPushButton(self.song_list_page)
-        self.delete_selected_btn.setGeometry(QtCore.QRect(480, 14, 31, 32))
+        self.delete_selected_btn.setGeometry(QtCore.QRect(478, 14, 31, 32))
         self.delete_selected_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.delete_selected_btn.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-radius:5px;")
+        self.delete_selected_btn.setStyleSheet("QPushButton{\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"    background-repeat:no-repeat;\n"
+"    border:none;\n"
+"    background-position:center center;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgba(255,255,255,100);\n"
+"}")
         self.delete_selected_btn.setText("")
         icon13 = QtGui.QIcon()
         icon13.addPixmap(QtGui.QPixmap(":/img/utils/images/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -542,8 +560,17 @@ class Ui_MusicApp(object):
         self.add_songs_btn = QtWidgets.QPushButton(self.song_list_page)
         self.add_songs_btn.setGeometry(QtCore.QRect(440, 14, 31, 32))
         self.add_songs_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.add_songs_btn.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-radius:5px;")
+        self.add_songs_btn.setStyleSheet("QPushButton{\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"    background-repeat:no-repeat;\n"
+"    border:none;\n"
+"    background-position:center center;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgba(255,255,255,100);\n"
+"}")
         self.add_songs_btn.setText("")
         icon14 = QtGui.QIcon()
         icon14.addPixmap(QtGui.QPixmap(":/img/utils/images/addFromLocal.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -687,8 +714,17 @@ class Ui_MusicApp(object):
         self.delete_selected_favourite_btn = QtWidgets.QPushButton(self.favourites_page)
         self.delete_selected_favourite_btn.setGeometry(QtCore.QRect(470, 14, 33, 32))
         self.delete_selected_favourite_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.delete_selected_favourite_btn.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-radius:5px;")
+        self.delete_selected_favourite_btn.setStyleSheet("QPushButton{\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"    background-repeat:no-repeat;\n"
+"    border:none;\n"
+"    background-position:center center;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgba(255,255,255,100);\n"
+"}")
         self.delete_selected_favourite_btn.setText("")
         self.delete_selected_favourite_btn.setIcon(icon13)
         self.delete_selected_favourite_btn.setIconSize(QtCore.QSize(32, 32))
@@ -696,8 +732,17 @@ class Ui_MusicApp(object):
         self.delete_all_favourites_btn = QtWidgets.QPushButton(self.favourites_page)
         self.delete_all_favourites_btn.setGeometry(QtCore.QRect(510, 14, 33, 32))
         self.delete_all_favourites_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.delete_all_favourites_btn.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-radius:5px;")
+        self.delete_all_favourites_btn.setStyleSheet("QPushButton{\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"    background-repeat:no-repeat;\n"
+"    border:none;\n"
+"    background-position:center center;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"    background-color: rgba(255,255,255,100);\n"
+"}")
         self.delete_all_favourites_btn.setText("")
         self.delete_all_favourites_btn.setIcon(icon12)
         self.delete_all_favourites_btn.setIconSize(QtCore.QSize(32, 32))
