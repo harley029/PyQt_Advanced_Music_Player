@@ -249,6 +249,45 @@ QPushButton:pressed{
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="about_btn">
+     <property name="geometry">
+      <rect>
+       <x>737</x>
+       <y>8</y>
+       <width>31</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	background-color: rgba(255, 255, 255, 0);
+	background-repeat:no-repeat;
+	border:none;
+	background-position:center center;
+	border-radius: 5px;
+}
+
+QPushButton:hover{
+	background-color: rgba(255,255,255,100);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="res.qrc">
+       <normaloff>:/img/utils/images/detail.png</normaloff>:/img/utils/images/detail.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_2">
     <property name="geometry">

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 
 from music import Ui_MusicApp
@@ -102,6 +102,9 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         # Изначально переходим на вкладку 0
         self.switch_to_songs_tab()
 
+        # Подключаем кнопку about к методу, который покажет окно с информацией
+        self.about_btn.clicked.connect(self.show_about)
+
     # -------------------- Базовые методы ---------------------
 
     def mousePressEvent(self, event):
@@ -114,6 +117,16 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         self.is_slider_moving = False
         new_position = self.music_slider.value()
         self.music_controller.media_player().setPosition(new_position)
+
+    def show_about(self):
+        about_text = """
+        <h2>Modern Music Player</h2>
+        <p>Version: 1.3</p>
+        <p>Author: Oleksandr Kharchenko</p>
+        <p>Email: oleksandr.kharchenko@icloud.com</p>
+        <p>Description: Application for listening offline music.</p>
+        """
+        QMessageBox.about(self, "О программе", about_text)
 
     # ---------------- Переключение вкладок -------------------
 
@@ -148,7 +161,6 @@ def set_working_directory():
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
     os.chdir(base_path)
-
 
 
 if __name__ == "__main__":
