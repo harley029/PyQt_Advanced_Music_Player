@@ -367,8 +367,8 @@ color: rgb(79, 208, 178);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
-       <width>141</width>
+       <y>42</y>
+       <width>41</width>
        <height>21</height>
       </rect>
      </property>
@@ -384,15 +384,15 @@ color: rgb(79, 208, 178);</string>
 color: rgb(79, 208, 178);</string>
      </property>
      <property name="text">
-      <string>Name</string>
+      <string>Title:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="current_song_name">
+    <widget class="QLabel" name="current_song_title">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>60</y>
-       <width>281</width>
+       <x>60</x>
+       <y>42</y>
+       <width>231</width>
        <height>21</height>
       </rect>
      </property>
@@ -408,55 +408,7 @@ color: rgb(79, 208, 178);</string>
 color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Song name goes here</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>80</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0);
-color: rgb(79, 208, 178);</string>
-     </property>
-     <property name="text">
-      <string>Path</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="current_song_path">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>100</y>
-       <width>281</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 0,0);
-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>Song path goes here</string>
+      <string>Song title goes here</string>
      </property>
     </widget>
     <widget class="QPushButton" name="add_to_fav_btn">
@@ -553,6 +505,150 @@ QPushButton:hover{
        <width>24</width>
        <height>24</height>
       </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>62</y>
+       <width>41</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(79, 208, 178);</string>
+     </property>
+     <property name="text">
+      <string>Artist:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="current_song_artist">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>62</y>
+       <width>231</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Artist name goes here</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>82</y>
+       <width>41</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(79, 208, 178);</string>
+     </property>
+     <property name="text">
+      <string>Album:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="current_song_album">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>82</y>
+       <width>231</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Albun title goes here</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>102</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(79, 208, 178);</string>
+     </property>
+     <property name="text">
+      <string>Duration:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="current_song_duration">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>102</y>
+       <width>221</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(0, 0, 0,0);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Song duration goes here</string>
      </property>
     </widget>
    </widget>
@@ -1797,6 +1893,9 @@ background-color: rgb(226, 94, 0);
    <property name="text">
     <string>Delete Selected</string>
    </property>
+   <property name="toolTip">
+    <string>Delete Selected Playlist</string>
+   </property>
   </action>
   <action name="actionDelete_All_Playlists">
    <property name="icon">
@@ -1805,6 +1904,9 @@ background-color: rgb(226, 94, 0);
    </property>
    <property name="text">
     <string>Delete All</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete All Playlists</string>
    </property>
   </action>
   <action name="actionRemove_Selected_Favourite">
@@ -1853,6 +1955,18 @@ background-color: rgb(226, 94, 0);
    </property>
    <property name="toolTip">
     <string>Add selected song to Favourites</string>
+   </property>
+  </action>
+  <action name="actionAbout_Song">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/img/utils/images/detail.png</normaloff>:/img/utils/images/detail.png</iconset>
+   </property>
+   <property name="text">
+    <string>About Song</string>
+   </property>
+   <property name="toolTip">
+    <string>About song</string>
    </property>
   </action>
  </widget>

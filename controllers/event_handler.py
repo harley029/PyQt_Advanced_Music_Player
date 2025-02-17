@@ -1,5 +1,4 @@
 import os
-from random import randint
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
@@ -12,6 +11,8 @@ from interfaces.navigation.navigation import (
 )
 from interfaces.interfaces import INavigationStrategy
 from utils import messages as msg
+from controllers.ui_updater import UIUpdater
+from controllers.music_player_controller import MusicPlayerController
 
 
 class PlaybackHandler:
@@ -19,7 +20,7 @@ class PlaybackHandler:
     Обрабатывает действия воспроизведения: play, pause, stop.
     """
 
-    def __init__(self, music_controller, ui_updater):
+    def __init__(self, music_controller: MusicPlayerController, ui_updater: UIUpdater):
         """
         :param music_controller: Объект, реализующий IMusicPlayerController.
         :param ui_updater: Объект, обновляющий UI (например, UIUpdater).

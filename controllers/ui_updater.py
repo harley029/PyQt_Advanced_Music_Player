@@ -1,18 +1,31 @@
 import time
+from os.path import basename
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtMultimedia import QMediaPlayer
 
+from mutagen import File
+
 
 class UIUpdater:
+
     def __init__(
-        self, music_controller, slider, time_label, song_name_label, song_path_label
+        self,
+        music_controller,
+        slider,
+        time_label,
+        current_song_title,
+        current_song_artist,
+        current_song_album,
+        current_song_duration,
     ):
         self.music_controller = music_controller
         self.slider = slider
         self.time_label = time_label
-        self.song_name_label = song_name_label
-        self.song_path_label = song_path_label
+        self.current_song_title = current_song_title
+        self.current_song_artist = current_song_artist
+        self.current_song_album = current_song_album
+        self.current_song_duration = current_song_duration
 
         self.is_slider_moving = False
 
@@ -38,13 +51,21 @@ class UIUpdater:
             self.time_label.setText(f"{current_time} / {total_time}")
 
     def update_current_song_info(self, song_path):
-        from os.path import basename, dirname
+        audio = File(song_path)
+        title = audio.tags.get("TIT2") if audio.tags and "TIT2" in audio.tags else basename(self.song_path)
+        artist = audio.tags.get("TPE1") if audio.tags and "TPE1" in audio.tags else "Unknown Artist"
+        album = audio.tags.get("TALB") if audio.tags and "TALB" in audio.tags else "Unknown Album"
+        duration = audio.info.length if audio.info else 0
 
-        self.song_name_label.setText(basename(song_path))
-        self.song_path_label.setText(dirname(song_path))
+        self.current_song_title.setText(f"{title}")
+        self.current_song_artist.setText(f"{artist}")
+        self.current_song_album.setText(f"{album}")
+        self.current_song_duration.setText(f"{int(duration // 3600)}:{int((duration % 3600) // 60):02}:{int(duration % 60):02}")
 
     def clear_song_info(self):
-        self.song_name_label.setText("")
-        self.song_path_label.setText("")
+        self.current_song_title.setText("")
+        self.current_song_artist.setText("")
+        self.current_song_album.setText("")
+        self.current_song_duration.setText("")
         self.time_label.setText("00:00:00 / 00:00:00")
         self.slider.setValue(0)

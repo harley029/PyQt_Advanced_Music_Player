@@ -59,8 +59,10 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
             music_controller=self.music_controller,
             slider=self.music_slider,
             time_label=self.time_label,
-            song_name_label=self.current_song_name,
-            song_path_label=self.current_song_path,
+            current_song_title=self.current_song_title,
+            current_song_artist=self.current_song_artist,
+            current_song_album=self.current_song_album,
+            current_song_duration=self.current_song_duration,
         )
 
         # Инициализация EventHandler для обработки нажатий кнопок и действий контекстного меню
@@ -124,7 +126,7 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         <p>Version: 1.3</p>
         <p>Author: Oleksandr Kharchenko</p>
         <p>Email: oleksandr.kharchenko@icloud.com</p>
-        <p>Description: Application for listening offline music.</p>
+        <p>Description: Application for the listening music.</p>
         """
         QMessageBox.about(self, "О программе", about_text)
 

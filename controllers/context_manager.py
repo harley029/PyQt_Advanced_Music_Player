@@ -50,14 +50,17 @@ class ContextMenuManager:
         menu.setContextMenuPolicy(Qt.ActionsContextMenu)
 
         actionRemove_Selected_Favourite=CommandAction(QIcon(":/img/utils/images/clear.png"), msg.CTX_DEL_SEL, self.parent, self.del_selected_fav_command)
-        ctionRemove_All_Favourites=CommandAction(QIcon(":/img/utils/images/remove.png"), msg.CTX_DEL_ALL, self.parent, self.del_all_favourites_command)
+        actionRemove_All_Favourites=CommandAction(QIcon(":/img/utils/images/remove.png"), msg.CTX_DEL_ALL, self.parent, self.del_all_favourites_command)
 
         menu.addAction(actionRemove_Selected_Favourite)
         separator = QAction(self.parent)
         separator.setSeparator(True)
         menu.addAction(separator)
 
-        menu.addAction(ctionRemove_All_Favourites)
+        menu.addAction(actionRemove_All_Favourites)
+        separator1 = QAction(self.parent)
+        separator1.setSeparator(True)
+        menu.addAction(separator1)
 
     # Настройка контекстного меню для Плейлистов
     def setup_playlist_menu(self):
