@@ -44,10 +44,10 @@ class MusicPlayerController(IMusicPlayerController):
             self._player.play()
 
     def is_playing(self) -> bool:
-        return self._player.state() == QMediaPlayer.PlayingState
+        return self._player.state() == QMediaPlayer.State.PlayingState
 
     def is_paused(self) -> bool:
-        return self._player.state() == QMediaPlayer.PausedState
+        return self._player.state() == QMediaPlayer.State.PausedState
 
     def set_looped(self, looped: bool):
         self.is_looped = looped

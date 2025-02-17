@@ -40,7 +40,7 @@ class PlaylistUIManager(IPlaylistUIManager):
         for song in songs:
             icon = QIcon(":/img/utils/images/like.png") if playlist == "favourites" else QIcon(":/img/utils/images/MusicListItem.png")
             item = QListWidgetItem(icon, os.path.basename(song))
-            item.setData(Qt.UserRole, song)
+            item.setData(Qt.ItemDataRole.UserRole, song)
             list_widget.addItem(item)
 
     def select_playlist(self, parent_widget: QListWidget) -> tuple:

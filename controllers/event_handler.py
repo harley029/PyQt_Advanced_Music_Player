@@ -1,4 +1,6 @@
 import os
+from typing import Optional
+
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
@@ -51,7 +53,7 @@ class NavigationHandler:
     Обрабатывает навигацию по списку песен (next, previous) с использованием паттерна "Стратегия".
     """
 
-    def __init__(self, navigation_strategy: INavigationStrategy = None):
+    def __init__(self, navigation_strategy: Optional[INavigationStrategy] = None):
         self.navigation_strategy = navigation_strategy or NormalNavigationStrategy()
 
     def set_strategy(self, strategy: INavigationStrategy) -> None:

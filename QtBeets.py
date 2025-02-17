@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Optional
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
@@ -37,7 +38,7 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         # Инициализация базы данных
         self.db_manager = db_manager
         self.db_manager.create_table("favourites")
-        self.current_playlist: str = None
+        self.current_playlist: Optional[str] = None
 
         # Инициализация менеджера плейлистов
         self.playlist_manager = PlaylistManager(
