@@ -51,10 +51,11 @@ class FavouritesManager:
         try:
             if not self._check_list_not_empty(self.loaded_songs_listWidget):
                 return
-            item = self.parent.loaded_songs_listWidget.currentItem()
-            if not item:
+            items = self.loaded_songs_listWidget.selectedItems()
+            if not items:
                 QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
+            item = self.parent.loaded_songs_listWidget.currentItem()
             current_song = item.data(Qt.UserRole)
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
@@ -66,19 +67,15 @@ class FavouritesManager:
         try:
             if not self._check_list_not_empty(self.parent.favourites_listWidget):
                 return
-            item = self.parent.loaded_songs_listWidget.currentItem()
-            if not item:
+            selected_items = self.parent.favourites_listWidget.selectedItems()
+            if not selected_items:
                 QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_selection = self.list_widget.currentRow()
             item = self.list_widget.currentItem()
-            if not item:
-                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
-                return
-
             current_song = item.data(Qt.UserRole)
             current_song_path = self._get_current_playing_song()
-            was_playing = (current_song_path == current_song)
+            was_playing = current_song_path == current_song
 
             if was_playing:
                 self.parent.music_controller.stop_song()

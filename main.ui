@@ -1102,7 +1102,7 @@ border-radius:5px</string>
 border-radius:15px;</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="song_list_page">
      <widget class="QFrame" name="frame_5">

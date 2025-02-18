@@ -1,5 +1,4 @@
 import time
-from os.path import basename
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtMultimedia import QMediaPlayer
@@ -7,25 +6,34 @@ from PyQt5.QtMultimedia import QMediaPlayer
 from mutagen import File
 
 
-class UIUpdater:
+class SongInfoLabels:
+    """
+    Класс для группировки ярлыков, отображающих информацию о песне.
+    """
 
-    def __init__(
-        self,
-        music_controller,
-        slider,
-        time_label,
-        current_song_title,
-        current_song_artist,
-        current_song_album,
-        current_song_duration,
-    ):
+    def __init__(self, title_label, artist_label, album_label, duration_label):
+        self.title = title_label
+        self.artist = artist_label
+        self.album = album_label
+        self.duration = duration_label
+
+
+class UIUpdater:
+    """
+    Обновляет элементы пользовательского интерфейса для отображения времени воспроизведения и информации о песне.
+    """
+
+    def __init__(self, music_controller, slider, time_label, song_info: SongInfoLabels):
+        """
+        :param music_controller: Контроллер воспроизведения музыки.
+        :param slider: Виджет-слайдер для отображения позиции песни.
+        :param time_label: Виджет для отображения времени воспроизведения.
+        :param song_info: Объект SongInfoLabels, содержащий ярлыки для информации о песне.
+        """
         self.music_controller = music_controller
         self.slider = slider
         self.time_label = time_label
-        self.current_song_title = current_song_title
-        self.current_song_artist = current_song_artist
-        self.current_song_album = current_song_album
-        self.current_song_duration = current_song_duration
+        self.song_info = song_info
 
         self.is_slider_moving = False
 
@@ -52,20 +60,34 @@ class UIUpdater:
 
     def update_current_song_info(self, song_path):
         audio = File(song_path)
-        title = audio.tags.get("TIT2") if audio.tags and "TIT2" in audio.tags else basename(self.song_path)
-        artist = audio.tags.get("TPE1") if audio.tags and "TPE1" in audio.tags else "Unknown Artist"
-        album = audio.tags.get("TALB") if audio.tags and "TALB" in audio.tags else "Unknown Album"
+        title = (
+            audio.tags.get("TIT2")
+            if audio.tags and "TIT2" in audio.tags
+            else song_path.split("/")[-1]
+        )
+        artist = (
+            audio.tags.get("TPE1")
+            if audio.tags and "TPE1" in audio.tags
+            else "Unknown Artist"
+        )
+        album = (
+            audio.tags.get("TALB")
+            if audio.tags and "TALB" in audio.tags
+            else "Unknown Album"
+        )
         duration = audio.info.length if audio.info else 0
 
-        self.current_song_title.setText(f"{title}")
-        self.current_song_artist.setText(f"{artist}")
-        self.current_song_album.setText(f"{album}")
-        self.current_song_duration.setText(f"{int(duration // 3600)}:{int((duration % 3600) // 60):02}:{int(duration % 60):02}")
+        self.song_info.title.setText(f"{title}")
+        self.song_info.artist.setText(f"{artist}")
+        self.song_info.album.setText(f"{album}")
+        self.song_info.duration.setText(
+            f"{int(duration // 3600)}:{int((duration % 3600) // 60):02}:{int(duration % 60):02}"
+        )
 
     def clear_song_info(self):
-        self.current_song_title.setText("")
-        self.current_song_artist.setText("")
-        self.current_song_album.setText("")
-        self.current_song_duration.setText("")
+        self.song_info.title.setText("")
+        self.song_info.artist.setText("")
+        self.song_info.album.setText("")
+        self.song_info.duration.setText("")
         self.time_label.setText("00:00:00 / 00:00:00")
         self.slider.setValue(0)

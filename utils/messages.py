@@ -39,8 +39,10 @@ MSG_FAF_CLEAR_ERR = "Error clearing favourites:"
 MSG_FAV_ERR_ADD_ALL = "Error adding all songs to Favourites:"
 MSG_FAV_ADDED = "songs added to Favourites."
 
-MSG_NAME_RULE = "Имя плейлиста может содержать буквы латинского и украинского алфавиотов, а также знаки подчеркивания, тире, восклицательные знаки и пробелы."
-
+MSG_NAME_RULE = (
+    "Имя плейлиста может содержать буквы латинского и украинского алфавитов, "
+    "а также знаки подчеркивания, тире, восклицательные знаки и пробелы."
+)
 
 # Context manager messages
 CTX_DEL_SEL = "Delete selected song"

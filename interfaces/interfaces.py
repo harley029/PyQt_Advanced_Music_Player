@@ -16,7 +16,6 @@ class ICommand(ABC):
         """
         Выполняет действие команды.
         """
-        pass
 
 
 class IPlaylistManager(ABC):
@@ -31,7 +30,6 @@ class IPlaylistManager(ABC):
         """
         Загружает список плейлистов в соответствующий виджет UI.
         """
-        pass
 
     @abstractmethod
     def load_playlist_into_widget(self, parent) -> None:
@@ -40,7 +38,6 @@ class IPlaylistManager(ABC):
 
         :param parent: Родительский виджет, содержащий списки плейлистов и песен.
         """
-        pass
 
     @abstractmethod
     def create_playlist(self, parent) -> str:
@@ -50,7 +47,6 @@ class IPlaylistManager(ABC):
         :param parent: Родительский виджет.
         :return: Имя созданного плейлиста или None, если операция отменена.
         """
-        pass
 
     @abstractmethod
     def remove_playlist(self, parent) -> None:
@@ -59,7 +55,6 @@ class IPlaylistManager(ABC):
 
         :param parent: Родительский виджет.
         """
-        pass
 
     @abstractmethod
     def remove_all_playlists(self, parent) -> None:
@@ -68,7 +63,6 @@ class IPlaylistManager(ABC):
 
         :param parent: Родительский виджет.
         """
-        pass
 
     @abstractmethod
     def check_list_not_empty(
@@ -81,7 +75,6 @@ class IPlaylistManager(ABC):
         :param message: Сообщение об ошибке, если список пуст.
         :return: True, если список не пуст, иначе False.
         """
-        pass
 
     @abstractmethod
     def add_song_to_playlist(self, parent) -> None:
@@ -90,7 +83,6 @@ class IPlaylistManager(ABC):
 
         :param parent: Родительский виджет.
         """
-        pass
 
     @abstractmethod
     def add_all_to_playlist(self, parent) -> None:
@@ -99,7 +91,6 @@ class IPlaylistManager(ABC):
 
         :param parent: Родительский виджет.
         """
-        pass
 
 
 class IPlaylistDatabaseManager(ABC):
@@ -108,22 +99,18 @@ class IPlaylistDatabaseManager(ABC):
     @abstractmethod
     def create_playlist(self, name: str):
         """Создаёт новый плейлист в базе."""
-        pass
 
     @abstractmethod
     def delete_playlist(self, name: str):
         """Удаляет плейлист из базы."""
-        pass
 
     @abstractmethod
     def add_song_to_playlist(self, playlist: str, song: str):
         """Добавляет песню в плейлист."""
-        pass
 
     @abstractmethod
     def get_playlists(self) -> List[str]:
         """Возвращает список всех плейлистов."""
-        pass
 
 
 class IPlaylistUIManager(ABC):
@@ -132,26 +119,18 @@ class IPlaylistUIManager(ABC):
     @abstractmethod
     def load_playlists(self):
         """Загружает плейлисты в UI."""
-        pass
 
     @abstractmethod
     def load_playlist(self, playlist: str, list_widget: QListWidget):
         """Загружает плейлист в UI."""
-        pass
-
-    # @abstractmethod
-    # def refresh_playlists(self):
-    #     """Обновляет UI при изменении плейлиста."""
-    #     pass
 
     @abstractmethod
     def check_list_not_empty(self, list_widget: QListWidget, message: str) -> bool:
         """Проверяет, что переданный виджет не пуст."""
-        pass
+
     @abstractmethod
     def select_playlist(self, parent_widget: QListWidget):
         """Возвращает выбранный плейлист."""
-        pass
 
 
 class INavigationStrategy(ABC):
@@ -168,7 +147,6 @@ class INavigationStrategy(ABC):
         :param count: общее количество песен
         :return: индекс следующей песни
         """
-        pass
 
     @abstractmethod
     def get_previous_index(self, current_index: int, count: int) -> int:
@@ -179,7 +157,6 @@ class INavigationStrategy(ABC):
         :param count: общее количество песен
         :return: индекс предыдущей песни
         """
-        pass
 
 
 class IDatabaseManager(ABC):
@@ -200,7 +177,6 @@ class IDatabaseManager(ABC):
 
         :return: Объект соединения с базой данных (например, sqlite3.Connection).
         """
-        pass
 
     @abstractmethod
     def execute_query(
@@ -214,7 +190,6 @@ class IDatabaseManager(ABC):
         :param fetch: Если True, возвращает результаты запроса, иначе возвращает пустой список.
         :return: Список кортежей с результатами, если fetch=True, иначе пустой список.
         """
-        pass
 
     @abstractmethod
     def add_song(self, table: str, song: str) -> None:
@@ -224,7 +199,6 @@ class IDatabaseManager(ABC):
         :param table: Имя таблицы.
         :param song: Путь или идентификатор песни.
         """
-        pass
 
     @abstractmethod
     def delete_song(self, table: str, song: str) -> None:
@@ -234,7 +208,6 @@ class IDatabaseManager(ABC):
         :param table: Имя таблицы.
         :param song: Путь или идентификатор песни.
         """
-        pass
 
     @abstractmethod
     def delete_all_songs(self, table: str) -> None:
@@ -243,7 +216,6 @@ class IDatabaseManager(ABC):
 
         :param table: Имя таблицы.
         """
-        pass
 
     @abstractmethod
     def create_table(self, table_name: str, columns: str = "song TEXT UNIQUE") -> None:
@@ -251,9 +223,9 @@ class IDatabaseManager(ABC):
         Создаёт таблицу в базе данных, если она ещё не существует.
 
         :param table_name: Имя таблицы.
-        :param columns: Строка с описанием столбцов (по умолчанию используется один столбец "song" с уникальными значениями).
+        :param columns: Строка с описанием столбцов (по умолчанию используется один столбец 
+         "song" с уникальными значениями).
         """
-        pass
 
     @abstractmethod
     def delete_table(self, table: str) -> None:
@@ -262,7 +234,6 @@ class IDatabaseManager(ABC):
 
         :param table: Имя таблицы.
         """
-        pass
 
     @abstractmethod
     def get_tables(self) -> List[str]:
@@ -271,7 +242,6 @@ class IDatabaseManager(ABC):
 
         :return: Список имен таблиц.
         """
-        pass
 
     @abstractmethod
     def fetch_all_songs(self, table: str) -> List[str]:
@@ -281,7 +251,6 @@ class IDatabaseManager(ABC):
         :param table: Имя таблицы.
         :return: Список песен (например, путей к файлам).
         """
-        pass
 
 
 class IMusicPlayerController(ABC):
@@ -326,7 +295,7 @@ class IMusicPlayerController(ABC):
     @abstractmethod
     def set_shuffled(self, shuffled: bool):
         pass
-    
+
     @abstractmethod
     def media_player(self) -> QMediaPlayer:
         pass

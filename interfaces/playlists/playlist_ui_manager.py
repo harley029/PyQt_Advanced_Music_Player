@@ -38,7 +38,11 @@ class PlaylistUIManager(IPlaylistUIManager):
         list_widget.clear()
         songs = self.db_manager.fetch_all_songs(f'"{playlist}"')
         for song in songs:
-            icon = QIcon(":/img/utils/images/like.png") if playlist == "favourites" else QIcon(":/img/utils/images/MusicListItem.png")
+            icon = (
+                QIcon(":/img/utils/images/like.png")
+                if playlist == "favourites"
+                else QIcon(":/img/utils/images/MusicListItem.png")
+            )
             item = QListWidgetItem(icon, os.path.basename(song))
             item.setData(Qt.ItemDataRole.UserRole, song)
             list_widget.addItem(item)

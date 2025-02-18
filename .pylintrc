@@ -1,0 +1,11 @@
+[MASTER]
+ignore=venv,BuckUp
+ignore-patterns=res_rc\.py,music\.py,marquee_label\.py,build\.py
+extension-pkg-whitelist=PyQt5
+disable=no-member,too-few-public-methods
+
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=C0103,C0114

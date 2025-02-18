@@ -50,7 +50,8 @@ class PlaybackHandler:
 
 class NavigationHandler:
     """
-    Обрабатывает навигацию по списку песен (next, previous) с использованием паттерна "Стратегия".
+    Обрабатывает навигацию по списку песен (next, previous) 
+    с использованием паттерна "Стратегия".
     """
 
     def __init__(self, navigation_strategy: Optional[INavigationStrategy] = None):
@@ -71,13 +72,17 @@ class NavigationHandler:
         return self.navigation_strategy.get_previous_index(current_index, count)
 
 
-class EventHandler:
-    """
-    Основной обработчик событий, агрегирующий специализированные обработчики.
-    Делегирует действия по воспроизведению, навигации и обновлению UI соответствующим классам.
-    """
+class EventHandlerConfig:
+    """Конфигурация для EventHandler, объединяющая все зависимости."""
+
     def __init__(
-        self, ui, music_controller, playlist_manager, favourites_manager, ui_updater, db_manager
+        self,
+        ui,
+        music_controller,
+        playlist_manager,
+        favourites_manager,
+        ui_updater,
+        db_manager,
     ):
         self.ui = ui
         self.music_controller = music_controller
@@ -85,34 +90,72 @@ class EventHandler:
         self.favourites_manager = favourites_manager
         self.ui_updater = ui_updater
         self.db_manager = db_manager
-        self.playback_handler = PlaybackHandler(music_controller, ui_updater)
-        self.navigation_handler = (NavigationHandler())
 
+
+class EventHandler:
+    """
+    Основной обработчик событий, агрегирующий специализированные обработчики.
+    Делегирует действия по воспроизведению, навигации и обновлению UI соответствующим классам.
+    """
+
+    def __init__(self, config: EventHandlerConfig):
+        self.ui = config.ui
+        self.music_controller = config.music_controller
+        self.playlist_manager = config.playlist_manager
+        self.favourites_manager = config.favourites_manager
+        self.ui_updater = config.ui_updater
+        self.db_manager = config.db_manager
+        self.playback_handler = PlaybackHandler(self.music_controller, self.ui_updater)
+        self.navigation_handler = NavigationHandler()
         self.setup_button_signals()
 
     def setup_button_signals(self):
         # Кнопки на вкладке Song List
         self.ui.add_songs_btn.clicked.connect(self.on_add_songs_clicked)
-        self.ui.delete_selected_btn.clicked.connect(lambda: self.on_delete_selected_song_clicked(db_table=None))
-        self.ui.delete_all_songs_btn.clicked.connect(lambda: self.on_clear_list_clicked(db_table=None))
+        self.ui.delete_selected_btn.clicked.connect(
+            lambda: self.on_delete_selected_song_clicked(db_table=None)
+        )
+        self.ui.delete_all_songs_btn.clicked.connect(
+            lambda: self.on_clear_list_clicked(db_table=None)
+        )
         # Кнопки на вкладке Favourites
-        self.ui.delete_selected_favourite_btn.clicked.connect(self.favourites_manager.remove_selected_favourite)
-        self.ui.delete_all_favourites_btn.clicked.connect(self.favourites_manager.clear_favourites)
+        self.ui.delete_selected_favourite_btn.clicked.connect(
+            self.favourites_manager.remove_selected_favourite
+        )
+        self.ui.delete_all_favourites_btn.clicked.connect(
+            self.favourites_manager.clear_favourites
+        )
         # Кнопки на вкладке Playlist
-        self.ui.new_playlist_btn.clicked.connect(lambda: self.playlist_manager.create_playlist(self.ui))
-        self.ui.remove_selected_playlist_btn.clicked.connect(lambda: self.playlist_manager.remove_playlist(self.ui))
-        self.ui.remove_all_playlists_btn.clicked.connect(lambda: self.playlist_manager.remove_all_playlists(self.ui))
-        self.ui.load_selected_playlist_btn.clicked.connect(lambda: self.playlist_manager.load_playlist_into_widget(self.ui))
+        self.ui.new_playlist_btn.clicked.connect(
+            lambda: self.playlist_manager.create_playlist(self.ui)
+        )
+        self.ui.remove_selected_playlist_btn.clicked.connect(
+            lambda: self.playlist_manager.remove_playlist(self.ui)
+        )
+        self.ui.remove_all_playlists_btn.clicked.connect(
+            lambda: self.playlist_manager.remove_all_playlists(self.ui)
+        )
+        self.ui.load_selected_playlist_btn.clicked.connect(
+            lambda: self.playlist_manager.load_playlist_into_widget(self.ui)
+        )
         # Кнопки добавления песен в списки
-        self.ui.add_to_fav_btn.clicked.connect(lambda: self.favourites_manager.add_to_favourites())
-        self.ui.add_to_playlist_btn.clicked.connect(lambda: self.playlist_manager.add_song_to_playlist(self.ui))
+        self.ui.add_to_fav_btn.clicked.connect(
+            self.favourites_manager.add_to_favourites
+        )
+        self.ui.add_to_playlist_btn.clicked.connect(
+            lambda: self.playlist_manager.add_song_to_playlist(self.ui)
+        )
 
         # Управление воспроизведением
         self.ui.play_btn.clicked.connect(self.on_play_clicked)
         self.ui.pause_btn.clicked.connect(self.on_pause_clicked)
         self.ui.stop_btn.clicked.connect(self.on_stop_clicked)
-        self.ui.next_btn.clicked.connect(lambda: self.on_next_previous_clicked(direction = "forward"))
-        self.ui.previous_btn.clicked.connect(lambda: self.on_next_previous_clicked(direction = "buckward"))
+        self.ui.next_btn.clicked.connect(
+            lambda: self.on_next_previous_clicked(direction="forward")
+        )
+        self.ui.previous_btn.clicked.connect(
+            lambda: self.on_next_previous_clicked(direction="buckward")
+        )
         self.ui.loop_one_btn.clicked.connect(self.on_loop_clicked)
         self.ui.shuffle_songs_btn.clicked.connect(self.on_shuffle_clicked)
         self.ui.volume_dial.valueChanged.connect(self.on_volume_clicked)
@@ -120,19 +163,23 @@ class EventHandler:
         # Сигналы управления двойными кликами по спискам песен, плейлистов
         self.ui.loaded_songs_listWidget.itemDoubleClicked.connect(self.on_play_clicked)
         self.ui.favourites_listWidget.itemDoubleClicked.connect(self.on_play_clicked)
-        self.ui.playlists_listWidget.itemDoubleClicked.connect(lambda: self.playlist_manager.load_playlist_into_widget(self.ui))
+        self.ui.playlists_listWidget.itemDoubleClicked.connect(
+            lambda: self.playlist_manager.load_playlist_into_widget(self.ui)
+        )
 
         # Служебные сигналы
-        self.music_controller.media_player().mediaStatusChanged.connect(self.handle_media_status)
+        self.music_controller.media_player().mediaStatusChanged.connect(
+            self.handle_media_status
+        )
 
     def get_current_list_widget(self):
-        # Выбираем виджет списка в зависимости от активной вкладки
+        """Выбирает виджет списка в зависимости от активной вкладки"""
         idx = self.ui.stackedWidget.currentIndex()
         if idx == 0:
             return self.ui.loaded_songs_listWidget
-        elif idx == 1:
+        if idx == 1:
             return self.ui.playlists_listWidget
-        elif idx == 2:
+        if idx == 2:
             return self.ui.favourites_listWidget
         return None
 
@@ -164,14 +211,15 @@ class EventHandler:
             if not items:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
-            
             item = list_widget.currentItem()
             current_song = item.data(Qt.UserRole)
-
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
             current_song_url = current_media.canonicalUrl().toLocalFile()
-            was_playing = (self.music_controller.media_player().state()== QMediaPlayer.PlayingState)
+            was_playing = (
+                self.music_controller.media_player().state()
+                == QMediaPlayer.PlayingState
+            )
             if current_song_url == current_song:
                 self.on_stop_clicked()
             # Удаление из базы и виджета
@@ -192,7 +240,7 @@ class EventHandler:
         except Exception as e:
             QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {e}")
 
-    def on_clear_list_clicked(self,db_table=None):
+    def on_clear_list_clicked(self, db_table=None):
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
@@ -214,7 +262,9 @@ class EventHandler:
                 if db_table:
                     self.db_manager.delete_all_songs(db_table)
         except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_ALL_SONG_DEL_ERR} {e}")
+            QMessageBox.critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_ALL_SONG_DEL_ERR} {e}"
+            )
 
     def on_play_clicked(self):
         try:
@@ -251,7 +301,9 @@ class EventHandler:
             if direction == "forward":
                 new_index = self.navigation_handler.get_next_index(current_index, count)
             elif direction == "buckward":
-                new_index = self.navigation_handler.get_previous_index(current_index, count)
+                new_index = self.navigation_handler.get_previous_index(
+                    current_index, count
+                )
             else:
                 new_index = current_index
 

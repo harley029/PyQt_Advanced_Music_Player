@@ -85,7 +85,7 @@ class PlaylistManager(IPlaylistManager):
                     return None
 
             self.ui_manager.load_playlists()
-        except ValueError as e:
+        except ValueError:
             QMessageBox.critical(parent, msg.TTL_ERR, msg.MSG_NAME_RULE)
         return playlist_name
 
@@ -178,12 +178,14 @@ class PlaylistManager(IPlaylistManager):
         try:
             if not self.check_list_not_empty(parent.loaded_songs_listWidget, "No songs in the list!"):
                 return
-            current_selection = parent.loaded_songs_listWidget.currentRow()
-            if current_selection < 0 or current_selection >= parent.loaded_songs_listWidget.count():
+            # Проверяем, выбраны ли элементы в списке
+            selected_items = parent.loaded_songs_listWidget.selectedItems()
+            if not selected_items:
                 QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
 
-            item = parent.loaded_songs_listWidget.item(current_selection)
+            # Берем первый выбранный элемент
+            item = selected_items[0]
             if not item:
                 QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return

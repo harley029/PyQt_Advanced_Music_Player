@@ -2,6 +2,7 @@ import re
 
 
 class DBUtils:
+    """" Валидатор имет иаблиц базы данных """
     @staticmethod
     def is_valid_table_name(name: str) -> bool:
         """Проверяет, что имя таблицы содержит только допустимые символы:

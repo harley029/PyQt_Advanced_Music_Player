@@ -1,7 +1,7 @@
 from interfaces.interfaces import ICommand
+from interfaces.playlists.playlist_manager import PlaylistManager
 from controllers.event_handler import EventHandler
 from controllers.favourites_manager import FavouritesManager
-from interfaces.playlists.playlist_manager import PlaylistManager
 
 
 class PlayCommand(ICommand):
