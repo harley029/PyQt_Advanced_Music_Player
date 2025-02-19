@@ -1,67 +1,76 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Any
-
-
 from PyQt5.QtWidgets import QListWidget
 from PyQt5.QtMultimedia import QMediaPlayer
 
 
 class ICommand(ABC):
     """
-    Интерфейс команды. Все команды должны реализовывать метод execute().
+    Command interface. All commands must implement the execute() method.
+    This interface follows the Command pattern to encapsulate actions as objects.
     """
 
     @abstractmethod
     def execute(self):
         """
-        Выполняет действие команды.
+        Executes the command's action.
+        This method should contain the core logic of the command.
         """
 
 
 class IPlaylistManager(ABC):
     """
-    Интерфейс менеджера плейлистов.
+    Playlist manager interface.
 
-    Определяет контракт для загрузки, создания, удаления плейлистов и управления UI.
+    Defines the contract for loading, creating, deleting playlists and managing the UI.
+    This interface provides a complete abstraction for playlist operations and their
+    UI representation.
     """
 
     @abstractmethod
     def load_playlists_into_widget(self) -> None:
         """
-        Загружает список плейлистов в соответствующий виджет UI.
+        Loads the list of playlists into the corresponding UI widget.
+        Updates the UI to reflect the current state of available playlists.
         """
 
     @abstractmethod
     def load_playlist_into_widget(self, parent) -> None:
         """
-        Загружает выбранный плейлист в виджет песен.
+        Loads the selected playlist into the songs widget.
 
-        :param parent: Родительский виджет, содержащий списки плейлистов и песен.
+        Args:
+            parent: Parent widget containing playlist and song lists.
         """
 
     @abstractmethod
     def create_playlist(self, parent) -> str:
         """
-        Создаёт новый плейлист через диалог ввода и обновляет UI.
+        Creates a new playlist through an input dialog and updates the UI.
 
-        :param parent: Родительский виджет.
-        :return: Имя созданного плейлиста или None, если операция отменена.
+        Args:
+            parent: Parent widget for the dialog.
+
+        Returns:
+            str: Name of the created playlist or None if operation was cancelled.
         """
 
     @abstractmethod
     def remove_playlist(self, parent) -> None:
         """
-        Удаляет выбранный плейлист и обновляет UI.
+        Removes the selected playlist and updates the UI.
 
-        :param parent: Родительский виджет.
+        Args:
+            parent: Parent widget containing the playlist list.
         """
 
     @abstractmethod
     def remove_all_playlists(self, parent) -> None:
         """
-        Удаляет все плейлисты и обновляет UI.
+        Removes all playlists and updates the UI.
 
-        :param parent: Родительский виджет.
+        Args:
+            parent: Parent widget containing the playlist list.
         """
 
     @abstractmethod
@@ -69,113 +78,184 @@ class IPlaylistManager(ABC):
         self, list_widget: QListWidget, message: str = "No songs in the list!"
     ) -> bool:
         """
-        Проверяет, что переданный виджет не пуст.
+        Checks if the provided widget is not empty.
 
-        :param list_widget: Виджет со списком элементов.
-        :param message: Сообщение об ошибке, если список пуст.
-        :return: True, если список не пуст, иначе False.
+        Args:
+            list_widget: Widget containing the list of items.
+            message: Error message to display if the list is empty.
+
+        Returns:
+            bool: True if the list is not empty, False otherwise.
         """
 
     @abstractmethod
     def add_song_to_playlist(self, parent) -> None:
         """
-        Добавляет выбранную песню в выбранный плейлист.
+        Adds the selected song to the selected playlist.
 
-        :param parent: Родительский виджет.
+        Args:
+            parent: Parent widget containing song and playlist lists.
         """
 
     @abstractmethod
     def add_all_to_playlist(self, parent) -> None:
         """
-        Добавляет все песни из списка в выбранный плейлист.
+        Adds all songs from the list to the selected playlist.
 
-        :param parent: Родительский виджет.
+        Args:
+            parent: Parent widget containing song and playlist lists.
         """
 
 
 class IPlaylistDatabaseManager(ABC):
-    """Интерфейс для работы с базой данных плейлистов."""
+    """
+    Interface for playlist database operations.
+
+    Provides methods for creating, deleting, and managing playlists in the database.
+    This interface abstracts the underlying database implementation from the playlist
+    management logic.
+    """
 
     @abstractmethod
     def create_playlist(self, name: str):
-        """Создаёт новый плейлист в базе."""
+        """
+        Creates a new playlist in the database.
+
+        Args:
+            name: Name of the playlist to create.
+        """
 
     @abstractmethod
     def delete_playlist(self, name: str):
-        """Удаляет плейлист из базы."""
+        """
+        Deletes a playlist from the database.
+
+        Args:
+            name: Name of the playlist to delete.
+        """
 
     @abstractmethod
     def add_song_to_playlist(self, playlist: str, song: str):
-        """Добавляет песню в плейлист."""
+        """
+        Adds a song to a playlist.
+
+        Args:
+            playlist: Name of the target playlist.
+            song: Path or identifier of the song to add.
+        """
 
     @abstractmethod
     def get_playlists(self) -> List[str]:
-        """Возвращает список всех плейлистов."""
+        """
+        Retrieves all playlists from the database.
+
+        Returns:
+            List[str]: List of playlist names.
+        """
 
 
 class IPlaylistUIManager(ABC):
-    """Интерфейс для управления UI плейлистов."""
+    """
+    Interface for managing playlist UI operations.
+
+    Provides methods for loading and displaying playlists in the user interface.
+    This interface separates UI concerns from the underlying playlist data management.
+    """
 
     @abstractmethod
     def load_playlists(self):
-        """Загружает плейлисты в UI."""
+        """
+        Loads playlists into the UI.
+        Updates the UI components to display all available playlists.
+        """
 
     @abstractmethod
     def load_playlist(self, playlist: str, list_widget: QListWidget):
-        """Загружает плейлист в UI."""
+        """
+        Loads a specific playlist into the UI.
+
+        Args:
+            playlist: Name of the playlist to load.
+            list_widget: Widget where the playlist should be displayed.
+        """
 
     @abstractmethod
     def check_list_not_empty(self, list_widget: QListWidget, message: str) -> bool:
-        """Проверяет, что переданный виджет не пуст."""
+        """
+        Verifies that the provided widget is not empty.
+
+        Args:
+            list_widget: Widget to check.
+            message: Error message to display if the list is empty.
+
+        Returns:
+            bool: True if the list contains items, False otherwise.
+        """
 
     @abstractmethod
     def select_playlist(self, parent_widget: QListWidget):
-        """Возвращает выбранный плейлист."""
+        """
+        Returns the currently selected playlist.
+
+        Args:
+            parent_widget: Widget containing the playlist list.
+
+        Returns:
+            The selected playlist or appropriate return value based on implementation.
+        """
 
 
 class INavigationStrategy(ABC):
     """
-    Интерфейс навигационной стратегии для выбора следующей или предыдущей песни.
+    Interface for navigation strategy to select next or previous songs.
+
+    Implements the Strategy pattern for different song navigation behaviors
+    (e.g., sequential, random, repeat).
     """
 
     @abstractmethod
     def get_next_index(self, current_index: int, count: int) -> int:
         """
-        Вычисляет индекс следующей песни.
+        Calculates the index of the next song.
 
-        :param current_index: текущий индекс песни
-        :param count: общее количество песен
-        :return: индекс следующей песни
+        Args:
+            current_index: Current song index.
+            count: Total number of songs.
+
+        Returns:
+            int: Index of the next song.
         """
 
     @abstractmethod
     def get_previous_index(self, current_index: int, count: int) -> int:
         """
-        Вычисляет индекс предыдущей песни.
+        Calculates the index of the previous song.
 
-        :param current_index: текущий индекс песни
-        :param count: общее количество песен
-        :return: индекс предыдущей песни
+        Args:
+            current_index: Current song index.
+            count: Total number of songs.
+
+        Returns:
+            int: Index of the previous song.
         """
 
 
 class IDatabaseManager(ABC):
     """
-    Интерфейс для работы с базой данных.
+    Interface for database operations.
 
-    Этот интерфейс определяет набор методов для подключения к базе данных,
-    выполнения SQL-запросов, а также операций по добавлению, удалению и выборке данных.
-
-    Использование интерфейса позволяет реализовывать разные стратегии доступа к данным
-    (например, SQLite, PostgreSQL, MySQL) без изменения бизнес-логики приложения.
+    Defines methods for database connection, SQL query execution, and data operations.
+    This interface allows for different database implementations (SQLite, PostgreSQL, MySQL)
+    without changing the application's business logic.
     """
 
     @abstractmethod
     def _connect(self) -> Any:
         """
-        Создаёт и возвращает соединение с базой данных.
+        Creates and returns a database connection.
 
-        :return: Объект соединения с базой данных (например, sqlite3.Connection).
+        Returns:
+            Any: Database connection object (e.g., sqlite3.Connection).
         """
 
     @abstractmethod
@@ -183,119 +263,182 @@ class IDatabaseManager(ABC):
         self, query: str, params: Tuple = (), fetch: bool = False
     ) -> List[Tuple]:
         """
-        Выполняет SQL-запрос к базе данных.
+        Executes an SQL query on the database.
 
-        :param query: SQL-запрос в виде строки.
-        :param params: Кортеж параметров для параметризованного запроса (по умолчанию пустой кортеж).
-        :param fetch: Если True, возвращает результаты запроса, иначе возвращает пустой список.
-        :return: Список кортежей с результатами, если fetch=True, иначе пустой список.
+        Args:
+            query: SQL query string.
+            params: Tuple of parameters for parameterized query (default empty tuple).
+            fetch: If True, returns query results, otherwise returns empty list.
+
+        Returns:
+            List[Tuple]: List of query results if fetch=True, empty list otherwise.
         """
 
     @abstractmethod
     def add_song(self, table: str, song: str) -> None:
         """
-        Добавляет песню в указанную таблицу базы данных.
+        Adds a song to the specified database table.
 
-        :param table: Имя таблицы.
-        :param song: Путь или идентификатор песни.
+        Args:
+            table: Name of the target table.
+            song: Path or identifier of the song.
         """
 
     @abstractmethod
     def delete_song(self, table: str, song: str) -> None:
         """
-        Удаляет песню из указанной таблицы базы данных.
+        Removes a song from the specified database table.
 
-        :param table: Имя таблицы.
-        :param song: Путь или идентификатор песни.
+        Args:
+            table: Name of the target table.
+            song: Path or identifier of the song to remove.
         """
 
     @abstractmethod
     def delete_all_songs(self, table: str) -> None:
         """
-        Удаляет все записи (песни) из указанной таблицы базы данных.
+        Removes all songs from the specified database table.
 
-        :param table: Имя таблицы.
+        Args:
+            table: Name of the table to clear.
         """
 
     @abstractmethod
     def create_table(self, table_name: str, columns: str = "song TEXT UNIQUE") -> None:
         """
-        Создаёт таблицу в базе данных, если она ещё не существует.
+        Creates a table in the database if it doesn't exist.
 
-        :param table_name: Имя таблицы.
-        :param columns: Строка с описанием столбцов (по умолчанию используется один столбец 
-         "song" с уникальными значениями).
+        Args:
+            table_name: Name of the table to create.
+            columns: String describing the columns (defaults to single unique song column).
         """
 
     @abstractmethod
     def delete_table(self, table: str) -> None:
         """
-        Удаляет таблицу из базы данных, если она существует.
+        Removes a table from the database if it exists.
 
-        :param table: Имя таблицы.
+        Args:
+            table: Name of the table to delete.
         """
 
     @abstractmethod
     def get_tables(self) -> List[str]:
         """
-        Возвращает список всех таблиц в базе данных.
+        Retrieves all tables from the database.
 
-        :return: Список имен таблиц.
+        Returns:
+            List[str]: List of table names.
         """
 
     @abstractmethod
     def fetch_all_songs(self, table: str) -> List[str]:
         """
-        Извлекает все песни из указанной таблицы базы данных.
+        Retrieves all songs from the specified database table.
 
-        :param table: Имя таблицы.
-        :return: Список песен (например, путей к файлам).
+        Args:
+            table: Name of the table to query.
+
+        Returns:
+            List[str]: List of songs (e.g., file paths).
         """
 
 
 class IMusicPlayerController(ABC):
+    """
+    Interface for music player control operations.
 
+    Provides methods for controlling music playback, volume, and playback modes.
+    This interface abstracts the underlying media player implementation from the
+    control logic.
+    """
 
     @abstractmethod
     def set_volume(self, volume: int):
-        pass
+        """
+        Sets the player volume.
+
+        Args:
+            volume: Volume level to set.
+        """
 
     @abstractmethod
     def current_volume(self) -> int:
-        pass
+        """
+        Gets the current volume level.
+
+        Returns:
+            int: Current volume level.
+        """
 
     @abstractmethod
     def play_song(self, song_path: str):
-        pass
+        """
+        Starts playing a song.
+
+        Args:
+            song_path: Path to the song file to play.
+        """
 
     @abstractmethod
     def stop_song(self):
-        pass
+        """
+        Stops the currently playing song.
+        """
 
     @abstractmethod
     def pause_song(self):
-        pass
+        """
+        Pauses the currently playing song.
+        """
 
     @abstractmethod
     def resume_song(self):
-        pass
+        """
+        Resumes playing the paused song.
+        """
 
     @abstractmethod
     def is_playing(self) -> bool:
-        pass
+        """
+        Checks if a song is currently playing.
+
+        Returns:
+            bool: True if a song is playing, False otherwise.
+        """
 
     @abstractmethod
     def is_paused(self) -> bool:
-        pass
+        """
+        Checks if playback is currently paused.
+
+        Returns:
+            bool: True if playback is paused, False otherwise.
+        """
 
     @abstractmethod
     def set_looped(self, looped: bool):
-        pass
+        """
+        Sets the loop playback mode.
+
+        Args:
+            looped: True to enable loop mode, False to disable.
+        """
 
     @abstractmethod
     def set_shuffled(self, shuffled: bool):
-        pass
+        """
+        Sets the shuffle playback mode.
+
+        Args:
+            shuffled: True to enable shuffle mode, False to disable.
+        """
 
     @abstractmethod
     def media_player(self) -> QMediaPlayer:
-        pass
+        """
+        Gets the underlying media player instance.
+
+        Returns:
+            QMediaPlayer: The Qt media player instance being used.
+        """

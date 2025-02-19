@@ -3,18 +3,31 @@ from PyQt5.QtWidgets import QAction
 
 class CommandAction(QAction):
     """
-    QAction, обёрнутый в объект-команду. При срабатывании (triggered)
-    вызывается метод execute() переданной команды.
+    A QAction wrapper that implements the Command pattern.
+
+    This class extends QAction to provide command pattern functionality.
+    When triggered, it executes the command's execute() method that was
+    passed during initialization.
+
+    Attributes:
+        command: An object implementing the ICommand interface that will be
+                executed when the action is triggered.
     """
 
     def __init__(self, icon, text, parent, command):
         """
-        Инициализирует CommandAction.
+        Initialize a new CommandAction instance.
 
-        :param icon: Иконка для QAction.
-        :param text: Текст для QAction.
-        :param parent: Родительский объект (обычно главное окно).
-        :param command: Объект, реализующий интерфейс ICommand.
+        Args:
+            icon: Icon to be displayed for the QAction
+            text: Text label for the QAction
+            parent: Parent widget (typically the main window)
+            command: Object implementing ICommand interface that will be
+                    executed when this action is triggered
+
+        Note:
+            The command object must implement the execute() method as per
+            the ICommand interface.
         """
         super().__init__(icon, text, parent)
         self.command = command
@@ -22,6 +35,10 @@ class CommandAction(QAction):
 
     def on_triggered(self):
         """
-        Вызывается при срабатывании действия и делегирует выполнение команде.
+        Handle the action's triggered signal.
+
+        Called automatically when the action is triggered (e.g., when the user
+        clicks a menu item or toolbar button). Delegates the execution to the
+        stored command object by calling its execute() method.
         """
         self.command.execute()

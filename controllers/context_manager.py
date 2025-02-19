@@ -8,17 +8,32 @@ from utils import messages as msg
 
 
 class PlaylistContextMenuManager:
+    """
+    Manages the context menu for the Playlists tab.
+
+    This class is responsible for setting up and handling context menu actions
+    related to playlist operations like loading, creating, and deleting playlists.
+    """
 
     def __init__(self, parent, playlist_manager):
         """
-        :param favourites_manager: Менеджер вкладки «Плейлисты».
+        Initialize the PlaylistContextMenuManager.
+
+        Parameters:
+            parent: The parent widget that will contain the context menu
+            playlist_manager: Manager for playlist-related operations
         """
         self.parent = parent
         self.playlist_manager = playlist_manager
         self.setup_menu()
 
     def setup_menu(self):
-        """Настройка контекстного меню для Избранного."""
+        """
+        Setup the context menu for the Playlists tab.
+
+        Creates and configures all menu actions related to playlist operations
+        including load, create, delete selected, and delete all playlists.
+        """
         self.load_playlist_command = cmd.LoadPlaylistCommand(
             self.playlist_manager, self.parent
         )
@@ -74,17 +89,32 @@ class PlaylistContextMenuManager:
 
 
 class FavouritesContextMenuManager:
+    """
+    Manages the context menu for the Favourites tab.
+
+    This class is responsible for setting up and handling context menu actions
+    related to favourite songs operations, primarily deletion operations.
+    """
 
     def __init__(self, parent, favourites_manager):
         """
-        :param favourites_manager: Менеджер вкладки «Избранное».
+        Initialize the FavouritesContextMenuManager.
+
+        Parameters:
+            parent: The parent widget that will contain the context menu
+            favourites_manager: Manager for favourites-related operations
         """
         self.parent = parent
         self.favourites_manager = favourites_manager
         self.setup_menu()
 
     def setup_menu(self):
-        """Настройка контекстного меню для Избранного."""
+        """
+        Setup the context menu for the Favourites tab.
+
+        Creates and configures all menu actions related to favourite songs operations
+        including delete selected and delete all favourites.
+        """
         self.del_selected_fav_command = cmd.DeleteSelectedFavouriteCommand(
             self.favourites_manager
         )
@@ -117,10 +147,22 @@ class FavouritesContextMenuManager:
 
 
 class SongsListContextMenuManager:
+    """
+    Manages the context menu for the Songs List.
+
+    This class is responsible for setting up and handling context menu actions
+    related to song playback control and adding songs to favourites or playlists.
+    """
 
     def __init__(self, parent, event_handler, favourites_manager, playlist_manager):
         """
-        :param favourites_manager: Менеджер вкладки «Песни».
+        Initialize the SongsListContextMenuManager.
+
+        Parameters:
+            parent: The parent widget that will contain the context menu
+            event_handler: Handler for playback control events
+            favourites_manager: Manager for favourites-related operations
+            playlist_manager: Manager for playlist-related operations
         """
         self.parent = parent
         self.event_handler = event_handler
@@ -129,7 +171,13 @@ class SongsListContextMenuManager:
         self.setup_menu()
 
     def setup_menu(self):
-        """Настройка контекстного меню для Избранного."""
+        """
+        Setup the context menu for the Songs List.
+
+        Creates and configures all menu actions related to song operations including
+        playback control (play, pause, next, previous, stop) and adding songs to
+        favourites or playlists.
+        """
         self.play_command = cmd.PlayCommand(self.event_handler)
         self.pause_command = cmd.PauseCommand(self.event_handler)
         self.next_command = cmd.NextCommand(self.event_handler)
@@ -223,7 +271,23 @@ class SongsListContextMenuManager:
 
 
 class ContextMenuManager:
+    """
+    Main manager class that coordinates all context menus in the application.
+
+    This class creates and coordinates the context menu managers for different
+    parts of the application: favourites list, playlist list, and songs list.
+    """
+
     def __init__(self, parent, event_handler, favourites_manager, playlist_manager):
+        """
+        Initialize the main ContextMenuManager.
+
+        Parameters:
+            parent: The parent widget containing all list widgets
+            event_handler: Handler for playback control events
+            favourites_manager: Manager for favourites-related operations
+            playlist_manager: Manager for playlist-related operations
+        """
         self.parent = parent
         self.event_handler = event_handler
         self.favourites_manager = favourites_manager
@@ -231,6 +295,12 @@ class ContextMenuManager:
         self.setup_all_menus()
 
     def setup_all_menus(self):
+        """
+        Setup all context menus for the application.
+
+        Creates instances of specialized context menu managers for the
+        favourites list, playlist list, and songs list.
+        """
         self.fav_menu = FavouritesContextMenuManager(
             self.parent, self.favourites_manager
         )

@@ -4,6 +4,7 @@ from interfaces.interfaces import INavigationStrategy
 
 
 class NormalNavigationStrategy(INavigationStrategy):
+    """Нормальная навигация по списку."""
 
     def get_next_index(self, current_index: int, count: int) -> int:
         return (current_index + 1) % count
@@ -23,6 +24,7 @@ class RandomNavigationStrategy(INavigationStrategy):
 
 
 class LoopingNavigationStrategy(INavigationStrategy):
+    """Зацикленная навигация по списку."""
 
     def get_next_index(self, current_index: int, count: int) -> int:
         return current_index
