@@ -1,4 +1,5 @@
 import os
+from sqlite3 import OperationalError
 from typing import Optional
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
@@ -303,7 +304,9 @@ class EventHandler:
                      removed from the database.
 
         Raises:
-            QMessageBox.critical: If there's an error during deletion
+            OperationalError: If there's an error accessing the database
+            RuntimeError: If there's an error with media player operations
+            ValueError: If there's an error with list widget operations
         """
         try:
             list_widget = self.get_current_list_widget()
@@ -316,6 +319,7 @@ class EventHandler:
                 return
             item = list_widget.currentItem()
             current_song = item.data(Qt.UserRole)
+
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
             current_song_url = current_media.canonicalUrl().toLocalFile()
@@ -325,6 +329,7 @@ class EventHandler:
             )
             if current_song_url == current_song:
                 self.on_stop_clicked()
+
             # Удаление из базы и виджета
             if db_table is None:
                 db_table = self.ui.current_playlist
@@ -332,6 +337,7 @@ class EventHandler:
                 self.ui.db_manager.delete_song(db_table, current_song)
             row = list_widget.row(item)
             list_widget.takeItem(row)
+
             # Запускаем следующую песню
             if list_widget.count() > 0:
                 new_selection = row % list_widget.count()
@@ -340,8 +346,15 @@ class EventHandler:
                     self.on_play_clicked()
                 else:
                     self.on_stop_clicked()
-        except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {e}")
+
+        except OperationalError as e:
+            QMessageBox.critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} Database error: {str(e)}"
+            )
+        except (RuntimeError, ValueError) as e:
+            QMessageBox.critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
+            )
 
     def on_clear_list_clicked(self, db_table=None):
         """
@@ -352,7 +365,7 @@ class EventHandler:
                      removed from the database.
 
         Raises:
-            QMessageBox.critical: If there's an error during clearing
+            OperationalError: If there's an error accessing the database
         """
         try:
             list_widget = self.get_current_list_widget()
@@ -374,9 +387,12 @@ class EventHandler:
                     db_table = self.ui.current_playlist
                 if db_table:
                     self.db_manager.delete_all_songs(db_table)
-        except Exception as e:
+
+        except OperationalError as e:
             QMessageBox.critical(
-                self.ui, msg.TTL_ERR, f"{msg.MSG_ALL_SONG_DEL_ERR} {e}"
+                self.ui,
+                msg.TTL_ERR,
+                f"{msg.MSG_ALL_SONG_DEL_ERR} Database error: {str(e)}",
             )
 
     def on_play_clicked(self):
@@ -386,7 +402,8 @@ class EventHandler:
         Starts playback of selected song in current list widget.
 
         Raises:
-            QMessageBox.critical: If there's an error during playback start
+            RuntimeError: If there's an error with media player operations
+            ValueError: If there's an error with list widget operations
         """
         try:
             list_widget = self.get_current_list_widget()
@@ -401,8 +418,9 @@ class EventHandler:
 
             song_path = current_item.data(Qt.UserRole)
             self.playback_handler.play(song_path)
-        except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {e}")
+
+        except (RuntimeError, ValueError) as e:
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}")
 
     def on_pause_clicked(self):
         """
@@ -428,7 +446,8 @@ class EventHandler:
             direction: Navigation direction, either "forward" or "backward"
 
         Raises:
-            QMessageBox.critical: If there's an error during navigation
+            ValueError: If there's an error with list widget operations
+            RuntimeError: If there's an error with media player operations
         """
         try:
             list_widget = self.get_current_list_widget()
@@ -449,8 +468,9 @@ class EventHandler:
 
             list_widget.setCurrentRow(new_index)
             self.on_play_clicked()
-        except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {e}")
+
+        except (ValueError, RuntimeError) as e:
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {str(e)}")
 
     def on_loop_clicked(self):
         """
@@ -459,7 +479,7 @@ class EventHandler:
         Toggles loop mode and updates navigation strategy accordingly.
 
         Raises:
-            QMessageBox.critical: If there's an error toggling loop mode
+            RuntimeError: If there's an error updating playback mode
         """
         try:
             self.music_controller.is_looped = not self.music_controller.is_looped
@@ -468,8 +488,9 @@ class EventHandler:
                 self.navigation_handler.set_strategy(LoopingNavigationStrategy())
             else:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
-        except Exception as e:
-            QMessageBox.critical(self, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {e}")
+
+        except RuntimeError as e:
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}")
 
     def on_shuffle_clicked(self):
         """
@@ -478,7 +499,7 @@ class EventHandler:
         Toggles shuffle mode and updates navigation strategy accordingly.
 
         Raises:
-            QMessageBox.critical: If there's an error toggling shuffle mode
+            RuntimeError: If there's an error updating playback mode
         """
         try:
             self.music_controller.is_shuffled = not self.music_controller.is_shuffled
@@ -487,8 +508,9 @@ class EventHandler:
                 self.navigation_handler.set_strategy(RandomNavigationStrategy())
             else:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
-        except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {e}")
+
+        except RuntimeError as e:
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}")
 
     def handle_media_status(self, status):
         """
@@ -512,10 +534,15 @@ class EventHandler:
             value: New volume value (integer between 0 and 100)
 
         Raises:
-            QMessageBox.critical: If there's an error setting the volume
+            RuntimeError: If there's an error setting the volume
+            ValueError: If the volume value is invalid
         """
         try:
+            if not isinstance(value, int) or value < 0 or value > 100:
+                raise ValueError("Volume value must be between 0 and 100")
+
             self.music_controller.set_volume(value)
             self.ui.volume_label.setText(str(value))
-        except Exception as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {e}")
+
+        except (RuntimeError, ValueError) as e:
+            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {str(e)}")

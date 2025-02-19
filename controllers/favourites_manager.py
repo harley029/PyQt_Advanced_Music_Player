@@ -1,5 +1,6 @@
-from sqlite3 import IntegrityError
+from sqlite3 import IntegrityError, OperationalError
 import os
+from typing import Optional
 
 from PyQt5.QtWidgets import QListWidget, QMessageBox, QListWidgetItem
 from PyQt5.QtGui import QIcon
@@ -29,7 +30,7 @@ class FavouritesManager:
         self.list_widget = parent.favourites_listWidget
         self.loaded_songs_listWidget = parent.loaded_songs_listWidget
 
-    def _get_current_playing_song(self):
+    def _get_current_playing_song(self) -> Optional[str]:
         """
         Get the file path of the currently playing song.
 
@@ -39,7 +40,7 @@ class FavouritesManager:
         current_media = self.parent.music_controller.media_player().media()
         return current_media.canonicalUrl().toLocalFile() if current_media else None
 
-    def _check_list_not_empty(self, list_widget: QListWidget):
+    def _check_list_not_empty(self, list_widget: QListWidget) -> bool:
         """
         Check if the given list widget contains any items.
 
@@ -57,7 +58,7 @@ class FavouritesManager:
             return False
         return True
 
-    def _remove_song_from_ui_and_db(self, song_path):
+    def _remove_song_from_ui_and_db(self, song_path: str) -> None:
         """
         Remove a song from both the UI list and database.
 
@@ -75,7 +76,7 @@ class FavouritesManager:
                 self.db_manager.delete_song("favourites", song_path)
                 break
 
-    def load_favourites(self):
+    def load_favourites(self) -> None:
         """
         Load all favorite songs from the database and display them in the UI.
 
@@ -83,7 +84,8 @@ class FavouritesManager:
         Each song is displayed with a like icon and the filename.
 
         Raises:
-            QMessageBox.critical: If there's an error loading the favorites
+            OperationalError: If there's an error accessing the database
+            OSError: If there's an error accessing the file system
         """
         try:
             self.list_widget.clear()
@@ -94,12 +96,12 @@ class FavouritesManager:
                 )
                 item.setData(Qt.UserRole, song)
                 self.list_widget.addItem(item)
-        except Exception as e:
+        except (OperationalError, OSError) as e:
             QMessageBox.critical(
-                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {str(e)}"
             )
 
-    def add_to_favourites(self):
+    def add_to_favourites(self) -> None:
         """
         Add the currently selected song from the loaded songs list to favorites.
 
@@ -107,8 +109,8 @@ class FavouritesManager:
         Shows appropriate message boxes for various conditions and errors.
 
         Raises:
-            QMessageBox.warning: If the song already exists in favorites
-            QMessageBox.critical: If there's an error adding the song
+            IntegrityError: If the song already exists in favorites
+            OperationalError: If there's an error accessing the database
         """
         try:
             if not self._check_list_not_empty(self.loaded_songs_listWidget):
@@ -122,10 +124,12 @@ class FavouritesManager:
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
             QMessageBox.warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
-        except Exception as e:
-            QMessageBox.critical(self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD} {e}")
+        except OperationalError as e:
+            QMessageBox.critical(
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD} {str(e)}"
+            )
 
-    def remove_selected_favourite(self):
+    def remove_selected_favourite(self) -> None:
         """
         Remove the currently selected song from the favorites list.
 
@@ -134,7 +138,8 @@ class FavouritesManager:
         UI consistency.
 
         Raises:
-            QMessageBox.critical: If there's an error removing the song
+            OperationalError: If there's an error accessing the database
+            OSError: If there's an error accessing the file system
         """
         try:
             if not self._check_list_not_empty(self.parent.favourites_listWidget):
@@ -158,16 +163,16 @@ class FavouritesManager:
                 new_selection = min(current_selection, self.list_widget.count() - 1)
                 self.list_widget.setCurrentRow(new_selection)
 
-            if was_playing:
+            if was_playing and self.list_widget.count() > 0:
                 next_song = self.list_widget.item(new_selection).data(Qt.UserRole)
                 self.parent.music_controller.play_song(next_song)
 
-        except Exception as e:
+        except (OperationalError, OSError) as e:
             QMessageBox.critical(
-                self.parent, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
             )
 
-    def clear_favourites(self):
+    def clear_favourites(self) -> None:
         """
         Remove all songs from the favorites list.
 
@@ -176,7 +181,7 @@ class FavouritesManager:
         list and database.
 
         Raises:
-            QMessageBox.critical: If there's an error clearing the favorites
+            OperationalError: If there's an error accessing the database
         """
         try:
             if not self._check_list_not_empty(self.parent.favourites_listWidget):
@@ -203,12 +208,12 @@ class FavouritesManager:
             self.list_widget.clear()
             self.db_manager.delete_all_songs("favourites")
 
-        except Exception as e:
+        except OperationalError as e:
             QMessageBox.critical(
-                self.parent, msg.TTL_ERR, f"{msg.MSG_FAF_CLEAR_ERR} {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAF_CLEAR_ERR} {str(e)}"
             )
 
-    def add_all_to_favourites(self):
+    def add_all_to_favourites(self) -> None:
         """
         Add all songs from the loaded songs list to favorites.
 
@@ -216,7 +221,7 @@ class FavouritesManager:
         Shows a message with the number of successfully added songs.
 
         Raises:
-            QMessageBox.critical: If there's an error adding the songs
+            OperationalError: If there's an error accessing the database
         """
         try:
             if not self._check_list_not_empty(self.parent.loaded_songs_listWidget):
@@ -238,7 +243,7 @@ class FavouritesManager:
                 self.parent, msg.TTL_OK, f"{added_count} {msg.MSG_FAV_ADDED}"
             )
 
-        except Exception as e:
+        except OperationalError as e:
             QMessageBox.critical(
-                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {e}"
+                self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {str(e)}"
             )

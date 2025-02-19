@@ -1,4 +1,5 @@
-from sqlite3 import IntegrityError
+from sqlite3 import IntegrityError, OperationalError, DatabaseError
+from typing import Optional
 
 from PyQt5.QtWidgets import QListWidget, QMessageBox, QInputDialog
 from PyQt5.QtCore import Qt
@@ -7,6 +8,12 @@ from interfaces.interfaces import IPlaylistManager
 from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManager
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
+
+
+class PlaylistError(Exception):
+    """Custom exception for playlist-related errors"""
+
+    # pass
 
 
 class PlaylistManager(IPlaylistManager):
@@ -52,10 +59,16 @@ class PlaylistManager(IPlaylistManager):
             parent.current_playlist = current_playlist
             self.ui_manager.load_playlist(current_playlist, parent.loaded_songs_listWidget)
             parent.switch_to_songs_tab()
-        except Exception as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_LOAD_ERR} {e}")
+        except DatabaseError as e:
+            QMessageBox.critical(
+                parent, msg.TTL_ERR, f"Database error while loading playlist: {e}"
+            )
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+        except PlaylistError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
-    def create_playlist(self, parent):
+    def create_playlist(self, parent) -> Optional[str]:
         """
         Создаёт новый плейлист через диалог ввода и обновляет UI.
 
@@ -64,7 +77,10 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             existing = self.db_manager.get_playlists()
-            playlist_name, ok = QInputDialog.getText(parent, "New Playlist", "Enter the name of the new playlist:")
+            playlist_name, ok = QInputDialog.getText(
+                parent, "New Playlist", "Enter the name of the new playlist:"
+            )
+
             if not ok or not playlist_name.strip():
                 return None
 
@@ -85,8 +101,15 @@ class PlaylistManager(IPlaylistManager):
                     return None
 
             self.ui_manager.load_playlists()
-        except ValueError:
-            QMessageBox.critical(parent, msg.TTL_ERR, msg.MSG_NAME_RULE)
+        except ValueError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Invalid playlist name: {e}")
+        except DatabaseError as e:
+            QMessageBox.critical(
+                parent, msg.TTL_ERR, f"Database error while creating playlist: {e}"
+            )
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+
         return playlist_name
 
     def remove_playlist(self, parent):
@@ -129,8 +152,14 @@ class PlaylistManager(IPlaylistManager):
                 new_selection = current_selection % parent.playlists_listWidget.count()
                 parent.playlists_listWidget.setCurrentRow(new_selection)
             # QMessageBox.information(parent, msg.TTL_OK, f"Playlist '{playlist_name}' has been deleted.")
-        except Exception as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_DEL_ERR} {e}")
+        except DatabaseError as e:
+            QMessageBox.critical(
+                parent, msg.TTL_ERR, f"Database error while removing playlist: {e}"
+            )
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+        except PlaylistError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def remove_all_playlists(self, parent):
         """
@@ -162,12 +191,14 @@ class PlaylistManager(IPlaylistManager):
                 self.db_manager.delete_playlist(playlist)
             parent.playlists_listWidget.clear()
             # QMessageBox.information(parent, msg.TTL_OK, msg.MSG_LST_DEL_OK)
-        except Exception as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_DEL_ERR} {e}")
-
-    def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
-        result = self.ui_manager.check_list_not_empty(list_widget, message)
-        return result
+        except DatabaseError as e:
+            QMessageBox.critical(
+                parent, msg.TTL_ERR, f"Database error while removing playlists: {e}"
+            )
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+        except PlaylistError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def add_song_to_playlist(self, parent):
         """
@@ -200,15 +231,24 @@ class PlaylistManager(IPlaylistManager):
 
             self.db_manager.add_song_to_playlist(playlist, current_song)
         except IntegrityError:
-            QMessageBox.warning(parent, msg.TTL_WRN, f"{msg.MSG_SONG_EXIST} {playlist}.")
-        except Exception as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"{msg.MSG_ADD_TO_LST_ERR} {playlist}: {e}")
+            QMessageBox.warning(
+                parent, msg.TTL_WRN, f"{msg.MSG_SONG_EXIST} {playlist}."
+            )
+        except DatabaseError as e:
+            QMessageBox.critical(
+                parent, msg.TTL_ERR, f"Database error while adding song: {e}"
+            )
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+        except PlaylistError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
-    def add_all_to_playlist(self, parent):
+    def add_all_to_playlist(self, parent) -> None:
         """
-        Добавляет все песни из списка в выбранный плейлист.
+        Adds all songs from the list to the selected playlist.
 
-        :param parent: Родительский виджет.
+        Args:
+            parent: Parent widget containing the song list.
         """
         try:
             if not self.check_list_not_empty(parent.loaded_songs_listWidget, "List of songs is empty!"):
@@ -231,10 +271,20 @@ class PlaylistManager(IPlaylistManager):
                     self.db_manager.add_song_to_playlist(playlist, current_song)
                     added_count += 1
                 except IntegrityError:
-                    # Если песня уже была в избранном, просто пропускаем
-                    pass
-            # QMessageBox.information(parent, msg.TTL_OK, f"{added_count} songs added to {playlist}.")
-        except Exception as e:
-            QMessageBox.critical(
-                parent, msg.TTL_ERR, f"{msg.MSG_ALL_ADD_ERR} {playlist}: {e}"
-            )
+                    # Skip if song already exists in playlist
+                    continue
+                except (DatabaseError, OperationalError) as e:
+                    raise PlaylistError(f"Failed to add song to playlist: {e}") from e
+
+        except PlaylistError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, str(e))
+        except DatabaseError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database error while adding songs: {e}")
+        except OperationalError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
+        except ValueError as e:
+            QMessageBox.critical(parent, msg.TTL_ERR, f"Invalid data format: {e}")
+
+    def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
+        result = self.ui_manager.check_list_not_empty(list_widget, message)
+        return result
