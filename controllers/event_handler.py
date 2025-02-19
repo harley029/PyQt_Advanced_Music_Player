@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import os
 from sqlite3 import OperationalError
 from typing import Optional
@@ -13,9 +14,92 @@ from interfaces.navigation.navigation import (
     LoopingNavigationStrategy,
 )
 from interfaces.interfaces import INavigationStrategy
+from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
 from controllers.ui_updater import UIUpdater
 from controllers.music_player_controller import MusicPlayerController
+from controllers.favourites_manager import FavouritesManager
+from database.db_manager import DatabaseManager
+
+
+@dataclass
+class UIComponents:
+    """
+    Groups UI-related components together.
+
+    Attributes:
+        main_window: Main UI window component
+        ui_updater: Component responsible for UI updates
+    """
+
+    main_window: any  # Main UI window
+    ui_updater: UIUpdater
+
+
+@dataclass
+class MediaComponents:
+    """
+    Groups media-related components together.
+
+    Attributes:
+        music_controller: Controller for music playback operations
+        playlist_manager: Manager for playlist operations
+        favourites_manager: Manager for favorites operations
+    """
+
+    music_controller: MusicPlayerController
+    playlist_manager: PlaylistManager
+    favourites_manager: FavouritesManager
+
+
+@dataclass
+class StorageComponents:
+    """
+    Groups storage-related components together.
+
+    Attributes:
+        db_manager: Manager for database operations
+    """
+
+    db_manager: DatabaseManager
+
+
+class EventHandlerConfig:
+    """
+    Configuration container for EventHandler dependencies.
+
+    Centralizes all dependencies required by the EventHandler to function,
+    making initialization and dependency management cleaner.
+
+    Attributes:
+        ui: Main UI window component
+        ui_updater: Component for UI updates
+        music_controller: Controller for music playback
+        playlist_manager: Manager for playlist operations
+        favourites_manager: Manager for favorites operations
+        db_manager: Manager for database operations
+    """
+
+    def __init__(
+        self,
+        ui_components: UIComponents,
+        media_components: MediaComponents,
+        storage_components: StorageComponents,
+    ):
+        """
+        Initialize the configuration container with grouped components.
+
+        Args:
+            ui_components: UI-related components group
+            media_components: Media-related components group
+            storage_components: Storage-related components group
+        """
+        self.ui = ui_components.main_window
+        self.ui_updater = ui_components.ui_updater
+        self.music_controller = media_components.music_controller
+        self.playlist_manager = media_components.playlist_manager
+        self.favourites_manager = media_components.favourites_manager
+        self.db_manager = storage_components.db_manager
 
 
 class PlaybackHandler:
@@ -24,6 +108,10 @@ class PlaybackHandler:
 
     This class encapsulates all logic related to music playback control,
     working in conjunction with the music controller and UI updater.
+
+    Attributes:
+        music_controller: Controller for music playback operations
+        ui_updater: Component for updating UI elements
     """
 
     def __init__(self, music_controller: MusicPlayerController, ui_updater: UIUpdater):
@@ -32,7 +120,7 @@ class PlaybackHandler:
 
         Args:
             music_controller: Object implementing IMusicPlayerController interface
-            ui_updater: Object responsible for UI updates (e.g., UIUpdater)
+            ui_updater: Object responsible for UI updates
         """
         self.music_controller = music_controller
         self.ui_updater = ui_updater
@@ -43,6 +131,9 @@ class PlaybackHandler:
 
         Args:
             song_path: File path to the song to be played
+
+        Raises:
+            RuntimeError: If there's an error starting playback
         """
         self.music_controller.play_song(song_path)
         self.ui_updater.update_current_song_info(song_path)
@@ -53,6 +144,9 @@ class PlaybackHandler:
 
         If the song is playing, it will be paused.
         If the song is paused, it will be resumed.
+
+        Raises:
+            RuntimeError: If there's an error changing playback state
         """
         if self.music_controller.is_playing():
             self.music_controller.pause_song()
@@ -62,6 +156,9 @@ class PlaybackHandler:
     def stop(self) -> None:
         """
         Stop the current playback and clear song information from UI.
+
+        Raises:
+            RuntimeError: If there's an error stopping playback
         """
         self.music_controller.stop_song()
         self.ui_updater.clear_song_info()
@@ -69,10 +166,13 @@ class PlaybackHandler:
 
 class NavigationHandler:
     """
-    Handles song list navigation (next, previous) using the Strategy pattern.
+    Handles song list navigation using the Strategy pattern.
 
     This class manages different navigation strategies (normal, random, looping)
     and delegates the actual navigation logic to the current strategy.
+
+    Attributes:
+        navigation_strategy: Current strategy for determining next/previous songs
     """
 
     def __init__(self, navigation_strategy: Optional[INavigationStrategy] = None):
@@ -103,7 +203,10 @@ class NavigationHandler:
             count: Total number of songs
 
         Returns:
-            Next song index according to current navigation strategy
+            int: Next song index according to current navigation strategy
+
+        Raises:
+            ValueError: If current_index or count are invalid
         """
         return self.navigation_strategy.get_next_index(current_index, count)
 
@@ -116,70 +219,100 @@ class NavigationHandler:
             count: Total number of songs
 
         Returns:
-            Previous song index according to current navigation strategy
+            int: Previous song index according to current navigation strategy
+
+        Raises:
+            ValueError: If current_index or count are invalid
         """
         return self.navigation_strategy.get_previous_index(current_index, count)
 
 
-class EventHandlerConfig:
+class UIEventHandler:
     """
-    Configuration container for EventHandler dependencies.
+    Handles UI-specific events and operations.
 
-    Centralizes all dependencies required by the EventHandler to function,
-    making initialization and dependency management cleaner.
+    This class encapsulates all UI-related event handling logic,
+    separating it from the main event handler.
+
+    Attributes:
+        ui: Main UI window component
+        db_manager: Manager for database operations
     """
 
-    def __init__(
-        self,
-        ui,
-        music_controller,
-        playlist_manager,
-        favourites_manager,
-        ui_updater,
-        db_manager,
-    ):
+    def __init__(self, ui, db_manager):
         """
-        Initialize the configuration container.
+        Initialize the UI event handler.
 
         Args:
-            ui: Main UI component
-            music_controller: Controller for music playback
-            playlist_manager: Manager for playlist operations
-            favourites_manager: Manager for favorites operations
-            ui_updater: Component for updating UI elements
+            ui: Main UI window component
             db_manager: Manager for database operations
         """
         self.ui = ui
-        self.music_controller = music_controller
-        self.playlist_manager = playlist_manager
-        self.favourites_manager = favourites_manager
-        self.ui_updater = ui_updater
         self.db_manager = db_manager
+
+    def handle_add_songs(self):
+        """
+        Handle adding new songs through file dialog.
+
+        Opens a file dialog for song selection and adds selected songs
+        to the current list widget.
+
+        Raises:
+            RuntimeError: If there's an error adding songs to the list
+        """
+        file_names, _ = QFileDialog.getOpenFileNames(
+            self.ui,
+            caption="Add Songs",
+            directory="",
+            filter="Supported Files (*.mp3; *.mpeg; *.ogg; *.m4a; *.MP3; *.wma; *.acc; *.amr)",
+        )
+        if file_names:
+            for file_name in file_names:
+                item = QListWidgetItem(
+                    QIcon(":/img/utils/images/MusicListItem.png"),
+                    os.path.basename(file_name),
+                )
+                item.setData(Qt.UserRole, file_name)
+                self.ui.loaded_songs_listWidget.addItem(item)
+        else:
+            QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
 
 class EventHandler:
     """
-    Main event handler that aggregates specialized handlers.
+    Main event handler that coordinates all specialized handlers.
 
-    Delegates playback, navigation, and UI update actions to appropriate classes.
+    Delegates playback, navigation, and UI update actions to appropriate handlers.
     Manages all user interactions with the music player interface.
+
+    Attributes:
+        ui_handler: Handler for UI-specific operations
+        playback_handler: Handler for playback operations
+        navigation_handler: Handler for navigation between songs
+        ui: Main UI window component
+        music_controller: Controller for music playback
+        playlist_manager: Manager for playlist operations
+        favourites_manager: Manager for favorites operations
     """
 
     def __init__(self, config: EventHandlerConfig):
         """
-        Initialize the EventHandler with provided configuration.
+        Initialize the event handler with provided configuration.
 
         Args:
             config: EventHandlerConfig instance containing all required dependencies
         """
+        # Create specialized handlers
+        self.ui_handler = UIEventHandler(config.ui, config.db_manager)
+        self.playback_handler = PlaybackHandler(config.music_controller, config.ui_updater)
+        self.navigation_handler = NavigationHandler()
+
+        # Store essential references
         self.ui = config.ui
         self.music_controller = config.music_controller
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
-        self.ui_updater = config.ui_updater
-        self.db_manager = config.db_manager
-        self.playback_handler = PlaybackHandler(self.music_controller, self.ui_updater)
-        self.navigation_handler = NavigationHandler()
+
         self.setup_button_signals()
 
     def setup_button_signals(self):
@@ -194,7 +327,7 @@ class EventHandler:
         - Media status changes
         """
         # Кнопки на вкладке Song List
-        self.ui.add_songs_btn.clicked.connect(self.on_add_songs_clicked)
+        self.ui.add_songs_btn.clicked.connect(self.ui_handler.handle_add_songs)
         self.ui.delete_selected_btn.clicked.connect(
             lambda: self.on_delete_selected_song_clicked(db_table=None)
         )
@@ -260,7 +393,7 @@ class EventHandler:
         Get the currently active list widget based on selected tab.
 
         Returns:
-            Active QListWidget or None if no valid widget is selected
+            QListWidget: Active list widget or None if no valid widget is selected
         """
         idx = self.ui.stackedWidget.currentIndex()
         if idx == 0:
@@ -271,38 +404,14 @@ class EventHandler:
             return self.ui.favourites_listWidget
         return None
 
-    def on_add_songs_clicked(self):
-        """
-        Handle adding new songs to the playlist.
-
-        Opens a file dialog for song selection and adds selected songs
-        to the current list widget.
-        """
-        file_names, _ = QFileDialog.getOpenFileNames(
-            self.ui,
-            caption="Add Songs",
-            directory="",
-            filter="Supported Files (*.mp3; *.mpeg; *.ogg; *.m4a; *.MP3; *.wma; *.acc; *.amr)",
-        )
-        if file_names:
-            for file_name in file_names:
-                item = QListWidgetItem(
-                    QIcon(":/img/utils/images/MusicListItem.png"),
-                    os.path.basename(file_name),
-                )
-                item.setData(Qt.UserRole, file_name)
-                self.ui.loaded_songs_listWidget.addItem(item)
-        else:
-            QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
-
     def on_delete_selected_song_clicked(self, db_table=None):
         """
         Handle deletion of selected song from current list.
-
+        
         Args:
             db_table: Optional database table name. If provided, song will also be
                      removed from the database.
-
+        
         Raises:
             OperationalError: If there's an error accessing the database
             RuntimeError: If there's an error with media player operations

@@ -15,7 +15,7 @@ from controllers.context_manager import ContextMenuManager
 from controllers.favourites_manager import FavouritesManager
 from controllers.window_manager import WindowManager
 from controllers.ui_updater import UIUpdater, SongInfoLabels
-from controllers.event_handler import EventHandler, EventHandlerConfig
+from controllers.event_handler import EventHandler, EventHandlerConfig, MediaComponents, StorageComponents, UIComponents
 
 
 class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
@@ -221,15 +221,26 @@ class AppFactory:
         db_manager = DatabaseManager()
         music_controller = MusicPlayerController()
         new_player = ModernMusicPlayer(db_manager, music_controller, event_handler=None)
-        # Create configuration for EventHandler
-        config = EventHandlerConfig(
-            ui=new_player,
+        # Create EventHandler
+        # Создание конфигурации
+        ui_components = UIComponents(
+            main_window=new_player, ui_updater=new_player.ui_updater
+        )
+        media_components = MediaComponents(
             music_controller=music_controller,
             playlist_manager=new_player.playlist_manager,
             favourites_manager=new_player.favourites_manager,
-            ui_updater=new_player.ui_updater,
-            db_manager=db_manager,
         )
+        storage_components = StorageComponents(db_manager=db_manager)
+
+        # Создание конфигурации обработчика событий
+        config = EventHandlerConfig(
+            ui_components=ui_components,
+            media_components=media_components,
+            storage_components=storage_components,
+        )
+
+        # Создание обработчика событий
         event_handler = EventHandler(config)
         # Initialize event handler with this configuration
         new_player.event_handler = event_handler
