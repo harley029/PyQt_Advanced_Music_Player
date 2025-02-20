@@ -275,6 +275,9 @@ class PlaylistManager(IPlaylistManager):
                     continue
                 except (DatabaseError, OperationalError) as e:
                     raise PlaylistError(f"Failed to add song to playlist: {e}") from e
+            QMessageBox.information(
+                parent, msg.TTL_OK, f"{added_count} {msg.CTX_ADD_ALL_TO_LST}"
+            )
 
         except PlaylistError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, str(e))

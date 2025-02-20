@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Any
+from typing import List, Optional, Tuple, Any
 from PyQt5.QtWidgets import QListWidget
 from PyQt5.QtMultimedia import QMediaPlayer
 
@@ -44,7 +44,7 @@ class IPlaylistManager(ABC):
         """
 
     @abstractmethod
-    def create_playlist(self, parent) -> str:
+    def create_playlist(self, parent) -> Optional[str]:
         """
         Creates a new playlist through an input dialog and updates the UI.
 

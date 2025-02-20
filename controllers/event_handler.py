@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import os
 from sqlite3 import OperationalError
-from typing import Optional
+from typing import Any, Optional
 
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from PyQt5.QtCore import Qt
@@ -32,7 +32,7 @@ class UIComponents:
         ui_updater: Component responsible for UI updates
     """
 
-    main_window: any  # Main UI window
+    main_window: Any  # Main UI window
     ui_updater: UIUpdater
 
 
@@ -312,6 +312,7 @@ class EventHandler:
         self.music_controller = config.music_controller
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
+        self.db_manager = config.db_manager
 
         self.setup_button_signals()
 
@@ -370,7 +371,7 @@ class EventHandler:
             lambda: self.on_next_previous_clicked(direction="forward")
         )
         self.ui.previous_btn.clicked.connect(
-            lambda: self.on_next_previous_clicked(direction="buckward")
+            lambda: self.on_next_previous_clicked(direction="backward")
         )
         self.ui.loop_one_btn.clicked.connect(self.on_loop_clicked)
         self.ui.shuffle_songs_btn.clicked.connect(self.on_shuffle_clicked)
@@ -520,10 +521,11 @@ class EventHandler:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
 
-            current_item = list_widget.currentItem()
-            if not current_item:
+            selected_items = list_widget.selectedItems()
+            if not selected_items:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
+            current_item = selected_items[0]
 
             song_path = current_item.data(Qt.UserRole)
             self.playback_handler.play(song_path)
@@ -563,12 +565,16 @@ class EventHandler:
             if not list_widget or list_widget.count() == 0:
                 QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
+            selected_items = list_widget.selectedItems()
+            if not selected_items:
+                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                return
             current_index = list_widget.currentRow()
             count = list_widget.count()
 
             if direction == "forward":
                 new_index = self.navigation_handler.get_next_index(current_index, count)
-            elif direction == "buckward":
+            elif direction == "backward":
                 new_index = self.navigation_handler.get_previous_index(
                     current_index, count
                 )
