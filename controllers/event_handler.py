@@ -277,7 +277,7 @@ class UIEventHandler:
         else:
             QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
-
+# pylint: disable=too-many-instance-attributes
 class EventHandler:
     """
     Main event handler that coordinates all specialized handlers.
