@@ -20,7 +20,7 @@ from controllers.event_handler import EventHandler, EventHandlerConfig, MediaCom
 
 class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
     # pylint: disable=too-many-instance-attributes
-    """
+    """ 
     Main window of the Modern Music Player application.
 
     Responsible for initializing dependencies, setting up the interface,
@@ -33,6 +33,7 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         db_manager: IDatabaseManager,
         music_controller: IMusicPlayerController,
         event_handler: Optional["EventHandler"] = None,
+        context_menu_manager: Optional["ContextMenuManager"] = None,
     ):
         """
         Initialize the main window and its components.
@@ -90,13 +91,8 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         # Initialize EventHandler for handling button clicks and context menu actions
         self.event_handler = event_handler
 
-        # Context menu manager, passing self
-        self.context_menu_manager = ContextMenuManager(
-            self,
-            self.event_handler,
-            self.favourites_manager,
-            self.playlist_manager,
-        )
+        #  Initialize Context Menu
+        self.context_menu_manager = context_menu_manager
 
         # Start BackgroundSlideshow
         images_dir = os.path.join(os.getcwd(), "utils", "bg_imgs")
@@ -220,9 +216,11 @@ class AppFactory:
         """
         db_manager = DatabaseManager()
         music_controller = MusicPlayerController()
-        new_player = ModernMusicPlayer(db_manager, music_controller, event_handler=None)
-        # Create EventHandler
-        # Создание конфигурации
+        new_player = ModernMusicPlayer(
+            db_manager, music_controller, event_handler=None, context_menu_manager=None
+        )
+
+        # Создание группы зависимостей для конфигурации EventHandler
         ui_components = UIComponents(
             main_window=new_player, ui_updater=new_player.ui_updater
         )
@@ -233,17 +231,21 @@ class AppFactory:
         )
         storage_components = StorageComponents(db_manager=db_manager)
 
-        # Создание конфигурации обработчика событий
+        # Создать конфигурации обработчика событий
         config = EventHandlerConfig(
             ui_components=ui_components,
             media_components=media_components,
             storage_components=storage_components,
         )
 
-        # Создание обработчика событий
+        # Создать обработчик событий и устанавливаем его в главном окне
         event_handler = EventHandler(config)
-        # Initialize event handler with this configuration
         new_player.event_handler = event_handler
+
+        # Создать менеджер контекстного меню, который получит корректный event_handler
+        new_player.context_menu_manager = ContextMenuManager(
+            new_player, event_handler, new_player.favourites_manager, new_player.playlist_manager
+        )
         return new_player
 
 
