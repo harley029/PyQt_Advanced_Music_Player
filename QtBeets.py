@@ -20,7 +20,7 @@ from controllers.event_handler import EventHandler, EventHandlerConfig, MediaCom
 
 class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
     # pylint: disable=too-many-instance-attributes
-    """ 
+    """
     Main window of the Modern Music Player application.
 
     Responsible for initializing dependencies, setting up the interface,

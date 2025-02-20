@@ -1,6 +1,4 @@
 from cx_Freeze import setup, Executable
-import sys
-import os
 
 build_exe_options = {
     "include_files": [

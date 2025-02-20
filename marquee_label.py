@@ -43,7 +43,7 @@ class MarqueeLabel(QLabel):
             )  # Пробелы для плавности
             avg_char_width = font_metrics.averageCharWidth()
             num_chars = label_width // avg_char_width
-            display = visible_text[self.offset : self.offset + num_chars]
+            display = visible_text[self.offset: self.offset + num_chars]
             self.setText(display)
 
     def resizeEvent(self, event):

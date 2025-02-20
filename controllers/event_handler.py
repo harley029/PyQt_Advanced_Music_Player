@@ -277,6 +277,7 @@ class UIEventHandler:
         else:
             QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
+
 # pylint: disable=too-many-instance-attributes
 class EventHandler:
     """
@@ -408,11 +409,11 @@ class EventHandler:
     def on_delete_selected_song_clicked(self, db_table=None):
         """
         Handle deletion of selected song from current list.
-        
+
         Args:
             db_table: Optional database table name. If provided, song will also be
                      removed from the database.
-        
+
         Raises:
             OperationalError: If there's an error accessing the database
             RuntimeError: If there's an error with media player operations
