@@ -63,8 +63,6 @@ class PlaylistManager(IPlaylistManager):
             QMessageBox.critical(
                 parent, msg.TTL_ERR, f"Database error while loading playlist: {e}"
             )
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
         except PlaylistError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
@@ -107,8 +105,6 @@ class PlaylistManager(IPlaylistManager):
             QMessageBox.critical(
                 parent, msg.TTL_ERR, f"Database error while creating playlist: {e}"
             )
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
 
         return playlist_name
 
@@ -151,13 +147,10 @@ class PlaylistManager(IPlaylistManager):
             if parent.playlists_listWidget.count() > 0:
                 new_selection = current_selection % parent.playlists_listWidget.count()
                 parent.playlists_listWidget.setCurrentRow(new_selection)
-            # QMessageBox.information(parent, msg.TTL_OK, f"Playlist '{playlist_name}' has been deleted.")
         except DatabaseError as e:
             QMessageBox.critical(
                 parent, msg.TTL_ERR, f"Database error while removing playlist: {e}"
             )
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
         except PlaylistError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
@@ -195,8 +188,6 @@ class PlaylistManager(IPlaylistManager):
             QMessageBox.critical(
                 parent, msg.TTL_ERR, f"Database error while removing playlists: {e}"
             )
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
         except PlaylistError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
@@ -209,13 +200,11 @@ class PlaylistManager(IPlaylistManager):
         try:
             if not self.check_list_not_empty(parent.loaded_songs_listWidget, "No songs in the list!"):
                 return
-            # Проверяем, выбраны ли элементы в списке
             selected_items = parent.loaded_songs_listWidget.selectedItems()
             if not selected_items:
                 QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
 
-            # Берем первый выбранный элемент
             item = selected_items[0]
             if not item:
                 QMessageBox.information(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
@@ -238,8 +227,6 @@ class PlaylistManager(IPlaylistManager):
             QMessageBox.critical(
                 parent, msg.TTL_ERR, f"Database error while adding song: {e}"
             )
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
         except PlaylistError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
@@ -283,8 +270,6 @@ class PlaylistManager(IPlaylistManager):
             QMessageBox.critical(parent, msg.TTL_ERR, str(e))
         except DatabaseError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Database error while adding songs: {e}")
-        except OperationalError as e:
-            QMessageBox.critical(parent, msg.TTL_ERR, f"Database operation failed: {e}")
         except ValueError as e:
             QMessageBox.critical(parent, msg.TTL_ERR, f"Invalid data format: {e}")
 
