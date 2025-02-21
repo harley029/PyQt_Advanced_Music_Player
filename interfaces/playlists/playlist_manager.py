@@ -260,7 +260,7 @@ class PlaylistManager(IPlaylistManager):
                 except IntegrityError:
                     # Skip if song already exists in playlist
                     continue
-                except (DatabaseError, OperationalError) as e:
+                except (DatabaseError) as e:
                     raise PlaylistError(f"Failed to add song to playlist: {e}") from e
             QMessageBox.information(
                 parent, msg.TTL_OK, f"{added_count} {msg.CTX_ADD_ALL_TO_LST}"

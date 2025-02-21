@@ -1,17 +1,16 @@
 from cx_Freeze import setup, Executable
+app_icon = "icons/5.icns"
 
 build_exe_options = {
     "include_files": [
         ("utils", "utils"),
-        ("icons/5.icns", "icons/5.icns"),
+        (app_icon, app_icon),
     ]
 }
 
 options = {
     "build_exe": build_exe_options,
-    "bdist_mac": {
-        "iconfile": "icons/5.icns"
-    },
+    "bdist_mac": {"iconfile": app_icon},
 }
 
 executables = [
@@ -19,7 +18,7 @@ executables = [
         script="QtBeets.py",
         target_name="QtBeets.app",
         base=None,
-        icon="icons/5.icns",
+        icon=app_icon,
     )
 ]
 
