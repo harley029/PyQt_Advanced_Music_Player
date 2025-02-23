@@ -101,9 +101,9 @@ class PreviousCommand(ICommand):
         Execute the Previous command.
 
         Calls the on_next_previous_clicked method of the associated event handler
-        with the direction set to "buckward". Note: There appears to be a typo, "buckward" instead of "backward".
+        with the direction set to "backward". Note: There appears to be a typo, "backward" instead of "backward".
         """
-        self.event_handler.on_next_previous_clicked(direction="buckward")
+        self.event_handler.on_next_previous_clicked(direction="backward")
 
 
 class StopCommand(ICommand):

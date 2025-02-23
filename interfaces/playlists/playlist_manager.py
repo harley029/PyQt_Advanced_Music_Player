@@ -1,4 +1,4 @@
-from sqlite3 import IntegrityError, OperationalError, DatabaseError
+from sqlite3 import IntegrityError, DatabaseError
 from typing import Optional
 
 from PyQt5.QtWidgets import QListWidget, QMessageBox, QInputDialog
