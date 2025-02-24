@@ -4,6 +4,8 @@ import random
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap
 
+from utils.message_manager import messanger
+
 
 class BackgroundSlideshow:
     """
@@ -60,18 +62,41 @@ class BackgroundSlideshow:
 
         If the images directory is empty after filtering, the method exits without changing the background.
         """
-        images = os.listdir(self.images_dir)
-        if "bg_overlay.png" in images:
-            images.remove("bg_overlay.png")
-        if ".DS_Store" in images:
-            images.remove(".DS_Store")
-        if not images:
-            return
-        current_file = images[self.slide_index]
-        full_path = os.path.join(self.images_dir, current_file)
-        pixmap = QPixmap(full_path)
-        self.label.setPixmap(pixmap)
-        if self.slide_index == len(images) - 1:
-            self.slide_index = 0
-        else:
-            self.slide_index = random.randint(0, len(images) - 1)
+        try:
+            # Проверка наличия каталога
+            if not os.path.isdir(self.images_dir):
+                raise FileNotFoundError(f"Directory '{self.images_dir}' does not exist.")
+            images = os.listdir(self.images_dir)
+            for unwanted in ["bg_overlay.png", ".DS_Store"]:
+                if unwanted in images:
+                    images.remove(unwanted)
+            if not images:
+                return
+            current_file = images[self.slide_index]
+            full_path = os.path.join(self.images_dir, current_file)
+            if not os.path.isfile(full_path):
+                raise FileNotFoundError(f"Image file '{full_path}' does not exist.")
+            # Загрузка изображения и проверка корректности загрузки
+            pixmap = QPixmap(full_path)
+            if pixmap.isNull():
+                raise ValueError(f"Unable to load image from '{full_path}'.")
+            self.label.setPixmap(pixmap)
+            if self.slide_index == len(images) - 1:
+                self.slide_index = 0
+            else:
+                self.slide_index = random.randint(0, len(images) - 1)
+        except FileNotFoundError as e:
+            messanger.show_critical(
+                self.label, "Slideshow Error", "Image file or directory not found.", e
+            )
+        except ValueError as e:
+            messanger.show_critical(
+                self.label, "Slideshow Error", "Failed to load image.", e
+            )
+        # except Exception as e:
+        #     messanger.show_critical(
+        #         self.label,
+        #         "Slideshow Error",
+        #         "Unexpected error during slideshow update.",
+        #         e,
+        #     )

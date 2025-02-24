@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from utils import messages as msg
+from utils.message_manager import messanger
 
 
 class FavouritesManager:
@@ -54,7 +55,7 @@ class FavouritesManager:
             Displays an information message box if the list is empty
         """
         if list_widget.count() == 0:
-            QMessageBox.information(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
+            messanger.show_info(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
             return False
         return True
 
@@ -97,7 +98,7 @@ class FavouritesManager:
                 item.setData(Qt.UserRole, song)
                 self.list_widget.addItem(item)
         except (OperationalError, OSError) as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {str(e)}"
             )
 
@@ -117,15 +118,15 @@ class FavouritesManager:
                 return
             items = self.loaded_songs_listWidget.selectedItems()
             if not items:
-                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                messanger.show_info(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             item = self.parent.loaded_songs_listWidget.currentItem()
             current_song = item.data(Qt.UserRole)
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
-            QMessageBox.warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
+            messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
         except OperationalError as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD} {str(e)}"
             )
 
@@ -146,7 +147,7 @@ class FavouritesManager:
                 return
             selected_items = self.parent.favourites_listWidget.selectedItems()
             if not selected_items:
-                QMessageBox.information(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                messanger.show_info(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_selection = self.list_widget.currentRow()
             item = self.list_widget.currentItem()
@@ -168,7 +169,7 @@ class FavouritesManager:
                 self.parent.music_controller.play_song(next_song)
 
         except (OperationalError, OSError) as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
             )
 
@@ -186,13 +187,7 @@ class FavouritesManager:
         try:
             if not self._check_list_not_empty(self.parent.favourites_listWidget):
                 return
-            confirm = QMessageBox.question(
-                self.parent,
-                msg.TTL_FAV_QUEST,
-                msg.MSG_FAV_QUEST,
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
+            confirm = messanger.show_question(self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST)
             if confirm != QMessageBox.Yes:
                 return
 
@@ -209,7 +204,7 @@ class FavouritesManager:
             self.db_manager.delete_all_songs("favourites")
 
         except OperationalError as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAF_CLEAR_ERR} {str(e)}"
             )
 
@@ -239,11 +234,11 @@ class FavouritesManager:
                 except IntegrityError:
                     pass  # Skip already existing songs
 
-            QMessageBox.information(
+            messanger.show_info(
                 self.parent, msg.TTL_OK, f"{added_count} {msg.MSG_FAV_ADDED}"
             )
 
         except OperationalError as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {str(e)}"
             )

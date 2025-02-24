@@ -16,6 +16,7 @@ from interfaces.navigation.navigation import (
 from interfaces.interfaces import INavigationStrategy
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
+from utils.message_manager import messanger
 from controllers.ui_updater import UIUpdater
 from controllers.music_player_controller import MusicPlayerController
 from controllers.favourites_manager import FavouritesManager
@@ -275,7 +276,7 @@ class UIEventHandler:
                 item.setData(Qt.UserRole, file_name)
                 self.ui.loaded_songs_listWidget.addItem(item)
         else:
-            QMessageBox.information(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
+            messanger.show_info(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -422,11 +423,11 @@ class EventHandler:
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
             items = list_widget.selectedItems()
             if not items:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             item = list_widget.currentItem()
             current_song = item.data(Qt.UserRole)
@@ -459,11 +460,11 @@ class EventHandler:
                     self.on_stop_clicked()
 
         except OperationalError as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} Database error: {str(e)}"
             )
         except (RuntimeError, ValueError) as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
             )
 
@@ -481,15 +482,13 @@ class EventHandler:
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
                 return
 
-            question = QMessageBox.question(
+            question = messanger.show_question(
                 self.ui,
                 msg.TTL_SONG_DEL_QUEST,
-                msg.MSG_SONG_DEL_QUEST,
-                QMessageBox.Yes | QMessageBox.Cancel,
-                QMessageBox.Cancel,
+                msg.MSG_SONG_DEL_QUEST
             )
             if question == QMessageBox.Yes:
                 self.on_stop_clicked()
@@ -500,7 +499,7 @@ class EventHandler:
                     self.db_manager.delete_all_songs(db_table)
 
         except OperationalError as e:
-            QMessageBox.critical(
+            messanger.show_critical(
                 self.ui,
                 msg.TTL_ERR,
                 f"{msg.MSG_ALL_SONG_DEL_ERR} Database error: {str(e)}",
@@ -519,12 +518,12 @@ class EventHandler:
         try:
             list_widget = self.get_current_list_widget()
             if list_widget is None or list_widget.count() == 0:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
 
             selected_items = list_widget.selectedItems()
             if not selected_items:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_item = selected_items[0]
 
@@ -532,7 +531,7 @@ class EventHandler:
             self.playback_handler.play(song_path)
 
         except (RuntimeError, ValueError) as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}")
+            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}")
 
     def on_pause_clicked(self):
         """
@@ -564,11 +563,11 @@ class EventHandler:
         try:
             list_widget = self.get_current_list_widget()
             if not list_widget or list_widget.count() == 0:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
                 return
             selected_items = list_widget.selectedItems()
             if not selected_items:
-                QMessageBox.information(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_index = list_widget.currentRow()
             count = list_widget.count()
@@ -586,7 +585,7 @@ class EventHandler:
             self.on_play_clicked()
 
         except (ValueError, RuntimeError) as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {str(e)}")
+            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {str(e)}")
 
     def on_loop_clicked(self):
         """
@@ -606,7 +605,7 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}")
+            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}")
 
     def on_shuffle_clicked(self):
         """
@@ -626,7 +625,7 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}")
+            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}")
 
     def handle_media_status(self, status):
         """
@@ -661,4 +660,4 @@ class EventHandler:
             self.ui.volume_label.setText(str(value))
 
         except (RuntimeError, ValueError) as e:
-            QMessageBox.critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {str(e)}")
+            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {str(e)}")

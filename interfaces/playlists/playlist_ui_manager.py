@@ -1,11 +1,12 @@
 import os
 
-from PyQt5.QtWidgets import QListWidget, QInputDialog, QMessageBox, QListWidgetItem
+from PyQt5.QtWidgets import QListWidget, QInputDialog, QListWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from interfaces.interfaces import IPlaylistUIManager
 from utils import messages as msg
+from utils.message_manager import messanger
 
 
 class PlaylistUIManager(IPlaylistUIManager):
@@ -73,6 +74,6 @@ class PlaylistUIManager(IPlaylistUIManager):
         self, list_widget: QListWidget, message: str = msg.MSG_LST_EMPTY
     ) -> bool:
         if not list_widget or list_widget.count() == 0:
-            QMessageBox.information(None, msg.TTL_WRN, message)
+            messanger.show_warning(None, msg.TTL_WRN, message)
             return False
         return True
