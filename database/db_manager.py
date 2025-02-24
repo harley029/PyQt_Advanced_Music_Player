@@ -70,6 +70,18 @@ class DatabaseManager(IDatabaseManager):
             logging.critical("Database connection failed: %s", e)
             raise
 
+    def _table_escaped(self, table: str) -> str:
+        """
+        Escape table name to prevent SQL injection attacks.
+
+        Parameters:
+            table: Table name to be escaped
+
+        Returns:
+            Escaped table name, e.g. "table"
+        """
+        return f'"{table}"'
+
     def execute_query(
         self, query: str, params: Tuple = (), fetch: bool = False
     ) -> List[Tuple]:
@@ -122,8 +134,7 @@ class DatabaseManager(IDatabaseManager):
             table: Table name
             song: Song path or identifier
         """
-        table_escaped = f'"{table}"'
-        query = f"INSERT INTO {table_escaped} (song) VALUES (?)"
+        query = f"INSERT INTO {self._table_escaped(table)} (song) VALUES (?)"
         logging.debug("Adding song: %s to table: %s", song, table)
         self.execute_query(query, (song,))
 
@@ -135,8 +146,7 @@ class DatabaseManager(IDatabaseManager):
             table: Table name
             song: Song path or identifier
         """
-        table_escaped = f'"{table}"'
-        query = f"DELETE FROM {table_escaped} WHERE song = ?"
+        query = f"DELETE FROM {self._table_escaped(table)} WHERE song = ?"
         logging.debug("Deleting song: %s from table: %s", song, table)
         self.execute_query(query, (song,))
 
@@ -147,8 +157,7 @@ class DatabaseManager(IDatabaseManager):
         Parameters:
             table: Table name
         """
-        table_escaped = f'"{table}"'
-        query = f"DELETE FROM {table_escaped}"
+        query = f"DELETE FROM {self._table_escaped(table)}"
         logging.debug("Deleting all songs from table: %s", table)
         self.execute_query(query)
 
@@ -166,8 +175,7 @@ class DatabaseManager(IDatabaseManager):
         if not DBUtils.is_valid_table_name(table_name):
             logging.error("Attempt to create table with invalid name: %s", table_name)
             raise ValueError("Invalid table name!")
-        table_escaped = f'"{table_name}"'
-        query = f"CREATE TABLE IF NOT EXISTS {table_escaped} ({columns})"
+        query = f"CREATE TABLE IF NOT EXISTS {self._table_escaped(table_name)} ({columns})"
         logging.debug("Creating table: %s with columns: %s", table_name, columns)
         self.execute_query(query)
 
