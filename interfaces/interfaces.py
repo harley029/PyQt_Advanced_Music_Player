@@ -74,21 +74,6 @@ class IPlaylistManager(ABC):
         """
 
     @abstractmethod
-    def check_list_not_empty(
-        self, list_widget: QListWidget, message: str = "No songs in the list!"
-    ) -> bool:
-        """
-        Checks if the provided widget is not empty.
-
-        Args:
-            list_widget: Widget containing the list of items.
-            message: Error message to display if the list is empty.
-
-        Returns:
-            bool: True if the list is not empty, False otherwise.
-        """
-
-    @abstractmethod
     def add_song_to_playlist(self, parent) -> None:
         """
         Adds the selected song to the selected playlist.
@@ -177,19 +162,6 @@ class IPlaylistUIManager(ABC):
         Args:
             playlist: Name of the playlist to load.
             list_widget: Widget where the playlist should be displayed.
-        """
-
-    @abstractmethod
-    def check_list_not_empty(self, list_widget: QListWidget, message: str) -> bool:
-        """
-        Verifies that the provided widget is not empty.
-
-        Args:
-            list_widget: Widget to check.
-            message: Error message to display if the list is empty.
-
-        Returns:
-            bool: True if the list contains items, False otherwise.
         """
 
     @abstractmethod

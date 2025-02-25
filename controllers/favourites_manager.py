@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 
 from utils import messages as msg
 from utils.message_manager import messanger
+from utils.list_validator import list_validator
 
 
 class FavouritesManager:
@@ -40,24 +41,6 @@ class FavouritesManager:
         """
         current_media = self.parent.music_controller.media_player().media()
         return current_media.canonicalUrl().toLocalFile() if current_media else None
-
-    def _check_list_not_empty(self, list_widget: QListWidget) -> bool:
-        """
-        Check if the given list widget contains any items.
-
-        Args:
-            list_widget (QListWidget): The list widget to check
-
-        Returns:
-            bool: True if the list is not empty, False otherwise
-
-        Note:
-            Displays an information message box if the list is empty
-        """
-        if list_widget.count() == 0:
-            messanger.show_info(self.parent, msg.TTL_INF, msg.MSG_LST_EMPTY)
-            return False
-        return True
 
     def _remove_song_from_ui_and_db(self, song_path: str) -> None:
         """
@@ -114,11 +97,9 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not self._check_list_not_empty(self.loaded_songs_listWidget):
+            if not list_validator.check_list_not_empty(self.loaded_songs_listWidget):
                 return
-            items = self.loaded_songs_listWidget.selectedItems()
-            if not items:
-                messanger.show_info(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(self.loaded_songs_listWidget, self.parent):
                 return
             item = self.parent.loaded_songs_listWidget.currentItem()
             current_song = item.data(Qt.UserRole)
@@ -143,11 +124,12 @@ class FavouritesManager:
             OSError: If there's an error accessing the file system
         """
         try:
-            if not self._check_list_not_empty(self.parent.favourites_listWidget):
+            if not list_validator.check_list_not_empty(
+                self.parent.favourites_listWidget
+            ):
                 return
-            selected_items = self.parent.favourites_listWidget.selectedItems()
-            if not selected_items:
-                messanger.show_info(self.parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(
+                self.parent.favourites_listWidget, self.parent):
                 return
             current_selection = self.list_widget.currentRow()
             item = self.list_widget.currentItem()
@@ -185,7 +167,9 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not self._check_list_not_empty(self.parent.favourites_listWidget):
+            if not list_validator.check_list_not_empty(
+                self.parent.favourites_listWidget
+            ):
                 return
             confirm = messanger.show_question(self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST)
             if confirm != QMessageBox.Yes:
@@ -219,7 +203,9 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not self._check_list_not_empty(self.parent.loaded_songs_listWidget):
+            if not list_validator.check_list_not_empty(
+                self.parent.loaded_songs_listWidget
+            ):
                 return
 
             added_count = 0

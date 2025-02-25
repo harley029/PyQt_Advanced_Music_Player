@@ -9,6 +9,7 @@ from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManag
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
 from utils.message_manager import messanger
+from utils.list_validator import list_validator
 
 
 class PlaylistError(Exception):
@@ -115,7 +116,9 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if parent.playlists_listWidget.count() == 0:
-                messanger.show_info(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
+                messanger.show_info(
+                    parent, msg.TTL_INF, "There are no playlists to be deleted"
+                )
                 return
             current_selection = parent.playlists_listWidget.selectedItems()
             if not current_selection:
@@ -158,8 +161,9 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Родительский виджет.
         """
         try:
-            if parent.playlists_listWidget.count() == 0:
-                messanger.show_info(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
+            if not list_validator.check_list_not_empty(
+                parent.playlists_listWidget, "There are no playlists to be deleted"
+            ):
                 return
             confirm = messanger.show_question(
                 parent,
@@ -193,14 +197,14 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Родительский виджет.
         """
         try:
-            if not self.check_list_not_empty(parent.loaded_songs_listWidget, "No songs in the list!"):
+            if not list_validator.check_list_not_empty(
+                parent.loaded_songs_listWidget, "No songs in the list!"
+            ):
                 return
-            selected_items = parent.loaded_songs_listWidget.selectedItems()
-            if not selected_items:
-                messanger.show_info(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(parent.loaded_songs_listWidget, parent):
                 return
 
-            item = selected_items[0]
+            item = parent.loaded_songs_listWidget.currentItem()
             if not item:
                 messanger.show_info(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
@@ -233,7 +237,9 @@ class PlaylistManager(IPlaylistManager):
             parent: Parent widget containing the song list.
         """
         try:
-            if not self.check_list_not_empty(parent.loaded_songs_listWidget, "List of songs is empty!"):
+            if not list_validator.check_list_not_empty(
+                parent.loaded_songs_listWidget, "List of songs is empty!"
+            ):
                 return
 
             playlist, ok = self.ui_manager.select_playlist(parent)
@@ -268,6 +274,6 @@ class PlaylistManager(IPlaylistManager):
         except ValueError as e:
             messanger.show_critical(parent, msg.TTL_ERR, f"Invalid data format: {e}")
 
-    def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
-        result = self.ui_manager.check_list_not_empty(list_widget, message)
-        return result
+    # def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
+    #     result = self.ui_manager.check_list_not_empty(list_widget, message)
+    #     return result

@@ -69,11 +69,3 @@ class PlaylistUIManager(IPlaylistUIManager):
         )
 
         return playlist, ok
-
-    def check_list_not_empty(
-        self, list_widget: QListWidget, message: str = msg.MSG_LST_EMPTY
-    ) -> bool:
-        if not list_widget or list_widget.count() == 0:
-            messanger.show_warning(None, msg.TTL_WRN, message)
-            return False
-        return True

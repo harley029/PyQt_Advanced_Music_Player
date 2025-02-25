@@ -17,6 +17,7 @@ from interfaces.interfaces import INavigationStrategy
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
 from utils.message_manager import messanger
+from utils.list_validator import list_validator
 from controllers.ui_updater import UIUpdater
 from controllers.music_player_controller import MusicPlayerController
 from controllers.favourites_manager import FavouritesManager
@@ -422,12 +423,9 @@ class EventHandler:
         """
         try:
             list_widget = self.get_current_list_widget()
-            if list_widget is None or list_widget.count() == 0:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
+            if not list_validator.check_list_not_empty(list_widget, msg.MSG_NO_SONG_TO_DEL):
                 return
-            items = list_widget.selectedItems()
-            if not items:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(list_widget, self.ui):
                 return
             item = list_widget.currentItem()
             current_song = item.data(Qt.UserRole)
@@ -481,8 +479,9 @@ class EventHandler:
         """
         try:
             list_widget = self.get_current_list_widget()
-            if list_widget is None or list_widget.count() == 0:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_TO_DEL)
+            if not list_validator.check_list_not_empty(
+                list_widget, msg.MSG_NO_SONG_TO_DEL
+            ):
                 return
 
             question = messanger.show_question(
@@ -517,15 +516,11 @@ class EventHandler:
         """
         try:
             list_widget = self.get_current_list_widget()
-            if list_widget is None or list_widget.count() == 0:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
+            if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
-
-            selected_items = list_widget.selectedItems()
-            if not selected_items:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(list_widget, self.ui):
                 return
-            current_item = selected_items[0]
+            current_item = list_widget.currentItem()
 
             song_path = current_item.data(Qt.UserRole)
             self.playback_handler.play(song_path)
@@ -562,12 +557,9 @@ class EventHandler:
         """
         try:
             list_widget = self.get_current_list_widget()
-            if not list_widget or list_widget.count() == 0:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_LST_EMPTY)
+            if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
-            selected_items = list_widget.selectedItems()
-            if not selected_items:
-                messanger.show_info(self.ui, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+            if not list_validator.check_item_selected(list_widget, self.ui):
                 return
             current_index = list_widget.currentRow()
             count = list_widget.count()
