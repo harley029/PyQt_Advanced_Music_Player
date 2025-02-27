@@ -10,6 +10,7 @@ logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 class MusicPlayerController(IMusicPlayerController):
     """
     Controls music playback functionality.
@@ -67,9 +68,9 @@ class MusicPlayerController(IMusicPlayerController):
             media = QMediaContent(QUrl.fromLocalFile(song_path))
             self._player.setMedia(media)
             self._player.play()
-            logging.info(f"Playing song: {song_path}")
+            logging.info("Playing song: %s", song_path)
         except Exception as e:
-            logging.error(f"Failed to play song {song_path}: {e}")
+            logging.error("Failed to play song %s: %s", song_path, e)
             raise
 
     def stop_song(self):

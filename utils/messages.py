@@ -60,3 +60,11 @@ CTX_ADD_TO_FAV = "Add song to favourites"
 CTX_ADD_ALL_TO_FAV = "Add all songs to favourites"
 CTX_ADD_TO_LST = "Add song to playlist"
 CTX_ADD_ALL_TO_LST = "Add all songs to playlist"
+
+about_message = """
+        <h2>Modern Music Player</h2>
+        <p>Version: 1.3</p>
+        <p>Author: Oleksandr Kharchenko</p>
+        <p>Email: oleksandr.kharchenko@icloud.com</p>
+        <p>Description: Application for the listening music.</p>
+        """

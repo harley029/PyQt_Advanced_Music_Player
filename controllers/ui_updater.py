@@ -1,10 +1,13 @@
 import os
 import time
+from dataclasses import dataclass
+from typing import Any
+
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtMultimedia import QMediaPlayer
 
-from mutagen import File
+from mutagen import File, MutagenError
 
 from utils.message_manager import messanger
 from utils import messages as msg
@@ -34,6 +37,21 @@ class SongInfoLabels:
         self.duration = duration_label
 
 
+@dataclass
+class UIElements:
+    """
+    Groups UI-related components together.
+
+    Attributes:
+        slider: Comonent representing the slider
+        time_label: Component responsible for the time label
+        song_info: Component responsible for displaying song information
+    """
+    slider: Any
+    time_label: Any
+    song_info: SongInfoLabels
+
+
 class UIUpdater:
     """
     Updates user interface elements to display playback time and song information.
@@ -42,7 +60,7 @@ class UIUpdater:
     the UI elements, handling slider position updates, time display, and metadata presentation.
     """
 
-    def __init__(self, music_controller, slider, time_label, song_info: SongInfoLabels, parent=None):
+    def __init__(self, music_controller, ui_elements: UIElements, parent=None):
         """
         Initialize a UIUpdater object with the necessary components.
 
@@ -53,9 +71,9 @@ class UIUpdater:
             song_info: SongInfoLabels object containing labels for song metadata
         """
         self.music_controller = music_controller
-        self.slider = slider
-        self.time_label = time_label
-        self.song_info = song_info
+        self.slider = ui_elements.slider
+        self.time_label = ui_elements.time_label
+        self.song_info = ui_elements.song_info
         self.parent = parent
 
         self.is_slider_moving = False
@@ -110,7 +128,7 @@ class UIUpdater:
                 artist = audio.tags.get("TPE1", artist)
                 album = audio.tags.get("TALB", album)
             duration = audio.info.length if audio and audio.info else 0
-        except Exception as e:
+        except (OSError, MutagenError) as e:
             messanger.show_critical(
                 self.parent,
                 msg.TTL_ERR,

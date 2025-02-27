@@ -1,15 +1,31 @@
-from PyQt5.QtWidgets import QListWidget, QMainWindow
+from PyQt5.QtWidgets import QListWidget
 from PyQt5.QtCore import Qt
+
+from music import Ui_MusicApp
 
 from interfaces.interfaces import IListWidgetProvider
 from utils.message_manager import messanger
 
 
 class ListValidator:
+    """
+    Validates list widgets and their selections.
+    Provides static methods to check list state and item selection.
+    """
     @staticmethod
     def check_list_not_empty(
         list_widget: QListWidget, message: str = "No songs in the list!"
     ) -> bool:
+        """
+        Checks if the list widget is not empty.
+
+        Args:
+            list_widget (QListWidget): The list widget to check
+            message (str, optional): Warning message to display if empty. Defaults to "No songs in the list!"
+
+        Returns:
+            bool: True if the list is not empty, False otherwise
+        """
         if not list_widget or list_widget.count() == 0:
             messanger.show_warning(None, "Warning", message)
             return False
@@ -22,6 +38,18 @@ class ListValidator:
         title: str = "Attention",
         message: str = "No song selected!",
     ) -> bool:
+        """
+        Checks if any item is selected in the list widget.
+
+        Args:
+            list_widget (QListWidget): The list widget to check
+            parent: Parent widget for displaying messages
+            title (str, optional): Title for the info message. Defaults to "Attention"
+            message (str, optional): Message to display if no item selected. Defaults to "No song selected!"
+
+        Returns:
+            bool: True if an item is selected, False otherwise
+        """
         selected_items = list_widget.selectedItems()
         if not selected_items:
             messanger.show_info(parent, title, message)
@@ -30,9 +58,18 @@ class ListValidator:
 
 
 class ListWidgetProvider(IListWidgetProvider):
-    """Предоставляет доступ к списковым виджетам."""
+    """
+    Provides access to list widgets.
+    Implements the IListWidgetProvider interface for managing list widgets.
+    """
 
-    def __init__(self, ui: QMainWindow):
+    def __init__(self, ui: Ui_MusicApp):
+        """
+        Initializes the ListWidgetProvider with a UI instance.
+
+        Args:
+            ui (Ui_MusicApp): The UI instance containing the list widgets
+        """
         self.ui = ui
         self.widget_map = {
             0: self.ui.loaded_songs_listWidget,
@@ -41,15 +78,32 @@ class ListWidgetProvider(IListWidgetProvider):
         }
 
     def get_current_widget(self):
+        """
+        Gets the currently active list widget based on stacked widget index.
+
+        Returns:
+            QListWidget: The currently active list widget or None if not found
+        """
         idx = self.ui.stackedWidget.currentIndex()
         return self.widget_map.get(idx)
 
     def register_widget(self, index, widget):
-        """Позволяет добавлять новые виджеты без изменения кода."""
+        """
+        Allows adding new widgets without modifying code.
+
+        Args:
+            index (int): The index to assign to the widget
+            widget (QListWidget): The widget to register
+        """
         self.widget_map[index] = widget
 
     def get_currently_selected_song(self):
-        """Получить выбранную песню из текущего виджета"""
+        """
+        Gets the currently selected song from the active widget.
+
+        Returns:
+            Any: The song data stored in UserRole or None if no selection
+        """
         widget = self.get_current_widget()
         if not widget or widget.count() == 0 or not widget.currentItem():
             return None

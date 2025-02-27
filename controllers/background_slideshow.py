@@ -92,4 +92,3 @@ class BackgroundSlideshow:
             messanger.show_critical(
                 self.label, "Slideshow Error", "Failed to load image.", e
             )
-            

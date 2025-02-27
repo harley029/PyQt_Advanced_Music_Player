@@ -433,7 +433,8 @@ class EventHandler:
             row = list_widget.row(item)
             list_widget.takeItem(row)
 
-            # Если в списке ещё есть элементы, выбираем следующий элемент и запускаем воспроизведение (если песня была проигрываемой)
+            # Если в списке ещё есть элементы, выбираем следующий элемент и запускаем воспроизведение
+            # (если песня была проигрываемой)
             if list_widget.count() > 0:
                 new_selection = row % list_widget.count()
                 list_widget.setCurrentRow(new_selection)

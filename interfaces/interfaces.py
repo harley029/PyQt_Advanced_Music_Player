@@ -417,24 +417,57 @@ class IMusicPlayerController(ABC):
 
 
 class IListWidgetProvider(ABC):
+    """
+    Interface for providing access to list widgets.
+
+    Defines methods for retrieving and registering list widgets used in the application.
+    This interface allows for flexible widget management and UI component abstraction.
+    """
     @abstractmethod
     def get_current_widget(self):
-        pass
+        """
+        Gets the currently active list widget.
+
+        Returns:
+            QListWidget: The current active list widget or appropriate return value.
+        """
 
     @abstractmethod
     def register_widget(self, index, widget):
-        pass
+        """
+        Registers a new widget at the specified index.
+
+        Args:
+            index: Index or identifier for the widget.
+            widget: Widget instance to register.
+        """
 
 
 class IPlaybackHandler(ABC):
+    """
+    Interface for handling music playback operations.
+
+    Provides basic methods for controlling the playback of audio files.
+    This interface simplifies the interaction with the underlying media player
+    by exposing only the essential playback controls.
+    """
     @abstractmethod
     def play(self, song_path):
-        pass
+        """
+        Plays a song from the specified path.
+
+        Args:
+            song_path: Path to the song file to play.
+        """
 
     @abstractmethod
     def pause(self):
-        pass
+        """
+        Pauses the currently playing song.
+        """
 
     @abstractmethod
     def stop(self):
-        pass
+        """
+        Stops the currently playing song and resets the player.
+        """

@@ -6,26 +6,32 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from interfaces.interfaces import IPlaylistUIManager
-from utils import messages as msg
-from utils.message_manager import messanger
 
 
 class IconType(Enum):
+    """
+    Enum defining icon paths for different playlist types.
+    Provides consistent access to icon resources.
+    """
     FAVOURITE = ":/img/utils/images/like.png"
     DEFAULT = ":/img/utils/images/MusicListItem.png"
 
 
 class PlaylistUIManager(IPlaylistUIManager):
     """
-    Реализация IPlaylistUIManager для управления отображением плейлистов.
-    Этот класс получает только необходимые виджеты (например, виджет для списка плейлистов)
-    и работает независимо от остального главного окна.
+    Implementation of IPlaylistUIManager for managing playlist display.
+    This class only receives the necessary widgets (for example, a widget for the playlist list)
+    and operates independently of the rest of the main window.
     """
 
     def __init__(self, playlist_widget: QListWidget, db_manager, icon_config=None):
         """
-        :param playlist_widget: Виджет, в который будут загружаться имена плейлистов.
-        :param db_manager: Объект, реализующий операции с базой данных для плейлистов.
+        Initializes the PlaylistUIManager with necessary components.
+
+        Args:
+            playlist_widget (QListWidget): Widget where playlist names will be loaded.
+            db_manager: Object implementing database operations for playlists.
+            icon_config (dict, optional): Configuration mapping playlist types to icons.
         """
         self.playlist_widget = playlist_widget
         self.db_manager = db_manager
@@ -35,16 +41,21 @@ class PlaylistUIManager(IPlaylistUIManager):
         }
 
     def load_playlists(self) -> None:
-        """Загружает плейлисты в виджет."""
+        """
+        Loads playlists into the widget.
+        Clears the current playlist widget and populates it with playlists from the database.
+        """
         self.playlist_widget.clear()
         playlists = self.db_manager.get_playlists()
         self.playlist_widget.addItems(playlists)
 
     def load_playlist(self, playlist: str, list_widget: QListWidget) -> None:
         """
-        Загружает песни выбранного плейлиста в указанный виджет.
-        :param playlist: Имя плейлиста.
-        :param list_widget: Виджет для отображения песен.
+        Loads songs from the selected playlist into the specified widget.
+
+        Args:
+            playlist (str): Name of the playlist.
+            list_widget (QListWidget): Widget for displaying songs.
         """
         list_widget.clear()
         songs = self.db_manager.fetch_all_songs(f'"{playlist}"')
@@ -53,12 +64,17 @@ class PlaylistUIManager(IPlaylistUIManager):
             item = QListWidgetItem(QIcon(icon_path), os.path.basename(song))
             item.setData(Qt.ItemDataRole.UserRole, song)
             list_widget.addItem(item)
-            
+
     def select_playlist(self, parent_widget: QListWidget) -> tuple:
         """
-        Отображает диалог выбора плейлиста и возвращает выбранное имя.
-        :param parent_widget: Родительский виджет для диалога.
-        :return: (playlist, ok)
+        Displays a playlist selection dialog and returns the selected name.
+
+        Args:
+            parent_widget (QListWidget): Parent widget for the dialog.
+
+        Returns:
+            tuple: (playlist, ok) where playlist is the selected playlist name
+                  and ok is a boolean indicating if selection was made.
         """
         playlists = self.db_manager.get_playlists()
         if "favourites" in playlists:

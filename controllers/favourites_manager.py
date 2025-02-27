@@ -27,6 +27,11 @@ class FavouritesManager:
     """
 
     def __init__(self, parent):
+        """
+        Initialize the Favourites Manager controller.
+
+        Sets up the FavouritesManager instance.
+        """
         self.parent = parent
         self.db_manager = parent.db_manager
         self.list_widget = parent.favourites_listWidget
@@ -102,7 +107,7 @@ class FavouritesManager:
                 return
             if not list_validator.check_item_selected(self.loaded_songs_listWidget, self.parent):
                 return
-            current_song =self.list_widget_provider.get_currently_selected_song()
+            current_song = self.list_widget_provider.get_currently_selected_song()
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
             messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)

@@ -9,7 +9,7 @@ from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManag
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator, ListWidgetProvider
+from utils.list_validator import list_validator
 
 
 class PlaylistError(Exception):
@@ -18,30 +18,34 @@ class PlaylistError(Exception):
 
 class PlaylistManager(IPlaylistManager):
     """
-    Менеджер плейлистов, объединяющий работу с базой данных и UI.
+    Playlist manager that combines database operations and UI management.
 
-    Использует PlaylistDatabaseManager для операций с базой данных
-    и PlaylistUIManager для обновления интерфейса.
+    Uses PlaylistDatabaseManager for database operations
+    and PlaylistUIManager for updating the user interface.
     """
     def __init__(self, db_manager, playlist_widget: QListWidget):
         """
-        :param db_manager: Объект, реализующий IDatabaseManager, для работы с базой.
-        :param playlist_widget: Виджет, в который будут загружаться плейлисты.
+        Initialize the PlaylistManager.
+
+        :param db_manager: Object implementing IDatabaseManager interface for database operations.
+        :param playlist_widget: Widget where playlists will be loaded.
         """
         self.db_manager = PlaylistDatabaseManager(db_manager)
         self.ui_manager = PlaylistUIManager(playlist_widget, self.db_manager)
         self.list_widget = playlist_widget
 
     def load_playlists_into_widget(self):
-        """Загружает плейлисты в UI."""
+        """
+        Load playlists into the UI widget.
+        """
         self.ui_manager.load_playlists()
 
     def load_playlist_into_widget(self, parent):
         """
-        Загружает выбранный плейлист в виджет песен. Если ничего не выбрано,
-        выводит сообщение о необходимости выбора.
+        Load the selected playlist into the songs widget.
+        If nothing is selected, displays a message about the need to make a selection.
 
-        :param parent: Родительский виджет, содержащий списки плейлистов и песен.
+        :param parent: Parent widget containing playlist and song lists.
         """
         try:
             if not list_validator.check_list_not_empty(self.list_widget, msg.MSG_NO_LSTS):
@@ -66,10 +70,10 @@ class PlaylistManager(IPlaylistManager):
 
     def create_playlist(self, parent) -> Optional[str]:
         """
-        Создаёт новый плейлист через диалог ввода и обновляет UI.
+        Create a new playlist through an input dialog and update the UI.
 
-        :param parent: Родительский виджет.
-        :return: Имя созданного плейлиста или None.
+        :param parent: Parent widget.
+        :return: Name of the created playlist or None.
         """
         try:
             existing = self.db_manager.get_playlists()
@@ -106,9 +110,9 @@ class PlaylistManager(IPlaylistManager):
 
     def remove_playlist(self, parent):
         """
-        Удаляет выбранный плейлист и обновляет UI.
+        Remove the selected playlist and update the UI.
 
-        :param parent: Родительский виджет.
+        :param parent: Parent widget.
         """
         try:
             if not list_validator.check_list_not_empty(self.list_widget, "There are no playlists to be deleted"):
@@ -147,9 +151,9 @@ class PlaylistManager(IPlaylistManager):
 
     def remove_all_playlists(self, parent):
         """
-        Удаляет все плейлисты и обновляет UI.
+        Remove all playlists and update the UI.
 
-        :param parent: Родительский виджет.
+        :param parent: Parent widget.
         """
         try:
             if not list_validator.check_list_not_empty(
@@ -183,9 +187,9 @@ class PlaylistManager(IPlaylistManager):
 
     def add_song_to_playlist(self, parent):
         """
-        Добавляет выбранную песню в выбранный плейлист.
+        Add the selected song to the selected playlist.
 
-        :param parent: Родительский виджет.
+        :param parent: Parent widget.
         """
         try:
             if not list_validator.check_list_not_empty(
@@ -222,10 +226,9 @@ class PlaylistManager(IPlaylistManager):
 
     def add_all_to_playlist(self, parent) -> None:
         """
-        Adds all songs from the list to the selected playlist.
+        Add all songs from the list to the selected playlist.
 
-        Args:
-            parent: Parent widget containing the song list.
+        :param parent: Parent widget containing the song list.
         """
         try:
             if not list_validator.check_list_not_empty(
@@ -264,7 +267,3 @@ class PlaylistManager(IPlaylistManager):
             messanger.show_critical(parent, msg.TTL_ERR, f"Database error while adding songs: {e}")
         except ValueError as e:
             messanger.show_critical(parent, msg.TTL_ERR, f"Invalid data format: {e}")
-
-    # def check_list_not_empty(self, list_widget: QListWidget, message: str = "No songs in the list!") -> bool:
-    #     result = self.ui_manager.check_list_not_empty(list_widget, message)
-    #     return result

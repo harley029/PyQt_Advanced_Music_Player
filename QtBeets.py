@@ -14,8 +14,9 @@ from controllers.music_player_controller import MusicPlayerController
 from controllers.context_manager import ContextMenuManager
 from controllers.favourites_manager import FavouritesManager
 from controllers.window_manager import WindowManager
-from controllers.ui_updater import UIUpdater, SongInfoLabels
+from controllers.ui_updater import UIElements, UIUpdater, SongInfoLabels
 from controllers.event_handler import EventHandler, EventHandlerConfig, MediaComponents, StorageComponents, UIComponents
+from utils.messages import about_message
 
 
 class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
@@ -80,11 +81,14 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
             self.current_song_album,
             self.current_song_duration,
         )
+        ui_elements = UIElements(
+            self.music_slider,
+            self.time_label,
+            song_info
+        )
         self.ui_updater = UIUpdater(
             music_controller=self.music_controller,
-            slider=self.music_slider,
-            time_label=self.time_label,
-            song_info=song_info,
+            ui_elements=ui_elements,
             parent=self
         )
         self.is_slider_moving = False
@@ -156,13 +160,7 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         Shows a message box containing information about the application,
         including version, author, and brief description.
         """
-        about_text = """
-        <h2>Modern Music Player</h2>
-        <p>Version: 1.3</p>
-        <p>Author: Oleksandr Kharchenko</p>
-        <p>Email: oleksandr.kharchenko@icloud.com</p>
-        <p>Description: Application for the listening music.</p>
-        """
+        about_text = about_message
         QMessageBox.about(self, "О программе", about_text)
 
     # ---------------- Tab switching -------------------
