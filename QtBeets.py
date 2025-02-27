@@ -16,7 +16,9 @@ from controllers.favourites_manager import FavouritesManager
 from controllers.window_manager import WindowManager
 from controllers.ui_updater import UIElements, UIUpdater, SongInfoLabels
 from controllers.event_handler import EventHandler, EventHandlerConfig, MediaComponents, StorageComponents, UIComponents
+from utils.list_validator import ListWidgetProvider
 from utils.messages import about_message
+from utils.ui_provider import UIProvider
 
 
 class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
@@ -59,6 +61,11 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         self.db_manager.create_table("favourites")
         self.current_playlist: Optional[str] = None
 
+        # Создаём UIProvider, передавая ссылку на главное окно (self)
+        self.ui_provider = UIProvider(self)
+        # Передаём именно UIProvider в ListWidgetProvider
+        self.list_widget_provider = ListWidgetProvider(self.ui_provider)
+        
         # Initialize playlist manager
         self.playlist_manager = PlaylistManager(
             self.db_manager, self.playlists_listWidget

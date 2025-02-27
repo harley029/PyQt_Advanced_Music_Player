@@ -146,7 +146,7 @@ class SelectedToFavouritesCommand(ICommand):
             favourites_manager (FavouritesManager): Manager for handling favourites-related operations.
         """
         self.favourites_manager = favourites_manager
-        self.source_list_widget = favourites_manager.loaded_songs_listWidget
+        self.source_list_widget = favourites_manager.loaded_songs_widget
 
     def execute(self):
         """

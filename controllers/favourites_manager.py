@@ -34,9 +34,10 @@ class FavouritesManager:
         """
         self.parent = parent
         self.db_manager = parent.db_manager
-        self.list_widget = parent.favourites_listWidget
-        self.loaded_songs_listWidget = parent.loaded_songs_listWidget
-        self.list_widget_provider = ListWidgetProvider(self.parent)
+        self.ui_provider = parent.ui_provider
+        self.favourites_widget = self.ui_provider.get_favourites_widget()
+        self.loaded_songs_widget = self.ui_provider.get_loaded_songs_widget()
+        self.list_widget_provider = parent.list_widget_provider
 
     def _get_current_playing_song(self) -> Optional[str]:
         """
@@ -59,10 +60,10 @@ class FavouritesManager:
             Removes the first occurrence of the song in the favorites list
             and deletes it from the database
         """
-        for i in range(self.list_widget.count()):
-            item = self.list_widget.item(i)
+        for i in range(self.favourites_widget.count()):
+            item = self.favourites_widget.item(i)
             if item and item.data(Qt.UserRole) == song_path:
-                self.list_widget.takeItem(i)
+                self.favourites_widget.takeItem(i)
                 self.db_manager.delete_song("favourites", song_path)
                 break
 
@@ -78,14 +79,14 @@ class FavouritesManager:
             OSError: If there's an error accessing the file system
         """
         try:
-            self.list_widget.clear()
+            self.favourites_widget.clear()
             songs = self.db_manager.fetch_all_songs("favourites")
             for song in songs:
                 item = QListWidgetItem(
                     QIcon(":/img/utils/images/like.png"), os.path.basename(song)
                 )
                 item.setData(Qt.UserRole, song)
-                self.list_widget.addItem(item)
+                self.favourites_widget.addItem(item)
         except (OperationalError, OSError) as e:
             messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {str(e)}"
@@ -103,11 +104,14 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not list_validator.check_list_not_empty(self.loaded_songs_listWidget):
+            if not list_validator.check_list_not_empty(self.loaded_songs_widget):
                 return
-            if not list_validator.check_item_selected(self.loaded_songs_listWidget, self.parent):
+            if not list_validator.check_item_selected(self.loaded_songs_widget, self.parent):
                 return
             current_song = self.list_widget_provider.get_currently_selected_song()
+            if current_song is None:
+                messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                return
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
             messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
@@ -129,11 +133,11 @@ class FavouritesManager:
             OSError: If there's an error accessing the file system
         """
         try:
-            if not list_validator.check_list_not_empty(self.parent.favourites_listWidget):
+            if not list_validator.check_list_not_empty(self.favourites_widget):
                 return
-            if not list_validator.check_item_selected(self.parent.favourites_listWidget, self.parent):
+            if not list_validator.check_item_selected(self.favourites_widget, self.parent):
                 return
-            current_selection = self.list_widget.currentRow()
+            current_selection = self.favourites_widget.currentRow()
             current_song = self.list_widget_provider.get_currently_selected_song()
             current_song_path = self._get_current_playing_song()
             was_playing = current_song_path == current_song
@@ -143,12 +147,12 @@ class FavouritesManager:
 
             self._remove_song_from_ui_and_db(current_song)
 
-            if self.list_widget.count() > 0:
-                new_selection = min(current_selection, self.list_widget.count() - 1)
-                self.list_widget.setCurrentRow(new_selection)
+            if self.favourites_widget.count() > 0:
+                new_selection = min(current_selection, self.favourites_widget.count() - 1)
+                self.favourites_widget.setCurrentRow(new_selection)
 
-            if was_playing and self.list_widget.count() > 0:
-                next_song = self.list_widget.item(new_selection).data(Qt.UserRole)
+            if was_playing and self.favourites_widget.count() > 0:
+                next_song = self.favourites_widget.item(new_selection).data(Qt.UserRole)
                 self.parent.music_controller.play_song(next_song)
 
         except (OperationalError, OSError) as e:
@@ -168,22 +172,24 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not list_validator.check_list_not_empty(self.parent.favourites_listWidget):
+            if not list_validator.check_list_not_empty(self.favourites_widget):
                 return
-            confirm = messanger.show_question(self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST)
+            confirm = messanger.show_question(
+                self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST
+            )
             if confirm != QMessageBox.Yes:
                 return
 
             current_song_path = self._get_current_playing_song()
             is_playing = any(
-                self.list_widget.item(i).data(Qt.UserRole) == current_song_path
-                for i in range(self.list_widget.count())
+                self.favourites_widget.item(i).data(Qt.UserRole) == current_song_path
+                for i in range(self.favourites_widget.count())
             )
 
             if is_playing:
                 self.parent.music_controller.stop_song()
 
-            self.list_widget.clear()
+            self.favourites_widget.clear()
             self.db_manager.delete_all_songs("favourites")
 
         except OperationalError as e:
@@ -202,14 +208,12 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not list_validator.check_list_not_empty(
-                self.parent.loaded_songs_listWidget
-            ):
+            if not list_validator.check_list_not_empty(self.loaded_songs_widget):
                 return
 
             added_count = 0
-            for i in range(self.parent.loaded_songs_listWidget.count()):
-                item = self.parent.loaded_songs_listWidget.item(i)
+            for i in range(self.loaded_songs_widget.count()):
+                item = self.loaded_songs_widget.item(i)
                 song_path = item.data(Qt.UserRole)
                 if not song_path:
                     continue
@@ -217,12 +221,10 @@ class FavouritesManager:
                     self.db_manager.add_song("favourites", song_path)
                     added_count += 1
                 except IntegrityError:
-                    pass  # Skip already existing songs
-
+                    pass
             messanger.show_info(
                 self.parent, msg.TTL_OK, f"{added_count} {msg.MSG_FAV_ADDED}"
             )
-
         except OperationalError as e:
             messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {str(e)}"

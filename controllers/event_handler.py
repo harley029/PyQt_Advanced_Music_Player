@@ -316,7 +316,7 @@ class EventHandler:
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
         self.db_manager = config.db_manager
-        self.list_widget_provider = ListWidgetProvider(self.ui)
+        self.list_widget_provider = self.ui.list_widget_provider
         self.setup_button_signals()
 
     def setup_button_signals(self):
@@ -465,9 +465,7 @@ class EventHandler:
         """
         try:
             list_widget = self.list_widget_provider.get_current_widget()
-            if not list_validator.check_list_not_empty(
-                list_widget, msg.MSG_NO_SONG_TO_DEL
-            ):
+            if not list_validator.check_list_not_empty(list_widget, msg.MSG_NO_SONG_TO_DEL):
                 return
 
             question = messanger.show_question(

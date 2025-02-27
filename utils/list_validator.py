@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 
 from music import Ui_MusicApp
 
-from interfaces.interfaces import IListWidgetProvider
+from interfaces.interfaces import IListWidgetProvider, IUIProvider
 from utils.message_manager import messanger
 
 
@@ -63,18 +63,18 @@ class ListWidgetProvider(IListWidgetProvider):
     Implements the IListWidgetProvider interface for managing list widgets.
     """
 
-    def __init__(self, ui: Ui_MusicApp):
+    def __init__(self, ui_provider: IUIProvider):
         """
         Initializes the ListWidgetProvider with a UI instance.
 
         Args:
             ui (Ui_MusicApp): The UI instance containing the list widgets
         """
-        self.ui = ui
+        self.ui_provider = ui_provider
         self.widget_map = {
-            0: self.ui.loaded_songs_listWidget,
-            1: self.ui.playlists_listWidget,
-            2: self.ui.favourites_listWidget,
+            0: self.ui_provider.get_loaded_songs_widget(),
+            1: self.ui_provider.get_playlists_widget(),
+            2: self.ui_provider.get_favourites_widget(),
         }
 
     def get_current_widget(self):
@@ -84,7 +84,7 @@ class ListWidgetProvider(IListWidgetProvider):
         Returns:
             QListWidget: The currently active list widget or None if not found
         """
-        idx = self.ui.stackedWidget.currentIndex()
+        idx = self.ui_provider.get_stacked_widget().currentIndex()
         return self.widget_map.get(idx)
 
     def register_widget(self, index, widget):
@@ -107,7 +107,6 @@ class ListWidgetProvider(IListWidgetProvider):
         widget = self.get_current_widget()
         if not widget or widget.count() == 0 or not widget.currentItem():
             return None
-
         return widget.currentItem().data(Qt.UserRole)
 
 

@@ -471,3 +471,22 @@ class IPlaybackHandler(ABC):
         """
         Stops the currently playing song and resets the player.
         """
+
+
+class IUIProvider(ABC):
+    @abstractmethod
+    def get_loaded_songs_widget(self):
+        """Возвращает виджет для отображения загруженных песен."""
+
+    @abstractmethod
+    def get_playlists_widget(self):
+        """Возвращает виджет для отображения плейлистов."""
+
+    @abstractmethod
+    def get_favourites_widget(self):
+        """Возвращает виджет для отображения избранного."""
+
+    @abstractmethod
+    def get_stacked_widget(self):
+        """Возвращает stacked widget для переключения вкладок."""
+    
