@@ -13,11 +13,11 @@ from interfaces.navigation.navigation import (
     RandomNavigationStrategy,
     LoopingNavigationStrategy,
 )
-from interfaces.interfaces import INavigationStrategy
+from interfaces.interfaces import INavigationStrategy, IPlaybackHandler
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator
+from utils.list_validator import list_validator, ListWidgetProvider
 from controllers.ui_updater import UIUpdater
 from controllers.music_player_controller import MusicPlayerController
 from controllers.favourites_manager import FavouritesManager
@@ -104,7 +104,7 @@ class EventHandlerConfig:
         self.db_manager = storage_components.db_manager
 
 
-class PlaybackHandler:
+class PlaybackHandler(IPlaybackHandler):
     """
     Handles playback operations: play, pause, and stop.
 
@@ -316,7 +316,7 @@ class EventHandler:
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
         self.db_manager = config.db_manager
-
+        self.list_widget_provider = ListWidgetProvider(self.ui)
         self.setup_button_signals()
 
     def setup_button_signals(self):
@@ -392,22 +392,6 @@ class EventHandler:
             self.handle_media_status
         )
 
-    def get_current_list_widget(self):
-        """
-        Get the currently active list widget based on selected tab.
-
-        Returns:
-            QListWidget: Active list widget or None if no valid widget is selected
-        """
-        idx = self.ui.stackedWidget.currentIndex()
-        if idx == 0:
-            return self.ui.loaded_songs_listWidget
-        if idx == 1:
-            return self.ui.playlists_listWidget
-        if idx == 2:
-            return self.ui.favourites_listWidget
-        return None
-
     def on_delete_selected_song_clicked(self, db_table=None):
         """
         Handle deletion of selected song from current list.
@@ -422,33 +406,34 @@ class EventHandler:
             ValueError: If there's an error with list widget operations
         """
         try:
-            list_widget = self.get_current_list_widget()
+            list_widget = self.list_widget_provider.get_current_widget()
             if not list_validator.check_list_not_empty(list_widget, msg.MSG_NO_SONG_TO_DEL):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):
                 return
-            item = list_widget.currentItem()
-            current_song = item.data(Qt.UserRole)
+            current_song = self.list_widget_provider.get_currently_selected_song()
 
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
             current_song_url = current_media.canonicalUrl().toLocalFile()
             was_playing = (
-                self.music_controller.media_player().state()
-                == QMediaPlayer.PlayingState
+                self.music_controller.media_player().state() == QMediaPlayer.PlayingState
             )
             if current_song_url == current_song:
                 self.on_stop_clicked()
 
-            # Удаление из базы и виджета
+            # Если имя таблицы не передано, берем текущий плейлист из UI
             if db_table is None:
                 db_table = self.ui.current_playlist
             if db_table:
                 self.ui.db_manager.delete_song(db_table, current_song)
+
+            # Находим индекс выбранного элемента и удаляем его из виджета
+            item = list_widget.currentItem()
             row = list_widget.row(item)
             list_widget.takeItem(row)
 
-            # Запускаем следующую песню
+            # Если в списке ещё есть элементы, выбираем следующий элемент и запускаем воспроизведение (если песня была проигрываемой)
             if list_widget.count() > 0:
                 new_selection = row % list_widget.count()
                 list_widget.setCurrentRow(new_selection)
@@ -478,7 +463,7 @@ class EventHandler:
             OperationalError: If there's an error accessing the database
         """
         try:
-            list_widget = self.get_current_list_widget()
+            list_widget = self.list_widget_provider.get_current_widget()
             if not list_validator.check_list_not_empty(
                 list_widget, msg.MSG_NO_SONG_TO_DEL
             ):
@@ -515,14 +500,15 @@ class EventHandler:
             ValueError: If there's an error with list widget operations
         """
         try:
-            list_widget = self.get_current_list_widget()
+            list_widget = self.list_widget_provider.get_current_widget()
             if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):
                 return
-            current_item = list_widget.currentItem()
-
-            song_path = current_item.data(Qt.UserRole)
+            song_path = self.list_widget_provider.get_currently_selected_song()
+            if song_path is None:
+                messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                return
             self.playback_handler.play(song_path)
 
         except (RuntimeError, ValueError) as e:
@@ -556,7 +542,7 @@ class EventHandler:
             RuntimeError: If there's an error with media player operations
         """
         try:
-            list_widget = self.get_current_list_widget()
+            list_widget = self.list_widget_provider.get_current_widget()
             if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):

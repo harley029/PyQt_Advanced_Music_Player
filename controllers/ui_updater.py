@@ -1,9 +1,13 @@
+import os
 import time
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtMultimedia import QMediaPlayer
 
 from mutagen import File
+
+from utils.message_manager import messanger
+from utils import messages as msg
 
 
 class SongInfoLabels:
@@ -38,7 +42,7 @@ class UIUpdater:
     the UI elements, handling slider position updates, time display, and metadata presentation.
     """
 
-    def __init__(self, music_controller, slider, time_label, song_info: SongInfoLabels):
+    def __init__(self, music_controller, slider, time_label, song_info: SongInfoLabels, parent=None):
         """
         Initialize a UIUpdater object with the necessary components.
 
@@ -52,6 +56,7 @@ class UIUpdater:
         self.slider = slider
         self.time_label = time_label
         self.song_info = song_info
+        self.parent = parent
 
         self.is_slider_moving = False
 
@@ -93,24 +98,24 @@ class UIUpdater:
         Parameters:
             song_path: Path to the audio file being played
         """
-        audio = File(song_path)
-        title = (
-            audio.tags.get("TIT2")
-            if audio.tags and "TIT2" in audio.tags
-            else song_path.split("/")[-1]
-        )
-        artist = (
-            audio.tags.get("TPE1")
-            if audio.tags and "TPE1" in audio.tags
-            else "Unknown Artist"
-        )
-        album = (
-            audio.tags.get("TALB")
-            if audio.tags and "TALB" in audio.tags
-            else "Unknown Album"
-        )
-        duration = audio.info.length if audio.info else 0
+        title = os.path.basename(song_path)  # Запасное значение
+        artist = "Unknown Artist"
+        album = "Unknown Album"
+        duration = 0
 
+        try:
+            audio = File(song_path)
+            if audio and audio.tags:
+                title = audio.tags.get("TIT2", title)
+                artist = audio.tags.get("TPE1", artist)
+                album = audio.tags.get("TALB", album)
+            duration = audio.info.length if audio and audio.info else 0
+        except Exception as e:
+            messanger.show_critical(
+                self.parent,
+                msg.TTL_ERR,
+                f"Failed to load metadata for {song_path}: {e}",
+            )
         self.song_info.title.setText(f"{title}")
         self.song_info.artist.setText(f"{artist}")
         self.song_info.album.setText(f"{album}")

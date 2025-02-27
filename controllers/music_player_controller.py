@@ -1,10 +1,14 @@
 import os
+import logging
 
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 
 from interfaces.interfaces import IMusicPlayerController
 
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 class MusicPlayerController(IMusicPlayerController):
     """
@@ -22,7 +26,6 @@ class MusicPlayerController(IMusicPlayerController):
         Sets up the QMediaPlayer instance and initializes playback state flags.
         """
         self._player = QMediaPlayer()
-
         self.is_shuffled = False
         self.is_looped = False
         self.is_stopped = False
@@ -59,10 +62,15 @@ class MusicPlayerController(IMusicPlayerController):
         if not song_path or not os.path.exists(song_path):
             return
 
-        self.current_song_path = song_path
-        media = QMediaContent(QUrl.fromLocalFile(song_path))
-        self._player.setMedia(media)
-        self._player.play()
+        try:
+            self.current_song_path = song_path
+            media = QMediaContent(QUrl.fromLocalFile(song_path))
+            self._player.setMedia(media)
+            self._player.play()
+            logging.info(f"Playing song: {song_path}")
+        except Exception as e:
+            logging.error(f"Failed to play song {song_path}: {e}")
+            raise
 
     def stop_song(self):
         """

@@ -414,3 +414,27 @@ class IMusicPlayerController(ABC):
         Returns:
             QMediaPlayer: The Qt media player instance being used.
         """
+
+
+class IListWidgetProvider(ABC):
+    @abstractmethod
+    def get_current_widget(self):
+        pass
+
+    @abstractmethod
+    def register_widget(self, index, widget):
+        pass
+
+
+class IPlaybackHandler(ABC):
+    @abstractmethod
+    def play(self, song_path):
+        pass
+
+    @abstractmethod
+    def pause(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass

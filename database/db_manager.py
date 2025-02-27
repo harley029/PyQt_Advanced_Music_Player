@@ -23,7 +23,7 @@ class DatabaseManager(IDatabaseManager):
     operations including adding, deleting, and retrieving data.
     """
 
-    def __init__(self, db_name: str = "qtbeets_db.db", db_dir: Optional[str] = None):
+    def __init__(self, db_name: Optional[str] = None, db_dir: Optional[str] = None):
         """
         Initialize the database manager.
 
@@ -32,8 +32,9 @@ class DatabaseManager(IDatabaseManager):
             db_dir: Directory for storing the database.
                    If None, uses current directory with '.dbs' subdirectory
         """
+        self.db_name = db_name or "qtbeets_db.db"
         self.db_dir: str = db_dir or os.path.join(os.getcwd(), ".dbs")
-        self.db_path: str = os.path.join(self.db_dir, db_name)
+        self.db_path: str = os.path.join(self.db_dir, self.db_name)
         self._ensure_database_directory()
         logging.debug("Database path set to: %s", self.db_path)
 

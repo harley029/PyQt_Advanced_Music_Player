@@ -9,13 +9,11 @@ from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManag
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator
+from utils.list_validator import list_validator, ListWidgetProvider
 
 
 class PlaylistError(Exception):
     """Custom exception for playlist-related errors"""
-
-    # pass
 
 
 class PlaylistManager(IPlaylistManager):
@@ -32,6 +30,7 @@ class PlaylistManager(IPlaylistManager):
         """
         self.db_manager = PlaylistDatabaseManager(db_manager)
         self.ui_manager = PlaylistUIManager(playlist_widget, self.db_manager)
+        self.list_widget = playlist_widget
 
     def load_playlists_into_widget(self):
         """Загружает плейлисты в UI."""
@@ -45,15 +44,12 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Родительский виджет, содержащий списки плейлистов и песен.
         """
         try:
-            if parent.playlists_listWidget.count() == 0:
-                messanger.show_info(parent, msg.TTL_INF, msg.MSG_NO_LSTS)
+            if not list_validator.check_list_not_empty(self.list_widget, msg.MSG_NO_LSTS):
                 return
-            current_selection = parent.playlists_listWidget.selectedItems()
-            if not current_selection:
-                messanger.show_info(parent, msg.TTL_WRN, msg.MSG_NO_LST_SEL)
+            if not list_validator.check_item_selected(self.list_widget, parent, message=msg.MSG_NO_LST_SEL):
                 return
-            current_selection = parent.playlists_listWidget.currentRow()
-            item = parent.playlists_listWidget.item(current_selection)
+            current_selection = self.list_widget.currentRow()
+            item = self.list_widget.item(current_selection)
             if not item:
                 return
 
@@ -115,17 +111,12 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Родительский виджет.
         """
         try:
-            if parent.playlists_listWidget.count() == 0:
-                messanger.show_info(
-                    parent, msg.TTL_INF, "There are no playlists to be deleted"
-                )
+            if not list_validator.check_list_not_empty(self.list_widget, "There are no playlists to be deleted"):
                 return
-            current_selection = parent.playlists_listWidget.selectedItems()
-            if not current_selection:
-                messanger.show_info(parent, msg.TTL_WRN, msg.MSG_NO_LST_SEL)
+            if not list_validator.check_item_selected(self.list_widget, parent, message=msg.MSG_NO_LST_SEL):
                 return
-            current_selection = parent.playlists_listWidget.currentRow()
-            item = parent.playlists_listWidget.item(current_selection)
+            current_selection = self.list_widget.currentRow()
+            item = self.list_widget.item(current_selection)
             if not item:
                 return
 
@@ -143,10 +134,10 @@ class PlaylistManager(IPlaylistManager):
                 parent.ui_updater.clear_song_info()
                 parent.current_playlist = None
             self.db_manager.delete_playlist(playlist_name)
-            parent.playlists_listWidget.takeItem(current_selection)
-            if parent.playlists_listWidget.count() > 0:
-                new_selection = current_selection % parent.playlists_listWidget.count()
-                parent.playlists_listWidget.setCurrentRow(new_selection)
+            self.list_widget.takeItem(current_selection)
+            if self.list_widget.count() > 0:
+                new_selection = current_selection % self.list_widget.count()
+                self.list_widget.setCurrentRow(new_selection)
         except DatabaseError as e:
             messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while removing playlist: {e}"

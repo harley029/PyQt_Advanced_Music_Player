@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 from PyQt5.QtWidgets import QListWidget, QInputDialog, QListWidgetItem
 from PyQt5.QtGui import QIcon
@@ -9,6 +10,11 @@ from utils import messages as msg
 from utils.message_manager import messanger
 
 
+class IconType(Enum):
+    FAVOURITE = ":/img/utils/images/like.png"
+    DEFAULT = ":/img/utils/images/MusicListItem.png"
+
+
 class PlaylistUIManager(IPlaylistUIManager):
     """
     Реализация IPlaylistUIManager для управления отображением плейлистов.
@@ -16,13 +22,17 @@ class PlaylistUIManager(IPlaylistUIManager):
     и работает независимо от остального главного окна.
     """
 
-    def __init__(self, playlist_widget: QListWidget, db_manager):
+    def __init__(self, playlist_widget: QListWidget, db_manager, icon_config=None):
         """
         :param playlist_widget: Виджет, в который будут загружаться имена плейлистов.
         :param db_manager: Объект, реализующий операции с базой данных для плейлистов.
         """
         self.playlist_widget = playlist_widget
         self.db_manager = db_manager
+        self.icon_config = icon_config or {
+            "favourites": IconType.FAVOURITE.value,
+            "default": IconType.DEFAULT.value,
+        }
 
     def load_playlists(self) -> None:
         """Загружает плейлисты в виджет."""
@@ -38,16 +48,12 @@ class PlaylistUIManager(IPlaylistUIManager):
         """
         list_widget.clear()
         songs = self.db_manager.fetch_all_songs(f'"{playlist}"')
+        icon_path = self.icon_config.get(playlist, self.icon_config["default"])
         for song in songs:
-            icon = (
-                QIcon(":/img/utils/images/like.png")
-                if playlist == "favourites"
-                else QIcon(":/img/utils/images/MusicListItem.png")
-            )
-            item = QListWidgetItem(icon, os.path.basename(song))
+            item = QListWidgetItem(QIcon(icon_path), os.path.basename(song))
             item.setData(Qt.ItemDataRole.UserRole, song)
             list_widget.addItem(item)
-
+            
     def select_playlist(self, parent_widget: QListWidget) -> tuple:
         """
         Отображает диалог выбора плейлиста и возвращает выбранное имя.

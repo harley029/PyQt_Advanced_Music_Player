@@ -85,6 +85,7 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
             slider=self.music_slider,
             time_label=self.time_label,
             song_info=song_info,
+            parent=self
         )
         self.is_slider_moving = False
 

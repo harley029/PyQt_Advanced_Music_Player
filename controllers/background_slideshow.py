@@ -16,7 +16,7 @@ class BackgroundSlideshow:
     and filters out certain system files.
     """
 
-    def __init__(self, label, images_dir, interval_ms=120000):
+    def __init__(self, label, images_dir=None, interval_ms=120000):
         """
         Initialize the BackgroundSlideshow with the specified parameters.
 
@@ -27,7 +27,7 @@ class BackgroundSlideshow:
                                          Defaults to 120000 (2 minutes).
         """
         self.label = label
-        self.images_dir = images_dir
+        self.images_dir = images_dir or os.path.join(os.getcwd(), "utils", "bg_imgs")
         self.slide_index = 0
 
         self.timer = QTimer()
@@ -63,9 +63,10 @@ class BackgroundSlideshow:
         If the images directory is empty after filtering, the method exits without changing the background.
         """
         try:
-            # Проверка наличия каталога
             if not os.path.isdir(self.images_dir):
-                raise FileNotFoundError(f"Directory '{self.images_dir}' does not exist.")
+                raise FileNotFoundError(
+                    f"Directory '{self.images_dir}' does not exist."
+                )
             images = os.listdir(self.images_dir)
             for unwanted in ["bg_overlay.png", ".DS_Store"]:
                 if unwanted in images:
@@ -76,15 +77,13 @@ class BackgroundSlideshow:
             full_path = os.path.join(self.images_dir, current_file)
             if not os.path.isfile(full_path):
                 raise FileNotFoundError(f"Image file '{full_path}' does not exist.")
-            # Загрузка изображения и проверка корректности загрузки
             pixmap = QPixmap(full_path)
             if pixmap.isNull():
                 raise ValueError(f"Unable to load image from '{full_path}'.")
             self.label.setPixmap(pixmap)
-            if self.slide_index == len(images) - 1:
-                self.slide_index = 0
-            else:
-                self.slide_index = random.randint(0, len(images) - 1)
+            self.slide_index = (
+                random.randint(0, len(images) - 1) if len(images) > 1 else 0
+            )
         except FileNotFoundError as e:
             messanger.show_critical(
                 self.label, "Slideshow Error", "Image file or directory not found.", e
@@ -93,10 +92,4 @@ class BackgroundSlideshow:
             messanger.show_critical(
                 self.label, "Slideshow Error", "Failed to load image.", e
             )
-        # except Exception as e:
-        #     messanger.show_critical(
-        #         self.label,
-        #         "Slideshow Error",
-        #         "Unexpected error during slideshow update.",
-        #         e,
-        #     )
+            

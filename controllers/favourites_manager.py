@@ -2,13 +2,13 @@ from sqlite3 import IntegrityError, OperationalError
 import os
 from typing import Optional
 
-from PyQt5.QtWidgets import QListWidget, QMessageBox, QListWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator
+from utils.list_validator import list_validator, ListWidgetProvider
 
 
 class FavouritesManager:
@@ -31,6 +31,7 @@ class FavouritesManager:
         self.db_manager = parent.db_manager
         self.list_widget = parent.favourites_listWidget
         self.loaded_songs_listWidget = parent.loaded_songs_listWidget
+        self.list_widget_provider = ListWidgetProvider(self.parent)
 
     def _get_current_playing_song(self) -> Optional[str]:
         """
@@ -101,8 +102,7 @@ class FavouritesManager:
                 return
             if not list_validator.check_item_selected(self.loaded_songs_listWidget, self.parent):
                 return
-            item = self.parent.loaded_songs_listWidget.currentItem()
-            current_song = item.data(Qt.UserRole)
+            current_song =self.list_widget_provider.get_currently_selected_song()
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
             messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
@@ -124,16 +124,12 @@ class FavouritesManager:
             OSError: If there's an error accessing the file system
         """
         try:
-            if not list_validator.check_list_not_empty(
-                self.parent.favourites_listWidget
-            ):
+            if not list_validator.check_list_not_empty(self.parent.favourites_listWidget):
                 return
-            if not list_validator.check_item_selected(
-                self.parent.favourites_listWidget, self.parent):
+            if not list_validator.check_item_selected(self.parent.favourites_listWidget, self.parent):
                 return
             current_selection = self.list_widget.currentRow()
-            item = self.list_widget.currentItem()
-            current_song = item.data(Qt.UserRole)
+            current_song = self.list_widget_provider.get_currently_selected_song()
             current_song_path = self._get_current_playing_song()
             was_playing = current_song_path == current_song
 
@@ -167,9 +163,7 @@ class FavouritesManager:
             OperationalError: If there's an error accessing the database
         """
         try:
-            if not list_validator.check_list_not_empty(
-                self.parent.favourites_listWidget
-            ):
+            if not list_validator.check_list_not_empty(self.parent.favourites_listWidget):
                 return
             confirm = messanger.show_question(self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST)
             if confirm != QMessageBox.Yes:
