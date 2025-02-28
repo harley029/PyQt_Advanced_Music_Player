@@ -243,7 +243,7 @@ class DeleteSelectedFavouriteCommand(ICommand):
     Implements the ICommand interface to provide a standard way to handle deleting selected favourites.
     """
 
-    def __init__(self, avourites_manager: FavouritesManager):
+    def __init__(self, favourites_manager: FavouritesManager):
         """
         Initialize a new DeleteSelectedFavouriteCommand instance.
 
@@ -251,7 +251,7 @@ class DeleteSelectedFavouriteCommand(ICommand):
             avourites_manager (FavouritesManager): Manager for handling favourites-related operations.
             Note: There appears to be a typo in the parameter name ('avourites_manager' vs 'favourites_manager').
         """
-        self.avourites_manager = avourites_manager
+        self.avourites_manager = favourites_manager
 
     def execute(self):
         """
@@ -269,7 +269,7 @@ class DeleteAllFavouriteCommand(ICommand):
     Implements the ICommand interface to provide a standard way to handle deleting all favourites.
     """
 
-    def __init__(self, avourites_manager: FavouritesManager):
+    def __init__(self, favourites_manager: FavouritesManager):
         """
         Initialize a new DeleteAllFavouriteCommand instance.
 
@@ -277,7 +277,7 @@ class DeleteAllFavouriteCommand(ICommand):
             avourites_manager (FavouritesManager): Manager for handling favourites-related operations.
             Note: There appears to be a typo in the parameter name ('avourites_manager' vs 'favourites_manager').
         """
-        self.avourites_manager = avourites_manager
+        self.avourites_manager = favourites_manager
 
     def execute(self):
         """
