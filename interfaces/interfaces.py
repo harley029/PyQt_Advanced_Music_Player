@@ -474,19 +474,45 @@ class IPlaybackHandler(ABC):
 
 
 class IUIProvider(ABC):
+    """
+    Interface for providing access to UI widgets.
+
+    Defines methods for retrieving UI components used in the application.
+    This interface abstracts the UI structure and allows for consistent
+    access to various widgets throughout the application.
+    """
     @abstractmethod
     def get_loaded_songs_widget(self):
-        """Возвращает виджет для отображения загруженных песен."""
+        """
+        Returns the widget for displaying loaded songs.
+
+        Returns:
+            QListWidget: The widget containing loaded songs.
+        """
 
     @abstractmethod
     def get_playlists_widget(self):
-        """Возвращает виджет для отображения плейлистов."""
+        """
+        Returns the widget for displaying playlists.
+
+        Returns:
+            QListWidget: The widget containing playlists.
+        """
 
     @abstractmethod
     def get_favourites_widget(self):
-        """Возвращает виджет для отображения избранного."""
+        """
+        Returns the widget for displaying favorite songs.
+
+        Returns:
+            QListWidget: The widget containing favorite songs.
+        """
 
     @abstractmethod
     def get_stacked_widget(self):
-        """Возвращает stacked widget для переключения вкладок."""
-    
+        """
+        Returns the stacked widget for switching between tabs.
+
+        Returns:
+            QStackedWidget: The widget used for UI navigation between different views.
+        """

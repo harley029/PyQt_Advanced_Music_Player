@@ -3,7 +3,7 @@ import os
 from sqlite3 import OperationalError
 from typing import Any, Optional
 
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QListWidget
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtMultimedia import QMediaPlayer
@@ -13,7 +13,7 @@ from interfaces.navigation.navigation import (
     RandomNavigationStrategy,
     LoopingNavigationStrategy,
 )
-from interfaces.interfaces import INavigationStrategy, IPlaybackHandler, IUIProvider
+from interfaces.interfaces import INavigationStrategy, IPlaybackHandler
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
 from utils.message_manager import messanger

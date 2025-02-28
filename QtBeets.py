@@ -65,7 +65,6 @@ class ModernMusicPlayer(QMainWindow, Ui_MusicApp):
         self.ui_provider = UIProvider(self)
         # Передаём именно UIProvider в ListWidgetProvider
         self.list_widget_provider = ListWidgetProvider(self.ui_provider)
-        
         # Initialize playlist manager
         self.playlist_manager = PlaylistManager(
             self.db_manager, self.playlists_listWidget

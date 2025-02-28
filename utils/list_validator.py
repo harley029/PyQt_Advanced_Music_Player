@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QListWidget
 from PyQt5.QtCore import Qt
 
-from music import Ui_MusicApp
-
 from interfaces.interfaces import IListWidgetProvider, IUIProvider
 from utils.message_manager import messanger
 

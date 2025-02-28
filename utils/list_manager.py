@@ -36,9 +36,12 @@ class ListManager:
         :return: The currently active QListWidget from the stacked widget.
         """
         widget = self.get_current_widget()
-        if widget is None or widget.count() == 0 or not widget.currentItem():
+        if widget is None or widget.count() == 0:
             return None
-        return widget.currentItem().data(Qt.UserRole)
+        current_item = widget.currentItem()
+        if current_item is None:
+            return None
+        return current_item.data(Qt.UserRole)
 
     def clear_current_widget(self):
         """
