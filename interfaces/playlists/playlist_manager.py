@@ -8,7 +8,7 @@ from interfaces.interfaces import IPlaylistManager
 from interfaces.playlists.playlist_database_manager import PlaylistDatabaseManager
 from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
-from utils.message_manager import messanger
+from utils.message_manager import MessageManager
 from utils.list_validator import list_validator
 
 
@@ -33,6 +33,7 @@ class PlaylistManager(IPlaylistManager):
         self.db_manager = PlaylistDatabaseManager(db_manager)
         self.ui_manager = PlaylistUIManager(playlist_widget, self.db_manager)
         self.list_widget = playlist_widget
+        self.messanger = MessageManager()
 
     def load_playlists_into_widget(self):
         """
@@ -62,11 +63,11 @@ class PlaylistManager(IPlaylistManager):
             self.ui_manager.load_playlist(current_playlist, parent.loaded_songs_listWidget)
             parent.switch_to_songs_tab()
         except DatabaseError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while loading playlist: {e}"
             )
         except PlaylistError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def create_playlist(self, parent) -> Optional[str]:
         """
@@ -87,7 +88,7 @@ class PlaylistManager(IPlaylistManager):
             if playlist_name not in existing:
                 self.db_manager.create_playlist(playlist_name)
             else:
-                caution = messanger.show_question(
+                caution = self.messanger.show_question(
                     parent,
                     msg.TTL_LST_REPL,
                     f'A playlist with name "{playlist_name}" already exists.\nDo you want to replace it?',
@@ -100,9 +101,11 @@ class PlaylistManager(IPlaylistManager):
 
             self.ui_manager.load_playlists()
         except ValueError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Invalid playlist name: {e}")
+            self.messanger.show_critical(
+                parent, msg.TTL_ERR, f"Invalid playlist name: {e}"
+            )
         except DatabaseError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while creating playlist: {e}"
             )
 
@@ -125,10 +128,8 @@ class PlaylistManager(IPlaylistManager):
                 return
 
             playlist_name = item.text().strip()
-            confirm = messanger.show_question(
-                parent,
-                msg.TTL_LST_DEL,
-                f"{msg.MSG_LST_DEL_QUEST} '{playlist_name}'?"
+            confirm = self.messanger.show_question(
+                parent, msg.TTL_LST_DEL, f"{msg.MSG_LST_DEL_QUEST} '{playlist_name}'?"
             )
             if confirm != QMessageBox.Yes:
                 return
@@ -143,11 +144,11 @@ class PlaylistManager(IPlaylistManager):
                 new_selection = current_selection % self.list_widget.count()
                 self.list_widget.setCurrentRow(new_selection)
         except DatabaseError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while removing playlist: {e}"
             )
         except PlaylistError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def remove_all_playlists(self, parent):
         """
@@ -160,10 +161,8 @@ class PlaylistManager(IPlaylistManager):
                 parent.playlists_listWidget, "There are no playlists to be deleted"
             ):
                 return
-            confirm = messanger.show_question(
-                parent,
-                msg.TTL_LST_DEL,
-                msg.MSG_LST_DEL_QUEST
+            confirm = self.messanger.show_question(
+                parent, msg.TTL_LST_DEL, msg.MSG_LST_DEL_QUEST
             )
             if confirm != QMessageBox.Yes:
                 return
@@ -177,13 +176,13 @@ class PlaylistManager(IPlaylistManager):
             for playlist in playlists:
                 self.db_manager.delete_playlist(playlist)
             parent.playlists_listWidget.clear()
-            # messanger.show_info(parent, msg.TTL_OK, msg.MSG_LST_DEL_OK)
+            # self.messanger.show_info(parent, msg.TTL_OK, msg.MSG_LST_DEL_OK)
         except DatabaseError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while removing playlists: {e}"
             )
         except PlaylistError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def add_song_to_playlist(self, parent):
         """
@@ -201,7 +200,7 @@ class PlaylistManager(IPlaylistManager):
 
             item = parent.loaded_songs_listWidget.currentItem()
             if not item:
-                messanger.show_info(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
+                self.messanger.show_info(parent, msg.TTL_ATT, msg.MSG_NO_SONG_SEL)
                 return
             current_song = item.data(Qt.UserRole)
 
@@ -209,20 +208,20 @@ class PlaylistManager(IPlaylistManager):
             if not ok:  # Пользователь нажал "Отмена"
                 return
             if playlist == "--Click to Select--":
-                messanger.show_info(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
+                self.messanger.show_info(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
                 return
 
             self.db_manager.add_song_to_playlist(playlist, current_song)
         except IntegrityError:
-            messanger.show_warning(
+            self.messanger.show_warning(
                 parent, msg.TTL_WRN, f"{msg.MSG_SONG_EXIST} {playlist}."
             )
         except DatabaseError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 parent, msg.TTL_ERR, f"Database error while adding song: {e}"
             )
         except PlaylistError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
 
     def add_all_to_playlist(self, parent) -> None:
         """
@@ -240,7 +239,7 @@ class PlaylistManager(IPlaylistManager):
             if not ok:
                 return
             if playlist == "--Click to Select--":
-                messanger.show_info(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
+                self.messanger.show_info(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)
                 return
 
             added_count = 0
@@ -257,13 +256,17 @@ class PlaylistManager(IPlaylistManager):
                     continue
                 except (DatabaseError) as e:
                     raise PlaylistError(f"Failed to add song to playlist: {e}") from e
-            messanger.show_info(
+            self.messanger.show_info(
                 parent, msg.TTL_OK, f"{added_count} {msg.CTX_ADD_ALL_TO_LST}"
             )
 
         except PlaylistError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, str(e))
+            self.messanger.show_critical(parent, msg.TTL_ERR, str(e))
         except DatabaseError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Database error while adding songs: {e}")
+            self.messanger.show_critical(
+                parent, msg.TTL_ERR, f"Database error while adding songs: {e}"
+            )
         except ValueError as e:
-            messanger.show_critical(parent, msg.TTL_ERR, f"Invalid data format: {e}")
+            self.messanger.show_critical(
+                parent, msg.TTL_ERR, f"Invalid data format: {e}"
+            )

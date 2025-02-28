@@ -16,7 +16,7 @@ from interfaces.navigation.navigation import (
 from interfaces.interfaces import INavigationStrategy, IPlaybackHandler
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
-from utils.message_manager import messanger
+from utils.message_manager import MessageManager
 from utils.list_validator import list_validator
 from utils.list_manager import ListManager
 from controllers.ui_updater import UIUpdater
@@ -252,6 +252,7 @@ class UIEventHandler:
         """
         self.ui = ui
         self.db_manager = db_manager
+        self.messanger = MessageManager()
 
     def handle_add_songs(self):
         """
@@ -278,7 +279,7 @@ class UIEventHandler:
                 item.setData(Qt.UserRole, file_name)
                 self.ui.loaded_songs_listWidget.addItem(item)
         else:
-            messanger.show_info(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
+            self.messanger.show_info(self.ui, msg.TTL_INF, msg.MSG_NO_FILES_SEL)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -319,7 +320,8 @@ class EventHandler:
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
         self.db_manager = config.db_manager
-        self.list_manager = ListManager(self.ui.ui_provider)
+        self.list_manager = ListManager(config.ui.ui_provider)
+        self.messanger = MessageManager()
         self.setup_button_signals()
 
     def setup_button_signals(self):
@@ -419,7 +421,7 @@ class EventHandler:
 
             current_song = self.list_manager.get_selected_song()
             if current_song is None:
-                messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                self.messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
                 return
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
@@ -453,11 +455,11 @@ class EventHandler:
                     self.on_stop_clicked()
 
         except OperationalError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} Database error: {str(e)}"
             )
         except (RuntimeError, ValueError) as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
             )
 
@@ -479,7 +481,7 @@ class EventHandler:
             ):
                 return
 
-            question = messanger.show_question(
+            question = self.messanger.show_question(
                 self.ui, msg.TTL_SONG_DEL_QUEST, msg.MSG_SONG_DEL_QUEST
             )
             if question == QMessageBox.Yes:
@@ -491,7 +493,7 @@ class EventHandler:
                     self.db_manager.delete_all_songs(db_table)
 
         except OperationalError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui,
                 msg.TTL_ERR,
                 f"{msg.MSG_ALL_SONG_DEL_ERR} Database error: {str(e)}",
@@ -515,12 +517,12 @@ class EventHandler:
                 return
             song_path = self.list_manager.get_selected_song()
             if song_path is None:
-                messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                self.messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
                 return
             self.playback_handler.play(song_path)
 
         except (RuntimeError, ValueError) as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}"
             )
 
@@ -573,7 +575,9 @@ class EventHandler:
             self.on_play_clicked()
 
         except (ValueError, RuntimeError) as e:
-            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {str(e)}")
+            self.messanger.show_critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_NAV_ERR} {str(e)}"
+            )
 
     def on_loop_clicked(self):
         """
@@ -593,7 +597,7 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}"
             )
 
@@ -615,7 +619,7 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}"
             )
 
@@ -652,4 +656,6 @@ class EventHandler:
             self.ui.volume_label.setText(str(value))
 
         except (RuntimeError, ValueError) as e:
-            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {str(e)}")
+            self.messanger.show_critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_VOL_ERR} {str(e)}"
+            )

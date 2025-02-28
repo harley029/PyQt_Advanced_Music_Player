@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 
 from utils import messages as msg
-from utils.message_manager import messanger
+from utils.message_manager import MessageManager
 from utils.list_validator import list_validator
 
 
@@ -38,6 +38,7 @@ class FavouritesManager:
         self.favourites_widget = self.ui_provider.get_favourites_widget()
         self.loaded_songs_widget = self.ui_provider.get_loaded_songs_widget()
         self.list_widget_provider = parent.list_widget_provider
+        self.messanger = MessageManager()
 
     def _get_current_playing_song(self) -> Optional[str]:
         """
@@ -88,7 +89,7 @@ class FavouritesManager:
                 item.setData(Qt.UserRole, song)
                 self.favourites_widget.addItem(item)
         except (OperationalError, OSError) as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_LOAD} {str(e)}"
             )
 
@@ -110,13 +111,15 @@ class FavouritesManager:
                 return
             current_song = self.list_widget_provider.get_currently_selected_song()
             if current_song is None:
-                messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                self.messanger.show_warning(
+                    self.parent, msg.TTL_WRN, msg.MSG_NO_SONG_SEL
+                )
                 return
             self.db_manager.add_song("favourites", current_song)
         except IntegrityError:
-            messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
+            self.messanger.show_warning(self.parent, msg.TTL_WRN, msg.MSG_FAV_EXIST)
         except OperationalError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD} {str(e)}"
             )
 
@@ -156,7 +159,7 @@ class FavouritesManager:
                 self.parent.music_controller.play_song(next_song)
 
         except (OperationalError, OSError) as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_SONG_DEL_ERR} {str(e)}"
             )
 
@@ -174,7 +177,7 @@ class FavouritesManager:
         try:
             if not list_validator.check_list_not_empty(self.favourites_widget):
                 return
-            confirm = messanger.show_question(
+            confirm = self.messanger.show_question(
                 self.parent, msg.TTL_FAV_QUEST, msg.MSG_FAV_QUEST
             )
             if confirm != QMessageBox.Yes:
@@ -193,7 +196,7 @@ class FavouritesManager:
             self.db_manager.delete_all_songs("favourites")
 
         except OperationalError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAF_CLEAR_ERR} {str(e)}"
             )
 
@@ -222,10 +225,10 @@ class FavouritesManager:
                     added_count += 1
                 except IntegrityError:
                     pass
-            messanger.show_info(
+            self.messanger.show_info(
                 self.parent, msg.TTL_OK, f"{added_count} {msg.MSG_FAV_ADDED}"
             )
         except OperationalError as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent, msg.TTL_ERR, f"{msg.MSG_FAV_ERR_ADD_ALL} {str(e)}"
             )

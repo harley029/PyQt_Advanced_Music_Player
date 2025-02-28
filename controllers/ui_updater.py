@@ -9,7 +9,7 @@ from PyQt5.QtMultimedia import QMediaPlayer
 
 from mutagen import File, MutagenError
 
-from utils.message_manager import messanger
+from utils.message_manager import MessageManager
 from utils import messages as msg
 
 
@@ -53,6 +53,7 @@ class UIElements:
 
 
 class UIUpdater:
+    # pylint: disable=too-many-instance-attributes
     """
     Updates user interface elements to display playback time and song information.
 
@@ -75,6 +76,7 @@ class UIUpdater:
         self.time_label = ui_elements.time_label
         self.song_info = ui_elements.song_info
         self.parent = parent
+        self.messanger = MessageManager()
 
         self.is_slider_moving = False
 
@@ -129,7 +131,7 @@ class UIUpdater:
                 album = audio.tags.get("TALB", album)
             duration = audio.info.length if audio and audio.info else 0
         except (OSError, MutagenError) as e:
-            messanger.show_critical(
+            self.messanger.show_critical(
                 self.parent,
                 msg.TTL_ERR,
                 f"Failed to load metadata for {song_path}: {e}",

@@ -24,7 +24,10 @@ class ListValidator:
         Returns:
             bool: True if the list is not empty, False otherwise
         """
-        if not list_widget or list_widget.count() == 0:
+        if list_widget is None:
+            messanger.show_warning(None, "Warning", "List widget is not provided!")
+            return False
+        if list_widget.count() == 0:
             messanger.show_warning(None, "Warning", message)
             return False
         return True
