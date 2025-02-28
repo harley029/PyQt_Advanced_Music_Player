@@ -3,7 +3,7 @@ import os
 from sqlite3 import OperationalError
 from typing import Any, Optional
 
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QListWidgetItem, QListWidget
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtMultimedia import QMediaPlayer
@@ -13,11 +13,12 @@ from interfaces.navigation.navigation import (
     RandomNavigationStrategy,
     LoopingNavigationStrategy,
 )
-from interfaces.interfaces import INavigationStrategy, IPlaybackHandler
+from interfaces.interfaces import INavigationStrategy, IPlaybackHandler, IUIProvider
 from interfaces.playlists.playlist_manager import PlaylistManager
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator, ListWidgetProvider
+from utils.list_validator import list_validator
+from utils.list_manager import ListManager
 from controllers.ui_updater import UIUpdater
 from controllers.music_player_controller import MusicPlayerController
 from controllers.favourites_manager import FavouritesManager
@@ -307,7 +308,9 @@ class EventHandler:
         """
         # Create specialized handlers
         self.ui_handler = UIEventHandler(config.ui, config.db_manager)
-        self.playback_handler = PlaybackHandler(config.music_controller, config.ui_updater)
+        self.playback_handler = PlaybackHandler(
+            config.music_controller, config.ui_updater
+        )
         self.navigation_handler = NavigationHandler()
 
         # Store essential references
@@ -316,7 +319,7 @@ class EventHandler:
         self.playlist_manager = config.playlist_manager
         self.favourites_manager = config.favourites_manager
         self.db_manager = config.db_manager
-        self.list_widget_provider = self.ui.list_widget_provider
+        self.list_manager = ListManager(self.ui.ui_provider)
         self.setup_button_signals()
 
     def setup_button_signals(self):
@@ -406,18 +409,24 @@ class EventHandler:
             ValueError: If there's an error with list widget operations
         """
         try:
-            list_widget = self.list_widget_provider.get_current_widget()
-            if not list_validator.check_list_not_empty(list_widget, msg.MSG_NO_SONG_TO_DEL):
+            list_widget = self.list_manager.get_current_widget()
+            if not list_validator.check_list_not_empty(
+                list_widget, msg.MSG_NO_SONG_TO_DEL
+            ):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):
                 return
-            current_song = self.list_widget_provider.get_currently_selected_song()
 
+            current_song = self.list_manager.get_selected_song()
+            if current_song is None:
+                messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
+                return
             # Проверяем, не играет ли сейчас эта песня
             current_media = self.music_controller.media_player().media()
             current_song_url = current_media.canonicalUrl().toLocalFile()
             was_playing = (
-                self.music_controller.media_player().state() == QMediaPlayer.PlayingState
+                self.music_controller.media_player().state()
+                == QMediaPlayer.PlayingState
             )
             if current_song_url == current_song:
                 self.on_stop_clicked()
@@ -464,18 +473,18 @@ class EventHandler:
             OperationalError: If there's an error accessing the database
         """
         try:
-            list_widget = self.list_widget_provider.get_current_widget()
-            if not list_validator.check_list_not_empty(list_widget, msg.MSG_NO_SONG_TO_DEL):
+            list_widget = self.list_manager.get_current_widget()
+            if not list_validator.check_list_not_empty(
+                list_widget, msg.MSG_NO_SONG_TO_DEL
+            ):
                 return
 
             question = messanger.show_question(
-                self.ui,
-                msg.TTL_SONG_DEL_QUEST,
-                msg.MSG_SONG_DEL_QUEST
+                self.ui, msg.TTL_SONG_DEL_QUEST, msg.MSG_SONG_DEL_QUEST
             )
             if question == QMessageBox.Yes:
                 self.on_stop_clicked()
-                list_widget.clear()
+                self.list_manager.clear_current_widget()
                 if db_table is None:
                     db_table = self.ui.current_playlist
                 if db_table:
@@ -499,19 +508,21 @@ class EventHandler:
             ValueError: If there's an error with list widget operations
         """
         try:
-            list_widget = self.list_widget_provider.get_current_widget()
+            list_widget = self.list_manager.get_current_widget()
             if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):
                 return
-            song_path = self.list_widget_provider.get_currently_selected_song()
+            song_path = self.list_manager.get_selected_song()
             if song_path is None:
                 messanger.show_warning(self.ui, msg.TTL_WRN, msg.MSG_NO_SONG_SEL)
                 return
             self.playback_handler.play(song_path)
 
         except (RuntimeError, ValueError) as e:
-            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}")
+            messanger.show_critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_PLAY_ERR} {str(e)}"
+            )
 
     def on_pause_clicked(self):
         """
@@ -541,7 +552,7 @@ class EventHandler:
             RuntimeError: If there's an error with media player operations
         """
         try:
-            list_widget = self.list_widget_provider.get_current_widget()
+            list_widget = self.list_manager.get_current_widget()
             if not list_validator.check_list_not_empty(list_widget, msg.MSG_LST_EMPTY):
                 return
             if not list_validator.check_item_selected(list_widget, self.ui):
@@ -582,7 +593,9 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}")
+            messanger.show_critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_LOOP_ERR} {str(e)}"
+            )
 
     def on_shuffle_clicked(self):
         """
@@ -602,7 +615,9 @@ class EventHandler:
                 self.navigation_handler.set_strategy(NormalNavigationStrategy())
 
         except RuntimeError as e:
-            messanger.show_critical(self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}")
+            messanger.show_critical(
+                self.ui, msg.TTL_ERR, f"{msg.MSG_SHFL_ERR} {str(e)}"
+            )
 
     def handle_media_status(self, status):
         """

@@ -243,7 +243,6 @@ class AppFactory:
             media_components=media_components,
             storage_components=storage_components,
         )
-
         # Создать обработчик событий и устанавливаем его в главном окне
         event_handler = EventHandler(config)
         new_player.event_handler = event_handler

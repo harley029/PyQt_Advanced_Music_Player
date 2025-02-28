@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt
 
 from utils import messages as msg
 from utils.message_manager import messanger
-from utils.list_validator import list_validator, ListWidgetProvider
+from utils.list_validator import list_validator
 
 
 class FavouritesManager:
