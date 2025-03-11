@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -22,7 +22,16 @@ jobs:
     - name: Install system dependencies for PyQt5
       run: |
         sudo apt-get update
-        sudo apt-get install -y libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0
+        sudo apt-get install -y \
+          libxkbcommon-x11-0 \
+          libxcb-icccm4 \
+          libxcb-image0 \
+          libxcb-keysyms1 \
+          libxcb-randr0 \
+          libxcb-render-util0 \
+          libxcb-xinerama0 \
+          libpulse0 \
+          libpulse-mainloop-glib0
 
     - name: Install Python dependencies
       run: |
@@ -42,7 +51,7 @@ jobs:
         pytest tests/ --cov=. --cov-report=xml -v
 
     - name: Upload coverage report
-      uses: actions/upload-artifact@v4  # Обновлено до v4
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage.xml
