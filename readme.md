@@ -1,6 +1,6 @@
 # Modern Music Player
 
-[![Codecov](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player/branch/main/graph/badge.svg)](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player)
+[![codecov](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player/branch/main/graph/badge.svg?token=6RNGBY6IXK)](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player)
 
 ## 1. General Analysis of the Project as a Whole
 
