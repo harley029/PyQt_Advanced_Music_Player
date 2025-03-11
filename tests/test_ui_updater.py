@@ -118,10 +118,10 @@ class TestUIUpdater:
         # Mock audio file with tags
         mock_audio = MagicMock()
         tags_dict = {
-        "TIT2": "Test Title",
-        "TPE1": "Test Artist",
-        "TALB": "Test Album",
-    }
+            "TIT2": "Test Title",
+            "TPE1": "Test Artist",
+            "TALB": "Test Album",
+        }
         mock_audio.tags.get.side_effect = tags_dict.get  # Use dict.get directly
         mock_audio.info.length = 185  # 3:05 in seconds
 

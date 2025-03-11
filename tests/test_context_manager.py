@@ -1,4 +1,6 @@
 # pylint: disable=redefined-outer-name
+# pylint: disable=duplicate-code
+
 import sys
 from unittest.mock import MagicMock, patch
 import pytest

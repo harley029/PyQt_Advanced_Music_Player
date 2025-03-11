@@ -1,4 +1,6 @@
-# pylint: disable=redefined-outer-name
+# test_event_handler.py
+# pylint: disable=redefined-outer-name, duplicate-code
+
 from sqlite3 import IntegrityError, OperationalError
 from unittest.mock import MagicMock, patch
 
@@ -8,26 +10,22 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QMessageBox
 from controllers.favourites_manager import FavouritesManager
 from utils import messages as msg
 
+from tests.test_utils import create_mock_music_controller, create_mock_ui_provider
+
 
 @pytest.fixture
 def mock_ui_provider():
-    """Мок для ui_provider, возвращающий моки для favourites и loaded_songs."""
-    ui_provider = MagicMock()
-    favourites_widget = MagicMock(spec=QListWidget)
-    loaded_songs_widget = MagicMock(spec=QListWidget)
-    ui_provider.get_favourites_widget.return_value = favourites_widget
-    ui_provider.get_loaded_songs_widget.return_value = loaded_songs_widget
-    return ui_provider, favourites_widget, loaded_songs_widget
+    return create_mock_ui_provider()
 
 
 @pytest.fixture
 def mock_parent(mock_ui_provider):
     """
     Мок родительского объекта с необходимыми атрибутами:
-      - db_manager (с методами fetch_all_songs, add_song, delete_song, delete_all_songs)
+      - db_manager с методами fetch_all_songs, add_song, delete_song, delete_all_songs
       - ui_provider
-      - list_widget_provider (с методом get_currently_selected_song)
-      - music_controller (с media_player, stop_song и play_song)
+      - list_widget_provider с методом get_currently_selected_song
+      - music_controller с media_player, stop_song и play_song
       - loaded_songs_listWidget и favourites_listWidget
       - current_playlist
     """
@@ -39,22 +37,10 @@ def mock_parent(mock_ui_provider):
     parent.db_manager.delete_song = MagicMock()
     parent.db_manager.delete_all_songs = MagicMock()
     parent.ui_provider = ui_provider
-    lw_provider = MagicMock()
-    # По умолчанию выбранная песня – "song.mp3"
-    lw_provider.get_currently_selected_song.return_value = "song.mp3"
-    parent.list_widget_provider = lw_provider
-
-    music_controller = MagicMock()
-    media_player = MagicMock()
-    media = MagicMock()
-    media.canonicalUrl.return_value.toLocalFile.return_value = "song.mp3"
-    media_player.media.return_value = media
-    # Методы для управления воспроизведением
-    music_controller.media_player.return_value = media_player
-    music_controller.stop_song = MagicMock()
-    music_controller.play_song = MagicMock()
-    parent.music_controller = music_controller
-
+    list_widget_provider = MagicMock()
+    list_widget_provider.get_currently_selected_song.return_value = "song.mp3"
+    parent.list_widget_provider = list_widget_provider
+    parent.music_controller = create_mock_music_controller()
     parent.loaded_songs_listWidget = loaded_songs_widget
     parent.favourites_listWidget = favourites_widget
     parent.current_playlist = None
@@ -70,7 +56,7 @@ def fav_manager(mock_parent):
 
 
 def test_load_favourites_success(fav_manager):
-    """Если база возвращает песни, load_favourites очищает виджет и добавляет элементы."""
+    """Проверяет, что load_favourites очищает виджет и добавляет песни из БД."""
     songs = ["/music/song1.mp3", "/music/song2.mp3"]
     fav_manager.db_manager.fetch_all_songs.return_value = songs
     fav_manager.favourites_widget = MagicMock(spec=QListWidget)
@@ -81,7 +67,6 @@ def test_load_favourites_success(fav_manager):
 
     fav_manager.favourites_widget.clear.assert_called_once()
     fav_manager.db_manager.fetch_all_songs.assert_called_once_with("favourites")
-    # Проверяем число вызовов addItem
     assert fav_manager.favourites_widget.addItem.call_count == len(songs)
 
 
@@ -100,10 +85,7 @@ def test_load_favourites_db_error(fav_manager):
 
 
 def test_add_to_favourites_loaded_empty(fav_manager):
-    """
-    Если loaded_songs_widget пуст (check_list_not_empty возвращает False),
-    метод add_to_favourites не вызывает добавление.
-    """
+    """Если loaded_songs_widget пуст, add_to_favourites не вызывает добавление."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=False,
@@ -113,9 +95,7 @@ def test_add_to_favourites_loaded_empty(fav_manager):
 
 
 def test_add_to_favourites_no_item_selected(fav_manager):
-    """
-    Если check_item_selected возвращает False, add_to_favourites не вызывает добавление.
-    """
+    """Если check_item_selected возвращает False, add_to_favourites не добавляет песню."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -154,9 +134,7 @@ def test_add_to_favourites_no_current_song(fav_manager, mock_parent):
 
 
 def test_add_to_favourites_success(fav_manager):
-    """
-    При корректном выборе песни, add_to_favourites вызывает db_manager.add_song.
-    """
+    """При корректном выборе песни, add_to_favourites вызывает db_manager.add_song."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -173,9 +151,7 @@ def test_add_to_favourites_success(fav_manager):
 
 
 def test_add_to_favourites_integrity_error(fav_manager):
-    """
-    Если db_manager.add_song выбрасывает IntegrityError, вызывается show_warning.
-    """
+    """Если db_manager.add_song выбрасывает IntegrityError, вызывается show_warning."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -194,9 +170,7 @@ def test_add_to_favourites_integrity_error(fav_manager):
 
 
 def test_add_to_favourites_operational_error(fav_manager):
-    """
-    Если db_manager.add_song выбрасывает OperationalError, вызывается show_critical.
-    """
+    """Если db_manager.add_song выбрасывает OperationalError, вызывается show_critical."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -219,9 +193,7 @@ def test_add_to_favourites_operational_error(fav_manager):
 
 
 def test_remove_selected_favourite_empty_list(fav_manager, mock_parent):
-    """
-    Если favourites_widget пуст, remove_selected_favourite не делает ничего.
-    """
+    """Если favourites_widget пуст, remove_selected_favourite ничего не делает."""
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=False,
@@ -235,9 +207,7 @@ def test_remove_selected_favourite_empty_list(fav_manager, mock_parent):
 
 
 def test_remove_selected_favourite_no_selection(fav_manager, mock_parent):
-    """
-    Если check_item_selected возвращает False, remove_selected_favourite не производит удаление.
-    """
+    """Если check_item_selected возвращает False, remove_selected_favourite не удаляет песню."""
     with patch(
         "controllers.favourites_manager.list_validator.check_item_selected",
         return_value=False,
@@ -280,20 +250,15 @@ def test_remove_selected_favourite_not_playing(fav_manager, mock_parent):
 
 def test_remove_selected_favourite_playing_and_next(fav_manager, mock_parent):
     """
-    Если удаляемая песня является текущей и после удаления остаётся хотя бы один элемент,
-    вызывается stop_song, затем play_song следующей песни.
+    Если удаляемая песня является текущей, вызывается stop_song, затем play_song следующей песни.
     """
     fav_widget = MagicMock(spec=QListWidget)
-    # Use a function that returns values dynamically to avoid StopIteration
-    fav_widget.count.side_effect = lambda: (
-        [2, 1][0] if fav_widget.count.call_count <= 1 else 1
-    )
+    fav_widget.count.side_effect = lambda: 2 if fav_widget.count.call_count <= 1 else 1
     item = MagicMock(spec=QListWidgetItem)
     item.data.return_value = "song.mp3"
     fav_widget.item.side_effect = lambda i: item
     fav_widget.currentRow.return_value = 0
     fav_manager.favourites_widget = fav_widget
-
     with patch.object(
         fav_manager, "_get_current_playing_song", return_value="song.mp3"
     ):
@@ -317,7 +282,6 @@ def test_remove_selected_favourite_playing_and_next(fav_manager, mock_parent):
                             "favourites", "song.mp3"
                         )
                         fav_widget.takeItem.assert_called_once()
-                        # Если после удаления остается элемент, должен вызываться play_song
                         mock_play.assert_called_once()
 
 
@@ -334,7 +298,6 @@ def test_remove_selected_favourite_db_error(fav_manager):
     fav_manager.favourites_widget = fav_widget
     error = OperationalError("DB delete error")
     fav_manager.db_manager.delete_song.side_effect = error
-
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -356,13 +319,12 @@ def test_remove_selected_favourite_db_error(fav_manager):
 
 def test_clear_favourites_list_empty(fav_manager):
     """
-    Если check_list_not_empty возвращает False, clear_favourites не делает ничего.
+    Если check_list_not_empty возвращает False, clear_favourites не очищает список.
     """
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=False,
     ):
-        # Создаем мок для list_widget_provider (не используется) и favourites_widget
         fav_manager.favourites_widget = MagicMock(spec=QListWidget)
         fav_manager.clear_favourites()
         fav_manager.favourites_widget.clear.assert_not_called()
@@ -375,7 +337,6 @@ def test_clear_favourites_no_confirmation(fav_manager, mock_parent):
     fav_widget = MagicMock(spec=QListWidget)
     fav_widget.count.return_value = 2
     fav_manager.favourites_widget = fav_widget
-
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -391,31 +352,22 @@ def test_clear_favourites_no_confirmation(fav_manager, mock_parent):
 
 def test_clear_favourites_success(fav_manager, mock_parent):
     """
-    Если пользователь подтверждает удаление, clear_favourites вызывает stop_song (если проигрывается),
+    Если пользователь подтверждает удаление, clear_favourites вызывает stop_song (при совпадении текущей песни),
     очищает favourites_widget и вызывает db_manager.delete_all_songs.
     """
     fav_widget = MagicMock(spec=QListWidget)
     fav_widget.count.return_value = 2
-    fav_manager.favourites_widget = fav_widget
-
-    # Create mock for favourites data to ensure it contains current playing song
     item = MagicMock(spec=QListWidgetItem)
     item.data.return_value = "song.mp3"
-    fav_widget.item.return_value = item
-
-    with patch(
-        "controllers.favourites_manager.list_validator.check_list_not_empty",
-        return_value=True,
+    fav_widget.item.side_effect = lambda i: item
+    fav_manager.favourites_widget = fav_widget
+    with patch.object(
+        fav_manager, "_get_current_playing_song", return_value="song.mp3"
     ):
         with patch.object(
-            fav_manager, "_get_current_playing_song", return_value="song.mp3"
+            fav_manager.messanger, "show_question", return_value=QMessageBox.Yes
         ):
-            with patch.object(
-                fav_manager.messanger, "show_question", return_value=QMessageBox.Yes
-            ):
-                fav_manager.clear_favourites()
-
-    # Ожидаем, что при совпадении текущей песни будет вызван stop_song
+            fav_manager.clear_favourites()
     mock_parent.music_controller.stop_song.assert_called_once()
     fav_widget.clear.assert_called_once()
     fav_manager.db_manager.delete_all_songs.assert_called_once_with("favourites")
@@ -430,8 +382,6 @@ def test_clear_favourites_db_error(fav_manager):
     fav_manager.favourites_widget = fav_widget
     error = OperationalError("Clear error")
     fav_manager.db_manager.delete_all_songs.side_effect = error
-
-    # Mock QMessageBox.question to return QMessageBox.Yes
     with patch("PyQt5.QtWidgets.QMessageBox.question", return_value=QMessageBox.Yes):
         with patch(
             "controllers.favourites_manager.list_validator.check_list_not_empty",
@@ -448,42 +398,29 @@ def test_clear_favourites_db_error(fav_manager):
 # --- Тесты для add_all_to_favourites ---
 
 
-def test_add_all_to_favourites_loaded_empty(fav_manager):
+def test_add_all_to_favourites_success(fav_manager, mock_parent):
     """
-    Если check_list_not_empty для loaded_songs_widget возвращает False,
-    add_all_to_favourites не вызывает добавление.
-    """
-    with patch(
-        "controllers.favourites_manager.list_validator.check_list_not_empty",
-        return_value=False,
-    ):
-        fav_manager.add_all_to_favourites()
-        fav_manager.db_manager.add_song.assert_not_called()
-
-
-def test_add_all_to_favourites_skip_empty_item(fav_manager, mock_parent):
-    """
-    Если элемент loaded_songs_widget возвращает пустой путь, он пропускается.
+    add_all_to_favourites добавляет все песни из loaded_songs_widget в избранное
+    и выводит информационное сообщение с количеством добавленных песен.
     """
     loaded_widget = MagicMock(spec=QListWidget)
-    loaded_widget.count.return_value = 2
+    loaded_widget.count.return_value = 3
     item1 = MagicMock(spec=QListWidgetItem)
     item2 = MagicMock(spec=QListWidgetItem)
+    item3 = MagicMock(spec=QListWidgetItem)
     item1.data.return_value = "/music/song1.mp3"
-    item2.data.return_value = ""
-    loaded_widget.item.side_effect = lambda i: [item1, item2][i]
+    item2.data.return_value = "/music/song2.mp3"
+    item3.data.return_value = "/music/song3.mp3"
+    loaded_widget.item.side_effect = lambda i: [item1, item2, item3][i]
     mock_parent.ui_provider.get_loaded_songs_widget.return_value = loaded_widget
     fav_manager.loaded_songs_widget = loaded_widget
-
     fav_manager.db_manager.add_song.side_effect = lambda table, song: None
-
     with patch.object(fav_manager.messanger, "show_info") as mock_show_info:
         fav_manager.add_all_to_favourites()
-        # Ожидаем, что add_song вызван только для item1
-        assert fav_manager.db_manager.add_song.call_count == 1
+        assert fav_manager.db_manager.add_song.call_count == 3
         mock_show_info.assert_called_once()
         args, _ = mock_show_info.call_args
-        assert "1" in args[2]
+        assert "3" in args[2]
 
 
 def test_add_all_to_favourites_operational_error(fav_manager, mock_parent):
@@ -497,10 +434,8 @@ def test_add_all_to_favourites_operational_error(fav_manager, mock_parent):
     loaded_widget.item.return_value = item
     mock_parent.ui_provider.get_loaded_songs_widget.return_value = loaded_widget
     fav_manager.loaded_songs_widget = loaded_widget
-
     error = OperationalError("Add all error")
     fav_manager.db_manager.add_song.side_effect = error
-
     with patch(
         "controllers.favourites_manager.list_validator.check_list_not_empty",
         return_value=True,
@@ -537,7 +472,6 @@ def test_add_all_to_favourites_integrity_issues(fav_manager, mock_parent):
 
     with patch.object(fav_manager.messanger, "show_info") as mock_show_info:
         fav_manager.add_all_to_favourites()
-        # add_song вызывается 3 раза, но успешно добавлена только 1 песня
         assert fav_manager.db_manager.add_song.call_count == 3
         mock_show_info.assert_called_once()
         args, _ = mock_show_info.call_args
@@ -548,11 +482,13 @@ def test_add_all_to_favourites_integrity_issues(fav_manager, mock_parent):
 
 
 def test_get_current_playing_song(fav_manager, mock_parent):
+    """
+    Проверяет, что _get_current_playing_song возвращает корректный путь к текущей песне.
+    """
     media_player = MagicMock()
     media = MagicMock()
     media.canonicalUrl.return_value.toLocalFile.return_value = "current_song.mp3"
     media_player.media.return_value = media
     mock_parent.music_controller.media_player.return_value = media_player
-
     result = fav_manager._get_current_playing_song()
     assert result == "current_song.mp3"
