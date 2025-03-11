@@ -12,3 +12,4 @@ venv/
 QtBeets.app/
 build/
 .mypy_cache/
+.pytest_cache/
