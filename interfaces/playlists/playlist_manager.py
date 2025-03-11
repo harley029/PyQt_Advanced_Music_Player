@@ -76,6 +76,7 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Parent widget.
         :return: Name of the created playlist or None.
         """
+        playlist_name = None
         try:
             existing = self.db_manager.get_playlists()
             playlist_name, ok = QInputDialog.getText(
