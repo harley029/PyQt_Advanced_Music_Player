@@ -32,8 +32,8 @@ jobs:
           libxcb-xinerama0 \
           libpulse0 \
           libpulse-mainloop-glib0 \
-          libgl1-mesa-glx \
-          libqt5gui5  # Additional Qt5 dependencies
+          libgl1 \          # Replaced libgl1-mesa-glx
+          libqt5gui5
 
     - name: Install Python dependencies
       run: |
@@ -45,16 +45,16 @@ jobs:
       run: |
         sudo apt-get install -y xvfb
         Xvfb :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset &
-        sleep 2  # Give Xvfb time to start
-        echo "DISPLAY=:99" >> $GITHUB_ENV  # Export DISPLAY explicitly
-        ps aux | grep Xvfb  # Verify Xvfb is running
+        sleep 2
+        echo "DISPLAY=:99" >> $GITHUB_ENV
+        ps aux | grep Xvfb
 
     - name: Run tests
       run: |
         pytest tests/ --cov=. --cov-report=xml -v
 
     - name: Upload coverage report
-      if: always()  # Run even if tests fail
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
