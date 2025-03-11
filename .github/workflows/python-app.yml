@@ -52,7 +52,7 @@ jobs:
         pytest --cov --junitxml=junit.xml -o junit_family=legacy
 
     - name: Upload test results to Codecov
-      if: ${{ !cancelled() }}
-      uses: codecov/test-results-action@v1
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+        slug: harley029/PyQt_Advanced_Music_Player
