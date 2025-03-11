@@ -96,6 +96,7 @@ class TestBackgroundSlideshow:
         mock_msgbox_critical.assert_not_called()
         slideshow.label.setPixmap.assert_not_called()
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     @patch("controllers.background_slideshow.os.path.isdir", return_value=True)
     @patch("controllers.background_slideshow.os.listdir", return_value=["image1.jpg"])
     @patch("controllers.background_slideshow.os.path.isfile", return_value=True)
@@ -125,6 +126,7 @@ class TestBackgroundSlideshow:
             assert slideshow.slide_index == 0
             mock_msgbox_critical.assert_not_called()
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     @patch("PyQt5.QtWidgets.QMessageBox.critical", return_value=None)
     @patch("controllers.background_slideshow.os.path.isdir", return_value=True)
     @patch(
@@ -160,6 +162,7 @@ class TestBackgroundSlideshow:
             assert slideshow.slide_index == 1
             mock_msgbox_critical.assert_not_called()
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     @patch("controllers.background_slideshow.os.path.isdir", return_value=True)
     @patch("controllers.background_slideshow.os.listdir", return_value=["image1.jpg"])
     @patch("controllers.background_slideshow.os.path.isfile", return_value=False)

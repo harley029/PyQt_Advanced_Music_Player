@@ -66,6 +66,7 @@ def test_connect_success(db_manager):
     """Test successful database connection."""
     # Restore original method for this test
     original_connect = db_manager._connect
+    # pylint: disable=no-value-for-parameter
     db_manager._connect = DatabaseManager._connect.__get__(db_manager)
 
     with patch("sqlite3.connect") as mock_connect:
@@ -83,6 +84,7 @@ def test_connect_failure(db_manager):
     """Test handling of connection failures."""
     # Restore original method for this test
     original_connect = db_manager._connect
+    # pylint: disable=no-value-for-parameter
     db_manager._connect = DatabaseManager._connect.__get__(db_manager)
 
     with patch("sqlite3.connect") as mock_connect:

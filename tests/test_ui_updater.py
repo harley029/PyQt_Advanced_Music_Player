@@ -117,11 +117,12 @@ class TestUIUpdater:
 
         # Mock audio file with tags
         mock_audio = MagicMock()
-        mock_audio.tags.get.side_effect = lambda key, default: {
-            "TIT2": "Test Title",
-            "TPE1": "Test Artist",
-            "TALB": "Test Album",
-        }.get(key, default)
+        tags_dict = {
+        "TIT2": "Test Title",
+        "TPE1": "Test Artist",
+        "TALB": "Test Album",
+    }
+        mock_audio.tags.get.side_effect = tags_dict.get  # Use dict.get directly
         mock_audio.info.length = 185  # 3:05 in seconds
 
         mock_file.return_value = mock_audio

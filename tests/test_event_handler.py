@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QMessageBox
 from controllers.favourites_manager import FavouritesManager
 from utils import messages as msg
 
+
 @pytest.fixture
 def mock_ui_provider():
     """Мок для ui_provider, возвращающий моки для favourites и loaded_songs."""

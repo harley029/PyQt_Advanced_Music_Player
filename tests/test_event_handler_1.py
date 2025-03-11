@@ -1,10 +1,12 @@
 # pylint: disable=redefined-outer-name
+from sqlite3 import OperationalError
+
 from unittest.mock import MagicMock, patch
 import pytest
+
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QFileDialog, QMessageBox
 from PyQt5.QtMultimedia import QMediaPlayer
 from PyQt5.QtCore import Qt
-from sqlite3 import OperationalError
 
 from controllers.event_handler import (
     EventHandler,

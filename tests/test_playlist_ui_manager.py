@@ -92,6 +92,7 @@ def test_select_playlist(monkeypatch):
 
     manager = PlaylistUIManager(None, mock_db_manager)
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def fake_get_item(parent, title, label, items, current, editable):
         assert items[0] == "--Click to Select--"
         assert "favourites" not in items
