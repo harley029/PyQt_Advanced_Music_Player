@@ -1,5 +1,7 @@
 # Modern Music Player
 
+[![Codecov](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player/branch/main/graph/badge.svg)](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player)
+
 ## 1. General Analysis of the Project as a Whole
 
 The project is a desktop music player application built using PyQt5. It is organized into multiple modules that handle the user interface, database operations, event handling, and playback functionality. The architecture follows a modular design with dependency injection, which facilitates testing and enhances flexibility. Key design patterns implemented in the project include the Factory, Command, Strategy, and Dependency Injection patterns.
