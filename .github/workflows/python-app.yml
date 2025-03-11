@@ -32,7 +32,7 @@ jobs:
           libxcb-xinerama0 \
           libpulse0 \
           libpulse-mainloop-glib0 \
-          libgl1 \          # Replaced libgl1-mesa-glx
+          libgl1 \          # Note: No comment here, backslash followed by newline
           libqt5gui5
 
     - name: Install Python dependencies
