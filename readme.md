@@ -1,5 +1,6 @@
 # Modern Music Player
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c111b8e0388c4381b7406cb04a0a0ba8)](https://app.codacy.com/gh/harley029/PyQt_Advanced_Music_Player?utm_source=github.com&utm_medium=referral&utm_content=harley029/PyQt_Advanced_Music_Player&utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player/branch/main/graph/badge.svg?token=6RNGBY6IXK)](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player)
 
 ## 1. General Analysis of the Project as a Whole
