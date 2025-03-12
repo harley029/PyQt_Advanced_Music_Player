@@ -5,7 +5,17 @@ from PyQt5.QtWidgets import QListWidget
 
 def create_mock_ui_provider():
     """
-    Создаёт мок для ui_provider с виджетами favourites и loaded_songs.
+    Creates a mock for the ui_provider with favourites and loaded_songs widgets.
+
+    This function creates a mock object for the UI provider that includes
+    configured mock objects for the favourites widget and loaded songs widget.
+    These mocks can be used in unit tests to simulate UI interactions.
+
+    Returns:
+        tuple: Contains three items:
+            - ui_provider (MagicMock): The mocked UI provider
+            - favourites_widget (MagicMock): Mock for the favourites list widget
+            - loaded_songs_widget (MagicMock): Mock for the loaded songs list widget
     """
     ui_provider = MagicMock()
     favourites_widget = MagicMock(spec=QListWidget)
@@ -17,7 +27,20 @@ def create_mock_ui_provider():
 
 def create_mock_music_controller(current_song="song.mp3"):
     """
-    Создаёт мок музыкального контроллера с настроенным media_player.
+    Creates a mock for the music controller with a configured media_player.
+
+    This function creates a mock object for the music controller that includes
+    a configured media player mock. The media player is set up to return the
+    specified current song when queried. This allows unit tests to simulate
+    the behavior of the music controller without requiring actual media playback.
+
+    Args:
+        current_song (str, optional): The filename of the song that should be
+            returned as the currently playing media. Defaults to "song.mp3".
+
+    Returns:
+        MagicMock: A configured mock object for the music controller that will
+                   return the specified current song when queried.
     """
     music_controller = MagicMock()
     media_player = MagicMock()
