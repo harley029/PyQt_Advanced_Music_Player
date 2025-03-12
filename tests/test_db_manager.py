@@ -63,10 +63,10 @@ def test_init_custom_values():
     Returns:
         None
     """
-    manager = DatabaseManager(db_name="custom.db", db_dir="/tmp/custom_dir")
-    assert manager.db_name == "custom.db"
-    assert manager.db_dir == "/tmp/custom_dir"
-    assert manager.db_path == "/tmp/custom_dir/custom.db"
+    manager = DatabaseManager(db_name="some.db", db_dir="/tmp/db_dir")
+    assert manager.db_name == "some.db"
+    assert manager.db_dir == "/tmp/db_dir"
+    assert manager.db_path == "/tmp/db_dir/some.db"
 
 
 def test_ensure_database_directory(temp_db_path):
