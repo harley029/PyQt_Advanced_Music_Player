@@ -11,34 +11,42 @@ jobs:
         ports:
           - 9000:9000
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history for better analysis
-      
+          fetch-depth: 0
+
       - name: Set up JDK 17
-        id: setup-java
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
-          
-      - name: Verify Java version
-        run: java -version
-        
+
       - name: Wait for SonarQube to be ready
         run: |
           until curl -s http://localhost:9000/api/system/status | grep -q "UP"; do
             echo "Waiting for SonarQube server to be ready..."
-            sleep 5
+            sleep 10
           done
-          
-      - name: Set up SonarScanner
+
+      - name: Create admin token
         run: |
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-            unzip sonar-scanner-cli-5.0.1.3006-linux.zip
+          # Change default admin password
+          curl -X POST -u admin:admin "http://localhost:9000/api/users/change_password" \
+            -d "login=admin&previousPassword=admin&password=admin123"
           
+          # Generate token
+          TOKEN=$(curl -X POST -u admin:admin123 "http://localhost:9000/api/user_tokens/generate" \
+            -d "name=github-action-token" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+          
+          echo "SONAR_TOKEN=$TOKEN" >> $GITHUB_ENV
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
-            SONAR_HOST_URL: "http://localhost:9000"
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: "http://localhost:9000"
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=my_project
+            -Dsonar.projectName="My Project"
