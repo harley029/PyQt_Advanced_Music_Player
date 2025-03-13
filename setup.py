@@ -4,7 +4,7 @@ from cx_Freeze import setup, Executable
 # app_icon = "icons/5.ico"
 
 include_files = [
-    ("utils/bg_imgs", "utils/bg_imags"),
+    ("utils/bg_imgs", "utils/bg_imgs"),
 ]
 
 build_exe_options = {
