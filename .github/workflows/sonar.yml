@@ -3,25 +3,19 @@ on: [push]
 jobs:
   sonar:
     runs-on: ubuntu-latest
-    services:
-      sonarqube:
-        image: sonarqube:community
-        ports:
-          - 9000:9000
     steps:
-    - uses: actions/checkout@v3
-    - name: Wait for SonarQube to start
-      run: |
-        until curl -s http://localhost:9000/api/system/status | grep -q "UP"; do
-            echo "Waiting for SonarQube to be ready..."
-            sleep 5
-        done
-    - name: Set up SonarScanner
-      run: |
-        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-        unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-    - name: Run SonarScanner
-      run: sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: http://localhost:9000
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+      - name: Run SonarScanner
+        run: sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: http://localhost:9000
