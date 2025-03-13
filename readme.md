@@ -14,15 +14,11 @@ The project is a desktop music player application built using PyQt5. It is organ
 
 ### Try out the last build (for Mac OS only)
 
-#### Download the artifact from <https://github.com/harley029/PyQt_Advanced_Music_Player/actions> last action with the tag Build macOS App.
-
-#### Unpack the package into the separate folder
-
-#### Open Terminal in that folder
-
-#### Run the command to bypasses the Gatekeeper: "xattr -d com.apple.quarantine qtbeets-1.4.app"
-
-#### Enjoy the fully operable application qtbeets-1.4.app
+- Download the artifact from [the latest Build macOS App](https://github.com/harley029/PyQt_Advanced_Music_Player/actions).
+- Unpack the package into the separate folder
+- Open Terminal in that folder
+- Run the command to bypasses the Gatekeeper: "xattr -d com.apple.quarantine qtbeets-1.4.app"
+- Enjoy the fully operable application qtbeets-1.4.app
 
 ## 2. General Analysis of Each Module
 
