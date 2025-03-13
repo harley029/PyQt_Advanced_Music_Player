@@ -10,7 +10,7 @@ include_files= [
 build_exe_options = {
     "packages": ["os", "PyQt5"],
     "include_files": include_files,
-    "excludes": ["PyQt5.QtQml"],
+    "excludes": ["PyQt5.QtQml", "libpq.5.dylib"],
 }
 
 base = None
