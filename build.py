@@ -24,7 +24,7 @@ executables = [
 
 setup(
     name="QtBeets",
-    version="1.3",
+    version="1.4",
     description="Advanced Music Player",
     options=options,
     executables=executables,
