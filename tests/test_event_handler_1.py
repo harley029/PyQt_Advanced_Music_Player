@@ -293,7 +293,10 @@ def test_navigation_handler_next_index_random(monkeypatch):
     """
     handler = NavigationHandler(RandomNavigationStrategy())
     mock_randint = MagicMock(side_effect=[0, 1])
-    monkeypatch.setattr("interfaces.navigation.navigation.randint", mock_randint)
+    monkeypatch.setattr(
+        "interfaces.navigation.navigation.secrets.randbelow", mock_randint
+    )
+
     assert handler.get_next_index(0, 3) == 1
     assert mock_randint.call_count == 2
 

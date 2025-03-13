@@ -1,5 +1,5 @@
 import os
-import random
+import secrets
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap
@@ -55,10 +55,10 @@ class BackgroundSlideshow:
         Update the background image according to the slideshow logic.
 
         This method is called automatically at intervals defined by the timer. It:
-        1. Gets the list of image files from the specified directory
-        2. Filters out specific files that should not be included in the slideshow
-        3. Loads the current image and sets it as the background
-        4. Selects the next image index (randomly or sequentially)
+        1. Gets the list of image files from the specified directory.
+        2. Filters out specific files that should not be included in the slideshow.
+        3. Loads the current image and sets it as the background.
+        4. Selects the next image index using a cryptographically secure random number generator.
 
         If the images directory is empty after filtering, the method exits without changing the background.
         """
@@ -81,9 +81,7 @@ class BackgroundSlideshow:
             if pixmap.isNull():
                 raise ValueError(f"Unable to load image from '{full_path}'.")
             self.label.setPixmap(pixmap)
-            self.slide_index = (
-                random.randint(0, len(images) - 1) if len(images) > 1 else 0
-            )
+            self.slide_index = secrets.randbelow(len(images)) if len(images) > 1 else 0
         except FileNotFoundError as e:
             messanger.show_critical(
                 self.label, "Slideshow Error", "Image file or directory not found.", e

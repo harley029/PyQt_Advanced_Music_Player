@@ -225,17 +225,14 @@ class TestBackgroundSlideshow:
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     @patch("PyQt5.QtWidgets.QMessageBox.critical", return_value=None)
     @patch("controllers.background_slideshow.os.path.isdir", return_value=True)
-    @patch(
-        "controllers.background_slideshow.os.listdir",
-        return_value=["image1.jpg", "image2.jpg"],
-    )
+    @patch("controllers.background_slideshow.os.listdir", return_value=["image1.jpg", "image2.jpg"])
     @patch("controllers.background_slideshow.os.path.isfile", return_value=True)
-    @patch("controllers.background_slideshow.random.randint", return_value=1)
+    @patch("controllers.background_slideshow.secrets.randbelow", return_value=1)
     @patch("controllers.background_slideshow.QPixmap")
     def test_slideshow_multiple_images(
         self,
         mock_QPixmap,
-        mock_randint,
+        mock_randbelow,
         mock_isfile,
         mock_listdir,
         mock_isdir,
@@ -247,21 +244,12 @@ class TestBackgroundSlideshow:
 
         Verifies that:
         - The function properly lists directory contents
-        - It uses random selection to choose the next image
+        - It uses secure random selection (secrets.randbelow) to choose the next image
         - It checks if the selected image file exists
         - It creates a QPixmap with the correct path
         - The QPixmap is set on the label
         - The slide index is correctly updated to match the random selection
         - No error messages are shown for valid images
-
-        Args:
-            mock_QPixmap (MagicMock): Mock for QPixmap constructor
-            mock_randint (MagicMock): Mock for random.randint returning a predetermined value
-            mock_isfile (MagicMock): Mock for os.path.isfile that returns True
-            mock_listdir (MagicMock): Mock for os.listdir returning multiple images
-            mock_isdir (MagicMock): Mock for os.path.isdir that returns True
-            mock_msgbox_critical (MagicMock): Mock for QMessageBox.critical
-            slideshow (BackgroundSlideshow): The fixture providing the instance to test.
         """
         mock_pixmap = Mock(spec=QPixmap)
         mock_pixmap.isNull.return_value = False
@@ -274,9 +262,10 @@ class TestBackgroundSlideshow:
             mock_isfile.assert_called_once_with(expected_path)
             mock_QPixmap.assert_called_once_with(expected_path)
             mock_set_pixmap.assert_called_once_with(mock_pixmap)
-            mock_randint.assert_called_once_with(0, 1)
+            mock_randbelow.assert_called_once_with(2)
             assert slideshow.slide_index == 1
             mock_msgbox_critical.assert_not_called()
+
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     @patch("controllers.background_slideshow.os.path.isdir", return_value=True)

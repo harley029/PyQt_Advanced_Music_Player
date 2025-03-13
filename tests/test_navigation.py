@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import pytest
 from interfaces.navigation.navigation import (
     NormalNavigationStrategy,
@@ -78,7 +79,8 @@ def test_normal_navigation_invalid_inputs():
 # --- Tests for RandomNavigationStrategy --- #
 
 
-def test_random_navigation_get_next_index():
+@patch("interfaces.navigation.navigation.secrets.randbelow", side_effect=[2, 4])
+def test_random_navigation_get_next_index(mock_randbelow):
     """
     Tests that RandomNavigationStrategy.get_next_index() returns a valid index
     that is different from the current index and within the valid range.
@@ -97,12 +99,14 @@ def test_random_navigation_get_next_index():
     current_index = 2
     count = 6
     result = strat.get_next_index(current_index, count)
-    assert 0 <= result < count
-    if count > 1:
-        assert result != current_index
+    assert result == 4
+    assert mock_randbelow.call_count >= 2
+
+    # и затем повторный вызов вернул 4.
 
 
-def test_random_navigation_get_previous_index():
+@patch("interfaces.navigation.navigation.secrets.randbelow", return_value=3)
+def test_random_navigation_get_previous_index(mock_randbelow):
     """
     Tests that RandomNavigationStrategy.get_previous_index() returns a valid index
     within the valid range.
@@ -120,7 +124,8 @@ def test_random_navigation_get_previous_index():
     current_index = 2
     count = 6
     result = strat.get_previous_index(current_index, count)
-    assert 0 <= result < count
+    assert result == 3
+    mock_randbelow.assert_called_once_with(count)
 
 
 def test_random_navigation_invalid_inputs_get_next():

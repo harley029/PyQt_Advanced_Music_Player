@@ -1,4 +1,4 @@
-from random import randint
+import secrets
 
 from interfaces.interfaces import INavigationStrategy
 
@@ -114,10 +114,10 @@ class RandomNavigationStrategy(INavigationStrategy, NavigationValidation):
             The returned index may be the same as current_index by chance.
         """
         self.validate_inputs(current_index, count)
-        new_index = randint(0, count - 1)
+        new_index = secrets.randbelow(count)
         # Ensure we don't get the same index twice in a row
         while count > 1 and new_index == current_index:
-            new_index = randint(0, count - 1)
+            new_index = secrets.randbelow(count)
         return new_index
 
     def get_previous_index(self, current_index: int, count: int) -> int:
@@ -137,8 +137,7 @@ class RandomNavigationStrategy(INavigationStrategy, NavigationValidation):
         Note:
             Functionally identical to get_next_index as both provide random indices.
         """
-        return randint(0, count - 1)
-
+        return secrets.randbelow(count)
 
 class LoopingNavigationStrategy(INavigationStrategy, NavigationValidation):
     """
