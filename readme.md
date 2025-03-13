@@ -3,21 +3,21 @@
 [![codecov](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player/branch/main/graph/badge.svg?token=6RNGBY6IXK)](https://codecov.io/gh/harley029/PyQt_Advanced_Music_Player)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/26102897f0694ae4b45d9106dc270160)](https://app.codacy.com/gh/harley029/PyQt_Advanced_Music_Player/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=harley029_PyQt_Advanced_Music_Player&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=harley029_PyQt_Advanced_Music_Player)
-[![Build Status](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml/badge.svg)](https://github.com/harley029/PyQt_Advanced_Music_Player/actions)
+[![macOS Build Status](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml/badge.svg)](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![Player](utils/screenshots/qtbeets2.png)
 
-## 1. General Analysis of the Project as a Whole
+## 1. General Description of the Project as a Whole
 
 The project is a desktop music player application built using PyQt5. It is organized into multiple modules that handle the user interface, database operations, event handling, and playback functionality. The architecture follows a modular design with dependency injection, which facilitates testing and enhances flexibility. Key design patterns implemented in the project include the Factory, Command, Strategy, and Dependency Injection patterns.
 
 ### Try out the last build (for Mac OS only)
 
-- Download the artifact from [the latest Build macOS App](https://github.com/harley029/PyQt_Advanced_Music_Player/actions).
-- Unpack the package into the separate folder
+- Download the build (artifact) from [the latest Build macOS App](https://github.com/harley029/PyQt_Advanced_Music_Player/actions).
+- Unpack the package into a separate folder
 - Open Terminal in that folder
-- Run the command to bypasses the Gatekeeper: "xattr -d com.apple.quarantine qtbeets-1.4.app"
+- Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine qtbeets-1.4.app`
 - Enjoy the fully operable application qtbeets-1.4.app
 
 ## 2. General Analysis of Each Module
@@ -102,8 +102,9 @@ The NavigationHandler employs the Strategy pattern to allow different navigation
 
 Through configuration objects such as EventHandlerConfig, dependencies are injected into various components, promoting loose coupling and increasing testability.
 
-## 6. How to use
+## 6. How to build on the local Mac
 
-- install сx-Freexe: pip install сx-Freexe
+- install: сx-Freexe: pip install сx_Freexe
+- install: dependencies pip install -r requirements.txt
 - build: python build.py bdist_mac
-- find a "qtbeets" application in the "build" folder.
+- find a `qtbeets-1.4.app` application in the `build` folder.
