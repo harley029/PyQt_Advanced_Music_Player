@@ -5,6 +5,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=harley029_PyQt_Advanced_Music_Player&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=harley029_PyQt_Advanced_Music_Player)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![Player](utils/screenshots/qtbeets2.png)
 
 ## 1. General Analysis of the Project as a Whole
 
