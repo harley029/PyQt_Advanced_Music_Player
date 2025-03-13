@@ -29,24 +29,12 @@ jobs:
             sleep 10
           done
 
-      - name: Create admin token
-        run: |
-          # Change default admin password
-          curl -X POST -u admin:admin "http://localhost:9000/api/users/change_password" \
-            -d "login=admin&previousPassword=admin&password=admin123"
-          
-          # Generate token
-          TOKEN=$(curl -X POST -u admin:admin123 "http://localhost:9000/api/user_tokens/generate" \
-            -d "name=github-action-token" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-          
-          echo "SONAR_TOKEN=$TOKEN" >> $GITHUB_ENV
-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
-            SONAR_HOST_URL: "http://localhost:9000"
-            SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+          SONAR_HOST_URL: "http://localhost:9000"
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-            args: >
-                -Dsonar.projectKey=harley029_PyQt_Advanced_Music_Player
-                -Dsonar.projectName="PyQt_Advanced_Music_Player"
+          args: >
+            -Dsonar.projectKey=harley029_PyQt_Advanced_Music_Player
+            -Dsonar.projectName="PyQt_Advanced_Music_Player"
