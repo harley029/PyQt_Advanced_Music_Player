@@ -48,5 +48,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=my_project
-            -Dsonar.projectName="My Project"
+            -Dsonar.projectKey=harley029_PyQt_Advanced_Music_Player
+            -Dsonar.projectName="PyQt_Advanced_Music_Player"
