@@ -1,7 +1,7 @@
 import sys
 from cx_Freeze import setup, Executable
 
-# app_icon = "icons/5.ico"
+app_icon = "icons/qtbeets.ico"
 
 include_files = [
     ("utils/bg_imgs", "utils/bg_imgs"),
@@ -22,5 +22,5 @@ setup(
     version="1.4",
     description="Advanced Music Player",
     options={"build_exe": build_exe_options},
-    executables=[Executable("QtBeets.py", base=base)],
+    executables=[Executable("QtBeets.py", base=base, icon=app_icon)],
 )

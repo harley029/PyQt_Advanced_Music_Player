@@ -14,12 +14,20 @@
 
 This is a desktop music player application built with PyQt5, designed for a modern and flexible user experience. The codebase is split into modules managing the UI, database, event handling, and audio playback. It uses a modular architecture with dependency injection to simplify testing and maintenance. Key design patterns include Factory, Command, Strategy, and Dependency Injection. Current version: 1.4.
 
-### Try Out the Latest Build (macOS Only)
+### Try Out the Latest Build
+
+- **macOS users**
 
 - Download the build artifact from [the latest Build macOS App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml) in the **Artifacts** section.
 - Unpack the `.zip` file into a separate folder.
 - Open Terminal in that folder.
 - Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine qtbeets-1.4.app`.
+- Open and enjoy the fully functional application `QtBeets`.
+
+- **Windows users**
+
+- Download the build artifact from [the latest Build Windows App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci_yml.yml) in the **Artifacts** section.
+- Unpack the `.zip` file into a separate folder.
 - Open and enjoy the fully functional application `QtBeets`.
 
 ## 2. Module Breakdown
