@@ -1,0 +1,35 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.21'
+
+      - name: Install dependencies
+        run: |
+          pip install cx_Freeze
+          # Если у вас есть файл requirements.txt, его тоже можно установить:
+          # pip install -r requirements.txt
+
+      - name: Build application using cx_Freeze
+        run: python build.py bdist_mac
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: QtBeets-mac-app
+          path: ./build
