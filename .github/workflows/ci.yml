@@ -22,14 +22,13 @@ jobs:
       - name: Install dependencies
         run: |
           pip install cx_Freeze
-          # Если у вас есть файл requirements.txt, его тоже можно установить:
-          # pip install -r requirements.txt
+          pip install -r requirements.txt
 
       - name: Build application using cx_Freeze
         run: python build.py bdist_mac
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: QtBeets-mac-app
           path: ./build
