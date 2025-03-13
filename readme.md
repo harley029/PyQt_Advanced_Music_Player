@@ -74,7 +74,7 @@ Encapsulate user actions as commands for decoupled and extensible UI interaction
 
 ## 6. How to build on the local Mac
 
-- install: сx-Freeze: pip install сx_Freexe
-- install: dependencies pip install -r requirements.txt
-- build: python build.py bdist_mac
+- **install:** сx_Freeze: pip install сx_Freexe
+- **install dependencies:** pip install -r requirements.txt
+- **build:** python build.py bdist_mac
 - find a `qtbeets-1.4.app` application in the `build` folder.
