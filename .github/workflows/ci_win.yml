@@ -26,10 +26,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build application using cx_Freeze
-        run: python build.py bdist_mac
+        run: python setuo.py build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QtBeets-mac-app
+          name: QtBeets
           path: ./build/*
