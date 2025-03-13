@@ -5,7 +5,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=harley029_PyQt_Advanced_Music_Player&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=harley029_PyQt_Advanced_Music_Player)
 [![macOS Build Status](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml/badge.svg)](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
-[![PyQt5 5.15.11](https://img.shields.io/badge/PyQt5-brightgreen)](https://www.riverbankcomputing.com/software/pyqt/)
+[![PyQt5](https://img.shields.io/badge/PyQt5-blue)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![Player](utils/screenshots/qtbeets2.png)
