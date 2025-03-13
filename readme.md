@@ -17,8 +17,8 @@ This is a desktop music player application built with PyQt5, designed for a mode
 - Download the build artifact from [the latest Build macOS App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml) in the **Artifacts** section.
 - Unpack the `.zip` file into a separate folder.
 - Open Terminal in that folder.
-- Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine QtBeets.app` (replace `QtBeets.app` with the actual app name if different).
-- Launch the fully operable application `QtBeets.app`.
+- Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine qtbeets-1.4.app`.
+- Launch the fully operable application `QtBeets`.
 
 ## 2. Module Breakdown
 
