@@ -8,103 +8,73 @@
 
 ![Player](utils/screenshots/qtbeets2.png)
 
-## 1. General Description of the Project as a Whole
+## 1. Project Overview
 
-The project is a desktop music player application built using PyQt5. It is organized into multiple modules that handle the user interface, database operations, event handling, and playback functionality. The architecture follows a modular design with dependency injection, which facilitates testing and enhances flexibility. Key design patterns implemented in the project include the Factory, Command, Strategy, and Dependency Injection patterns.
+This is a desktop music player application built with PyQt5, designed for a modern and flexible user experience. The codebase is split into modules managing the UI, database, event handling, and audio playback. It uses a modular architecture with dependency injection to simplify testing and maintenance. Key design patterns include Factory, Command, Strategy, and Dependency Injection. Current version: 1.4.
 
-### Try out the last build (for Mac OS only)
+### Try Out the Latest Build (macOS Only)
 
-- Download the build (artifact) from [the latest Build macOS App](https://github.com/harley029/PyQt_Advanced_Music_Player/actions).
-- Unpack the package into a separate folder
-- Open Terminal in that folder
-- Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine qtbeets-1.4.app`
-- Enjoy the fully operable application qtbeets-1.4.app
+- Download the build artifact from [the latest Build macOS App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml) in the **Artifacts** section.
+- Unpack the `.zip` file into a separate folder.
+- Open Terminal in that folder.
+- Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine QtBeets.app` (replace `QtBeets.app` with the actual app name if different).
+- Launch the fully operable application `QtBeets.app`.
 
-## 2. General Analysis of Each Module
+## 2. Module Breakdown
 
-### 2.1. Main UI (QtBeets.py)
+### 2.1. Main UI (`QtBeets.py`)
 
-Initializes core components, sets up the main window, and manages UI events. It uses classes such as WindowManager, UIUpdater, and EventHandler to delegate functionality.
+Initializes the core components, sets up the main window, and manages UI events using `WindowManager`, `UIUpdater`, and `EventHandler`.
 
-### 2.2. Database Module (db_manager.py & db_utils.py)
+### 2.2. Database Module (`db_manager.py` & `db_utils.py`)
 
-Implements SQLite database operations including connection management, query execution, table creation, and data manipulation. It also includes utility functions for validating table names.
+Handles SQLite database operations: connections, queries, table creation, and data management. Includes utilities for table name validation.
 
 ### 2.3. Controllers
 
-#### 2.3.1. MusicPlayerController
+#### 2.3.1. `MusicPlayerController`
 
-Wraps the QMediaPlayer to manage playback functions such as play, pause, stop, and volume control.
+Manages playback (play, pause, stop, volume) via `QMediaPlayer`.
 
-#### 2.3.2. UIUpdater
+#### 2.3.2. `UIUpdater`
 
-Synchronizes the music player’s state with the UI (e.g., slider position, time labels, and song metadata).
+Keeps the UI in sync with playback state (e.g., slider, time labels, song metadata).
 
-#### 2.3.3. EventHandler
+#### 2.3.3. `EventHandler`
 
-Coordinates user interactions by delegating tasks to specialized handlers like PlaybackHandler, NavigationHandler, and UIEventHandler.
+Coordinates user actions, delegating to handlers like `PlaybackHandler`, `NavigationHandler`, and `UIEventHandler`.
 
 #### 2.3.4. Utility Modules
 
-Provide shared functionality including message management (MessageManager), UI component access (UIProvider), and list management (ListManager).
+Shared tools for messaging (`MessageManager`), UI access (`UIProvider`), and list operations (`ListManager`).
 
 #### 2.3.5. Command & Context Menu Modules
 
-Implement the Command pattern to encapsulate user actions, allowing for decoupled and easily extendable command execution within the UI.
+Encapsulate user actions as commands for decoupled and extensible UI interactions.
 
-## 3. Detailed Analysis from the Perspective of SOLID Principles
+## 3. SOLID Principles Analysis
 
-### Single Responsibility Principle (SRP)
+- **Single Responsibility Principle (SRP)**: Each class has one job—e.g., `UIUpdater` updates the UI, `MusicPlayerController` handles playback.
+- **Open/Closed Principle (OCP)**: Extensible via dependency injection and interfaces, minimizing changes to existing code.
+- **Liskov Substitution Principle (LSP)**: Interfaces like `IMusicPlayerController` and `IUIProvider` allow seamless substitution.
+- **Interface Segregation Principle (ISP)**: Focused interfaces ensure classes implement only relevant methods.
+- **Dependency Inversion Principle (DIP)**: High-level modules rely on abstractions, with dependencies injected via configs (e.g., `EventHandlerConfig`).
 
-Each class is designed to handle a specific responsibility. For example, UIUpdater solely updates UI elements while MusicPlayerController handles playback.
+## 4. DRY Principle Analysis
 
-### Open/Closed Principle (OCP)
+- **Avoiding Repetition**: Shared logic lives in utility classes (`UIProvider`, `ListManager`, `MessageManager`), reducing duplication.
+- **Shared Methods**: Common tasks (e.g., list validation, message display) are centralized for consistency and ease of maintenance.
 
-The application is extensible via dependency injection and the use of interfaces. This allows new features or modifications to be added with minimal changes to the existing codebase.
+## 5. Structural Programming Patterns
 
-### Liskov Substitution Principle (LSP)
-
-Interfaces such as IMusicPlayerController and IUIProvider ensure that different implementations can be substituted without affecting the overall functionality of the application.
-
-### Interface Segregation Principle (ISP)
-
-The interfaces are fine-grained and focused on specific functionalities, ensuring that classes only need to implement the methods that are relevant to their operations.
-
-### Dependency Inversion Principle (DIP)
-
-High-level modules depend on abstractions rather than concrete implementations. The use of configuration objects (e.g., EventHandlerConfig) and dependency injection throughout the project exemplify this principle.
-
-## 4. Detailed Analysis from the Perspective of the DRY Principle
-
-### Avoiding Repetition
-
-Common functionality is abstracted into utility classes such as UIProvider, ListManager, and MessageManager. This centralization reduces code duplication and simplifies maintenance.
-
-### Shared Methods
-
-Methods for common tasks (e.g., list validation, message display, widget access) are implemented once and reused across multiple modules, ensuring consistency and reducing the likelihood of errors.
-
-## 5. Detailed Analysis from the Perspective of Structural Programming Patterns
-
-### Factory Pattern
-
-The AppFactory is used to create and wire up all dependencies, centralizing the instantiation logic and making the application setup more manageable.
-
-### Command Pattern
-
-The application uses the Command pattern to encapsulate user actions into command objects (e.g., PlayCommand, PauseCommand). This decouples the UI event handling from the actual logic execution, making it easier to extend and maintain.
-
-### Strategy Pattern
-
-The NavigationHandler employs the Strategy pattern to allow different navigation behaviors (normal, random, looping) to be selected dynamically at runtime.
-
-### Dependency Injection
-
-Through configuration objects such as EventHandlerConfig, dependencies are injected into various components, promoting loose coupling and increasing testability.
+- **Factory Pattern**: `AppFactory` centralizes dependency creation and setup.
+- **Command Pattern**: User actions (e.g., `PlayCommand`, `PauseCommand`) are encapsulated for decoupling.
+- **Strategy Pattern**: `NavigationHandler` switches navigation behaviors (normal, random, looping) at runtime.
+- **Dependency Injection**: Configs like `EventHandlerConfig` inject dependencies for loose coupling.
 
 ## 6. How to build on the local Mac
 
-- install: сx-Freexe: pip install сx_Freexe
+- install: сx-Freeze: pip install сx_Freexe
 - install: dependencies pip install -r requirements.txt
 - build: python build.py bdist_mac
 - find a `qtbeets-1.4.app` application in the `build` folder.
