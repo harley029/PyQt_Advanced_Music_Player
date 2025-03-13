@@ -44,9 +44,9 @@ jobs:
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
-          SONAR_HOST_URL: "http://localhost:9000"
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+            SONAR_HOST_URL: "http://localhost:9000"
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >
-            -Dsonar.projectKey=harley029_PyQt_Advanced_Music_Player
-            -Dsonar.projectName="PyQt_Advanced_Music_Player"
+            args: >
+                -Dsonar.projectKey=harley029_PyQt_Advanced_Music_Player
+                -Dsonar.projectName="PyQt_Advanced_Music_Player"
