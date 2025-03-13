@@ -1,5 +1,7 @@
 name: SonarQube Analysis
+
 on: [push]
+
 jobs:
   sonar:
     runs-on: ubuntu-latest
@@ -10,8 +12,11 @@ jobs:
           - 9000:9000
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          fetch-depth: 0  # Fetch all history for better analysis
+      
       - name: Set up JDK 17
+        id: setup-java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -19,23 +24,28 @@ jobs:
           
       - name: Verify Java version
         run: java -version
-
+        
       - name: Wait for SonarQube to be ready
         run: |
           until curl -s http://localhost:9000/api/system/status | grep -q "UP"; do
             echo "Waiting for SonarQube server to be ready..."
             sleep 5
           done
-
+          
       - name: Set up SonarScanner
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
           unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-
+          
       - name: Run SonarScanner with Java 17
-        env:
-            JAVA_HOME: ${{ steps.setup-java.outputs.java-home }}
-            PATH: ${{ steps.setup-java.outputs.java-home }}/bin:${{ env.PATH }}
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            SONAR_HOST_URL: http://localhost:9000
-        run: sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner
+        run: |
+          export JAVA_HOME=${{ steps.setup-java.outputs.path }}
+          export PATH=$JAVA_HOME/bin:$PATH
+          echo "Using Java from: $JAVA_HOME"
+          echo "Java version:"
+          java -version
+          ./sonar-scanner-4.8.0.2856-linux/bin/sonar-scanner \
+            -Dsonar.projectKey=your_project_key \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://localhost:9000 \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
