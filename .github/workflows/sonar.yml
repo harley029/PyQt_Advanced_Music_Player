@@ -3,8 +3,19 @@ on: [push]
 jobs:
   sonar:
     runs-on: ubuntu-latest
+    services:
+      sonarqube:
+        image: sonarqube:community
+        ports:
+          - 9000:9000
     steps:
     - uses: actions/checkout@v3
+    - name: Wait for SonarQube to start
+      run: |
+        until curl -s http://localhost:9000; do
+          echo "Waiting for SonarQube server..."
+          sleep 5
+        done
     - name: Set up SonarScanner
       run: |
         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
