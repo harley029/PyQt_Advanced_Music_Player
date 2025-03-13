@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install cx_Freeze
-          pip install -r requirements.txt
+          pip install -r requirem_win.txt
 
       - name: Build application using cx_Freeze
         run: python setup.py build
