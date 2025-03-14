@@ -4,6 +4,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/26102897f0694ae4b45d9106dc270160)](https://app.codacy.com/gh/harley029/PyQt_Advanced_Music_Player/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=harley029_PyQt_Advanced_Music_Player&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=harley029_PyQt_Advanced_Music_Player)
 [![macOS Build Status](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml/badge.svg)](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml)
+[![Windows Build Status](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml/badge.svg)](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci_win.yml)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3921/)
 [![PyQt5](https://img.shields.io/badge/PyQt5-blue)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -16,7 +17,7 @@ This is a desktop music player application built with PyQt5, designed for a mode
 
 ### Try Out the Latest Build
 
-- **macOS users**
+#### macOS users
 
 - Download the build artifact from [the latest Build macOS App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci.yml) in the **Artifacts** section.
 - Unpack the `.zip` file into a separate folder.
@@ -24,7 +25,7 @@ This is a desktop music player application built with PyQt5, designed for a mode
 - Run the following command to bypass Gatekeeper: `xattr -d com.apple.quarantine qtbeets-1.4.app`.
 - Open and enjoy the fully functional application `QtBeets`.
 
-- **Windows users**
+#### Windows users
 
 - Download the build artifact from [the latest Build Windows App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci_yml.yml) in the **Artifacts** section.
 - Unpack the `.zip` file into a separate folder.
@@ -82,9 +83,10 @@ Encapsulate user actions as commands for decoupled and extensible UI interaction
 - **Strategy Pattern**: `NavigationHandler` switches navigation behaviors (normal, random, looping) at runtime.
 - **Dependency Injection**: Configs like `EventHandlerConfig` inject dependencies for loose coupling.
 
-## 6. How to build on the local Mac
+## 6. How to build on the local computer
 
 - **install:** cx_Freeze: pip install cx_Freeze
 - **install dependencies:** pip install -r requirements.txt
-- **build:** python build.py bdist_mac
+- **build (macOS users):** python build.py bdist_mac
+- **build (macOS users):** python setup.py build
 - find a `qtbeets-1.4.app` application in the `build` folder.
