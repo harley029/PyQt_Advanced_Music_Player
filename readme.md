@@ -27,7 +27,7 @@ This is a desktop music player application built with PyQt5, designed for a mode
 
 #### Windows users
 
-- Download the build artifact from [the latest Build Windows App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci_yml.yml) in the **Artifacts** section.
+- Download the build artifact from [the latest Build Windows App workflow](https://github.com/harley029/PyQt_Advanced_Music_Player/actions/workflows/ci_win.yml) in the **Artifacts** section.
 - Unpack the `.zip` file into a separate folder.
 - Open and enjoy the fully functional application `QtBeets`.
 
