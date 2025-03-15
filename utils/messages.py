@@ -65,6 +65,6 @@ about_message = """
         <h2>Modern Music Player</h2>
         <p>Version: 1.3</p>
         <p>Author: Oleksandr Kharchenko</p>
-        <p>Email: oleksandr.kharchenko@icloud.com</p>
-        <p>Description: Application for the listening music.</p>
+        <p>Email: kharchenko.oleksandr@icloud.com</p>
+        <p>Description: Application for the music listening.</p>
         """
