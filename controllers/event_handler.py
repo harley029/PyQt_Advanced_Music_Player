@@ -35,7 +35,7 @@ class UIComponents:
         ui_updater: Component responsible for UI updates
     """
 
-    main_window: Any  # Main UI window
+    main_window: Any
     ui_updater: UIUpdater
 
 
@@ -307,14 +307,12 @@ class EventHandler:
         Args:
             config: EventHandlerConfig instance containing all required dependencies
         """
-        # Create specialized handlers
         self.ui_handler = UIEventHandler(config.ui, config.db_manager)
         self.playback_handler = PlaybackHandler(
             config.music_controller, config.ui_updater
         )
         self.navigation_handler = NavigationHandler()
 
-        # Store essential references
         self.ui = config.ui
         self.music_controller = config.music_controller
         self.playlist_manager = config.playlist_manager

@@ -133,11 +133,12 @@ class RandomNavigationStrategy(INavigationStrategy, NavigationValidation):
 
         Raises:
             ValueError: If inputs are invalid
-
+            
         Note:
             Functionally identical to get_next_index as both provide random indices.
         """
-        return secrets.randbelow(count)
+        new_index = self.get_next_index(current_index, count)
+        return new_index
 
 class LoopingNavigationStrategy(INavigationStrategy, NavigationValidation):
     """
@@ -160,6 +161,7 @@ class LoopingNavigationStrategy(INavigationStrategy, NavigationValidation):
 
         Returns:
             int: The same index as current_index, creating a loop.
+
         Raises:
             ValueError: If inputs are invalid
         """
@@ -176,6 +178,7 @@ class LoopingNavigationStrategy(INavigationStrategy, NavigationValidation):
 
         Returns:
             int: The same index as current_index, creating a loop.
+
         Raises:
             ValueError: If inputs are invalid
         """

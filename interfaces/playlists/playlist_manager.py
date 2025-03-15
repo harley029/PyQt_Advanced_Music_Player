@@ -206,7 +206,7 @@ class PlaylistManager(IPlaylistManager):
             current_song = item.data(Qt.UserRole)
 
             playlist, ok = self.ui_manager.select_playlist(parent)
-            if not ok:  # Пользователь нажал "Отмена"
+            if not ok:
                 return
             if playlist == "--Click to Select--":
                 self.messanger.show_info(parent, msg.TTL_ADD_TO_LST, msg.MSG_NO_LST_SEL)

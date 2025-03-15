@@ -63,5 +63,4 @@ class MessageManager:
         )
 
 
-# Создаем экземпляр MessageManager для использования в других модулях
 messanger = MessageManager()

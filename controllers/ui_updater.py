@@ -118,7 +118,7 @@ class UIUpdater:
         Parameters:
             song_path: Path to the audio file being played
         """
-        title = os.path.basename(song_path)  # Запасное значение
+        title = os.path.basename(song_path)
         artist = "Unknown Artist"
         album = "Unknown Album"
         duration = 0

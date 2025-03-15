@@ -27,12 +27,9 @@ class ListManager:
 
         :return: The currently active QListWidget from the stacked widget.
         """
-        # Получаем текущую страницу (widget) из stacked widget
         widget = self.ui_provider.get_stacked_widget().currentWidget()
-        # Если widget уже является QListWidget, возвращаем его
         if isinstance(widget, QListWidget):
             return widget
-        # Иначе, пытаемся найти в нем дочерний QListWidget
         return widget.findChild(QListWidget)
 
     def get_selected_song(self) -> Optional[str]:
