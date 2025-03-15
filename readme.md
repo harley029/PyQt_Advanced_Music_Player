@@ -15,6 +15,8 @@
 
 This is a desktop music player application built with PyQt5, designed for a modern and flexible user experience. The codebase is split into modules managing the UI, database, event handling, and audio playback. It uses a modular architecture with dependency injection to simplify testing and maintenance. Key design patterns include Factory, Command, Strategy, and Dependency Injection. Current version: 1.4.
 
+The project is based on the [Python User Interface Project – Use PyQt5 to Code a Music Player](https://www.youtube.com/watch?v=DjutoyfCl2c&ab_channel=freeCodeCamp.org) tutorial in terms of the UI creation, while the business logic has been developed completely from scratch.
+
 ### Try Out the Latest Build
 
 #### macOS users
