@@ -89,4 +89,4 @@ Encapsulate user actions as commands for decoupled and extensible UI interaction
 - **install dependencies:** `pip install -r requirements.txt`
 - **build (macOS users):** `python build.py bdist_mac`
 - **build (macOS users):** `python setup.py build`
-- find a `qtbeets-1.4.app` application in the `build` folder.
+- find a `qtbeets-1.4` application in the `build` folder.
