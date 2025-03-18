@@ -207,9 +207,10 @@ class TestPlaylistManager:
 
         playlist_manager.load_playlist_into_widget(mock_parent)
 
+        expected_message = f"{msg.MSG_LST_LOAD_ERR} Playlist error"
         playlist_manager.messanger.show_critical.assert_called_once_with(
-            mock_parent, msg.TTL_ERR, "Playlist error: Playlist error"
-        )
+        mock_parent, msg.TTL_ERR, expected_message
+    )
 
     def test_create_playlist_new(self, playlist_manager, mock_parent):
         """
@@ -630,11 +631,10 @@ class TestPlaylistManager:
             "DB error"
         )
         playlist_manager.remove_all_playlists(mock_parent)
+        expected_message = f"{msg.DB_LST_DEL_ERROR} DB error"
         playlist_manager.messanger.show_critical.assert_called_once_with(
-            mock_parent,
-            msg.TTL_ERR,
-            "Database error while removing playlists: DB error",
-        )
+        mock_parent, msg.TTL_ERR, expected_message
+    )
 
     @patch("interfaces.playlists.playlist_manager.list_validator")
     def test_remove_all_playlists_playlist_error(
@@ -958,9 +958,10 @@ class TestPlaylistManager:
             "DB error"
         )
         playlist_manager.add_song_to_playlist(mock_parent)
+        expected_message = f"{msg.DB_SONG_ADD_ERROR} DB error"
         playlist_manager.messanger.show_critical.assert_called_once_with(
-            mock_parent, msg.TTL_ERR, "Database error while adding song: DB error"
-        )
+        mock_parent, msg.TTL_ERR, expected_message
+    )
 
     @patch("interfaces.playlists.playlist_manager.list_validator")
     def test_add_song_to_playlist_playlist_error(
