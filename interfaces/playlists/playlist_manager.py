@@ -10,6 +10,7 @@ from interfaces.playlists.playlist_ui_manager import PlaylistUIManager
 from utils import messages as msg
 from utils.message_manager import MessageManager
 from utils.list_validator import list_validator
+from utils import messages as msg
 
 
 class PlaylistError(Exception):
@@ -64,10 +65,12 @@ class PlaylistManager(IPlaylistManager):
             parent.switch_to_songs_tab()
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while loading playlist: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_LST_LOAD_ERROR} {e}"
             )
         except PlaylistError as e:
-            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(
+                parent, msg.TTL_ERR, f"{msg.MSG_LST_LOAD_ERR} {e}"
+            )
 
     def create_playlist(self, parent) -> Optional[str]:
         """
@@ -103,11 +106,11 @@ class PlaylistManager(IPlaylistManager):
             self.ui_manager.load_playlists()
         except ValueError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Invalid playlist name: {e}"
+                parent, msg.TTL_ERR, f"{msg.MSG_LST_NAME_ERROR} {e}"
             )
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while creating playlist: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_LST_NEW_ERROR} {e}"
             )
 
         return playlist_name
@@ -119,7 +122,9 @@ class PlaylistManager(IPlaylistManager):
         :param parent: Parent widget.
         """
         try:
-            if not list_validator.check_list_not_empty(self.list_widget, "There are no playlists to be deleted"):
+            if not list_validator.check_list_not_empty(
+                self.list_widget, msg.MSG_NO_LST_TO_DEL
+            ):
                 return
             if not list_validator.check_item_selected(self.list_widget, parent, message=msg.MSG_NO_LST_SEL):
                 return
@@ -146,10 +151,10 @@ class PlaylistManager(IPlaylistManager):
                 self.list_widget.setCurrentRow(new_selection)
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while removing playlist: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_LST_DEL_ERROR} {e}"
             )
         except PlaylistError as e:
-            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_ERR} {e}")
 
     def remove_all_playlists(self, parent):
         """
@@ -159,7 +164,7 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if not list_validator.check_list_not_empty(
-                parent.playlists_listWidget, "There are no playlists to be deleted"
+                parent.playlists_listWidget, msg.MSG_NO_LST_TO_DEL
             ):
                 return
             confirm = self.messanger.show_question(
@@ -180,10 +185,10 @@ class PlaylistManager(IPlaylistManager):
             # self.messanger.show_info(parent, msg.TTL_OK, msg.MSG_LST_DEL_OK)
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while removing playlists: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_LST_DEL_ERROR} {e}"
             )
         except PlaylistError as e:
-            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_ERR} {e}")
 
     def add_song_to_playlist(self, parent):
         """
@@ -193,7 +198,7 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if not list_validator.check_list_not_empty(
-                parent.loaded_songs_listWidget, "No songs in the list!"
+                parent.loaded_songs_listWidget, msg.MSG_LST_EMPTY
             ):
                 return
             if not list_validator.check_item_selected(parent.loaded_songs_listWidget, parent):
@@ -219,10 +224,10 @@ class PlaylistManager(IPlaylistManager):
             )
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while adding song: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_SONG_ADD_ERROR} {e}"
             )
         except PlaylistError as e:
-            self.messanger.show_critical(parent, msg.TTL_ERR, f"Playlist error: {e}")
+            self.messanger.show_critical(parent, msg.TTL_ERR, f"{msg.MSG_LST_ERR} {e}")
 
     def add_all_to_playlist(self, parent) -> None:
         """
@@ -232,7 +237,7 @@ class PlaylistManager(IPlaylistManager):
         """
         try:
             if not list_validator.check_list_not_empty(
-                parent.loaded_songs_listWidget, "List of songs is empty!"
+                parent.loaded_songs_listWidget, msg.MSG_LST_EMPTY
             ):
                 return
 
@@ -256,7 +261,7 @@ class PlaylistManager(IPlaylistManager):
                     # Skip if song already exists in playlist
                     continue
                 except (DatabaseError) as e:
-                    raise PlaylistError(f"Failed to add song to playlist: {e}") from e
+                    raise PlaylistError(f"{msg.MSG_ADD_TO_LST_ERR} {e}") from e
             self.messanger.show_info(
                 parent, msg.TTL_OK, f"{added_count} {msg.CTX_ADD_ALL_TO_LST}"
             )
@@ -265,9 +270,9 @@ class PlaylistManager(IPlaylistManager):
             self.messanger.show_critical(parent, msg.TTL_ERR, str(e))
         except DatabaseError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Database error while adding songs: {e}"
+                parent, msg.TTL_ERR, f"{msg.DB_SONG_ADD_ERROR} {e}"
             )
         except ValueError as e:
             self.messanger.show_critical(
-                parent, msg.TTL_ERR, f"Invalid data format: {e}"
+                parent, msg.TTL_ERR, f"{msg.MSG_DATA_FORMAT_ERROR} {e}"
             )

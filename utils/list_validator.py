@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 
 from interfaces.interfaces import IListWidgetProvider, IUIProvider
 from utils.message_manager import messanger
+from utils import messages as msg
 
 
 class ListValidator:
@@ -12,7 +13,7 @@ class ListValidator:
     """
     @staticmethod
     def check_list_not_empty(
-        list_widget: QListWidget, message: str = "No songs in the list!"
+        list_widget: QListWidget, message: str = msg.MSG_LST_EMPTY
     ) -> bool:
         """
         Checks if the list widget is not empty.
@@ -25,10 +26,10 @@ class ListValidator:
             bool: True if the list is not empty, False otherwise
         """
         if list_widget is None:
-            messanger.show_warning(None, "Warning", "List widget is not provided!")
+            messanger.show_warning(None, msg.TTL_WRN, msg.MSG_WIDGET_ABCENT)
             return False
         if list_widget.count() == 0:
-            messanger.show_warning(None, "Warning", message)
+            messanger.show_warning(None, msg.TTL_WRN, message)
             return False
         return True
 
@@ -36,8 +37,8 @@ class ListValidator:
     def check_item_selected(
         list_widget: QListWidget,
         parent,
-        title: str = "Attention",
-        message: str = "No song selected!",
+        title: str = msg.TTL_ATT,
+        message: str = msg.MSG_NO_SONG_SEL,
     ) -> bool:
         """
         Checks if any item is selected in the list widget.
