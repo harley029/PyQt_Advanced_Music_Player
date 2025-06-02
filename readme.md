@@ -8,6 +8,7 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3921/)
 [![PyQt5](https://img.shields.io/badge/PyQt5-blue)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![GitHub release](https://img.shields.io/github/v/release/harley029/PyQt_Advanced_Music_Player)
 
 ![Player](utils/screenshots/qtbeets2.png)
 
