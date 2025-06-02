@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![GitHub release](https://img.shields.io/github/v/release/harley029/PyQt_Advanced_Music_Player)
 ![Repo Size](https://img.shields.io/github/repo-size/harley029/PyQt_Advanced_Music_Player)
-![GitHub stars](https://img.shields.io/github/stars/harley029/PyQt_Advanced_Music_Player?style=social)
+![GitHub stars](https://img.shields.io/github/stars/harley029/PyQt_Advanced_Music_Player?style=social&cacheSeconds=60)
 
 ![Player](utils/screenshots/qtbeets2.png)
 
